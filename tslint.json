@@ -32,6 +32,7 @@
       140
     ],
     "member-access": false,
+    "semicolon": [true, "always"],
     "member-ordering": [
       true,
       {
@@ -43,7 +44,7 @@
         ]
       }
     ],
-    "no-consecutive-blank-lines": false,
+    "no-consecutive-blank-lines": true,
     "no-console": [
       true,
       "debug",
@@ -66,10 +67,10 @@
       "as-needed"
     ],
     "object-literal-sort-keys": false,
-    "ordered-imports": false,
+    "ordered-imports": true,
     "quotemark": [
       true,
-      "single"
+      "double"
     ],
     "trailing-comma": false,
     "no-conflicting-lifecycle": true,

@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { StaticHeaderComponent } from './static-header.component';
+import { StaticHeaderComponent } from "./static-header.component";
 
-describe('StaticHeaderComponent', () => {
+describe("StaticHeaderComponent", () => {
   let component: StaticHeaderComponent;
   let fixture: ComponentFixture<StaticHeaderComponent>;
 
@@ -19,7 +19,7 @@ describe('StaticHeaderComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });
