@@ -1,0 +1,10 @@
+@import "../../styles.scss";
+
+.header-link {
+    padding-right: $padding-md;
+    border: none;
+}
+
+.header-link:hover {
+    cursor: pointer;
+}
