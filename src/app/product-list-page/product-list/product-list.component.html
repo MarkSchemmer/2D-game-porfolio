@@ -1,0 +1,5 @@
+<h1>product-list works!</h1>
+<div class="product-list-container list-group" *ngFor="let product of products">
+    <!-- Need to pass component data into product -->
+     <app-product-list-item [product]="product"></app-product-list-item>
+</div>
