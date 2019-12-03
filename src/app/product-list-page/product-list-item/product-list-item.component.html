@@ -1,1 +1,1 @@
-<button class="list-group-item list-group-item-action">{{ product.name }}</button>
+<button class="list-group-item list-group-item-action">{{ product.name }} <span class="product-id" *ngIf="shouldShow">{{ product.productIdCode }}</span></button>

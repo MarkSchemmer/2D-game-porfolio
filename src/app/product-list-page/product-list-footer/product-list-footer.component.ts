@@ -1,4 +1,13 @@
 import { Component, OnInit } from "@angular/core";
+import { select, Store } from "@ngrx/store";
+import { setProductCode } from "src/store/actions/productActions";
+
+/*
+  I'm currently able to dispatch an action to reducer successfully each time I click,
+
+  need to wire up the data so I can
+
+*/
 
 @Component({
   selector: "app-product-list-footer",
@@ -7,9 +16,16 @@ import { Component, OnInit } from "@angular/core";
 })
 export class ProductListFooterComponent implements OnInit {
 
-  constructor() { }
+  isChecked: boolean;
+
+  constructor(private store: Store<any>) { }
 
   ngOnInit() {
+    this.store.pipe(select("products")).subscribe(products => {
+      this.isChecked = products.productCode;
+    });
   }
+
+  checkBoxClicked = (value: boolean) => this.store.dispatch(setProductCode(value));
 
 }
