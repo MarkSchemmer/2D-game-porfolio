@@ -1,0 +1,20 @@
+.list-group-footer {
+    display: flex;
+    width: 400px;
+}
+
+.form-check {
+    display: inline-block;
+    padding-top: 10px;
+}
+
+.form-check-label {
+    vertical-align: bottom;
+    padding-top: 2px;
+    font-weight: 525;
+}
+
+.btn.btn-success {
+    float: right;
+    align-self: stretch;
+}
