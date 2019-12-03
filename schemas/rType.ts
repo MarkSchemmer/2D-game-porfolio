@@ -1,7 +1,7 @@
 
 /*
     [Conditional types by ahejlsberg · Pull Request #21316 · microsoft/TypeScript · GitHub]
-    (https://github.com/Microsoft/TypeScript/pull/21316) 
+    (https://github.com/Microsoft/TypeScript/pull/21316)
 */
 
 // Note(Mark): The immutability types are adapted from a tutorial by Anders Hejlsberg, the architect of TypeScript:

@@ -59,9 +59,12 @@ Rdux principles:
 - State is read only and only changed by dispatching actions 
 - changes are made using pure functions called reducers
 
+Notes on Implementing Redux pattern via Angular:
 
-
-
+For setting up the store: 
+    - Import StoreModule and add to Imports, use .forRoot and give the Root reducer
+    - Note: will need to create a root reducer with StoreState type... 
+    - Will need to define multiple reducers, like in Redux -> so use the combineReducer -> Feature Module State Composition
 
 
 Todos: 

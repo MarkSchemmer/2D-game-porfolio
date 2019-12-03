@@ -23,20 +23,25 @@ export interface ProductPreparation {
 }
 
 export const listOfProductImages: ProductPreparation[] = [
-    { name: "asus zenbook",
+    {
+      name: "Asus zenbook",
       imageUrl: baseImageUrl + "/asus_zenbook.png",
     },
-    { name: "Ford GT",
+    {
+      name: "Ford GT",
       imageUrl: baseImageUrl + "/ford-gt.jfif",
     },
-    { name: "Android phone",
+    {
+      name: "Android phone",
       imageUrl: baseImageUrl + "/android.jfif",
     },
-    { name: "Linus Tarvalds clone",
-      imageUrl: "\linus-torvalds.jfif",
+    {
+      name: "Linus Tarvalds clone",
+      imageUrl: baseImageUrl + "/linus-torvalds.jfif",
     },
-    { name: "Liberal tears",
-      imageUrl: "libtard.jfif",
+    {
+      name: "Liberal tears",
+      imageUrl: baseImageUrl + "libtard.jfif",
     }
 ];
 
