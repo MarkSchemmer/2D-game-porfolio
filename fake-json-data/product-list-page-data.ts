@@ -9,7 +9,7 @@ const generateFakeProductlistData = (): R<Product[]> => {
         const product: Product = {
             ...prod,
             id,
-            productIdCode: `(${id})-${name}`,
+            productIdCode: `(${id})-${prod.name}`,
         };
         return product;
     });
