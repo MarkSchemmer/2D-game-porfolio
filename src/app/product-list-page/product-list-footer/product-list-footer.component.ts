@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { setProductCode } from "src/store/actions/productActions";
 import { getProductPageState, ProductPageState } from "src/store/reducers/productListReducer";
-declare var $: any;
+import { showProductModal } from "utils/Utils";
 
 @Component({
   selector: "app-product-list-footer",
@@ -23,6 +23,6 @@ export class ProductListFooterComponent implements OnInit {
 
   checkBoxClicked = (value: boolean) => this.store.dispatch(setProductCode(value));
 
-  handleClick = () => $("#productModal").modal("show");
+  handleClick = () => showProductModal();
 
 }

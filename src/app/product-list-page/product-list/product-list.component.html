@@ -1,7 +1,9 @@
 <app-add-product-form></app-add-product-form>
 <h1>product-list works!</h1>
-<div class="product-list-container list-group" *ngFor="let product of products">
-    <!-- Need to pass component data into product -->
-     <app-product-list-item [product]="product"></app-product-list-item>
+<div cdkDropList (cdkDropListDropped)="drop($event)">
+    <div class="product-list-container list-group" *ngFor="let product of products" cdkDrag>
+        <!-- Need to pass component data into product -->
+        <app-product-list-item [product]="product"></app-product-list-item>
+    </div>
 </div>
 <app-product-list-footer></app-product-list-footer>

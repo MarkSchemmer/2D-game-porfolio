@@ -2,6 +2,22 @@ import { Observable } from "rxjs";
 import { Product } from "schemas/product-list/product-list-schema";
 import { R } from "schemas/rType";
 
+declare const $: any;
+
+const productModal: string = "#productModal";
+// const show: string = "show";
+const hide: string = "hide";
+
+const showProductModalOptions = {
+  keyboard: false,
+  focus: true,
+  show: true,
+  backdrop: "static"
+};
+
+export const showProductModal = () => $(productModal).modal(showProductModalOptions);
+export const hideProductModal = () => $(productModal).modal(hide);
+
 export const generateRandomGuid = (): string => {
     let u = "";
     const m = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
@@ -23,7 +39,7 @@ export const ObservableWrapper = (fn: Function) => (...args: any): Observable<Pr
 };
 
 export const generateProductIdCode = (name: string, id: string) =>
- `(${id.slice(5)})-${name.length > 10 ? name.slice(7) + "..." : name}`;
+ `(${id.split("").slice(0, 5).join("")})-${name.length > 10 ? name.split("").slice(0, 7).join("") + "..." : name}`;
 
 export const generateProductWithNameAndImageUrl = (name: string, imageUrl: string): R<Product> => {
   const id: string = generateRandomGuid();

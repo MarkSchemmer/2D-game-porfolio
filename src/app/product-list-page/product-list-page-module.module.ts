@@ -1,5 +1,7 @@
+import { DragDropModule } from "@angular/cdk/drag-drop";
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { StoreModule } from "@ngrx/store";
 import { productCode, productList, productsSelector } from "src/store/reducers/productListReducer";
 import { AddProductFormComponent } from "./add-product-form/add-product-form.component";
@@ -21,7 +23,7 @@ const featureReducer = {
       ProductListFooterComponent,
       AddProductFormComponent
   ],
-  imports: [ CommonModule, StoreModule.forFeature(productsSelector, featureReducer) ],
+  imports: [ CommonModule, StoreModule.forFeature(productsSelector, featureReducer), FormsModule, DragDropModule ],
   bootstrap: [
     ProductListPageComponent
   ]

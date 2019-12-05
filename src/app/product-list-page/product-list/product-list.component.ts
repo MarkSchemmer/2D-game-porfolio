@@ -1,3 +1,4 @@
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 import { Component, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
@@ -17,6 +18,12 @@ export class ProductListComponent implements OnInit {
   products: R<Product[]> = [];
 
   constructor(private prodService: ProductService, private store: Store<ProductPageState>) { }
+
+  drop(event: CdkDragDrop<Product[]>) {
+    const newList: Product[] = [...this.products];
+    moveItemInArray(newList, event.previousIndex, event.currentIndex);
+    this.store.dispatch(setProductList(newList));
+  }
 
   ngOnInit() {
     const productObservable: Observable<R<Product[]>> = this.prodService.getProducts();

@@ -24,17 +24,17 @@
             <form>
                 <div class="form-group">
                   <label for="product-name">Name of Product</label>
-                  <input class="form-control" id="product-name" aria-describedby="emailHelp">
+                  <input [(ngModel)]="productPreparation.name" value="{{ productPreparation.name }}" name="name" class="form-control" id="product-name" aria-describedby="emailHelp">
                 </div>
                 <div class="form-group">
                   <label for="image-url">Image url</label>
-                  <input class="form-control" id="image-url">
+                  <input name="imageUrl" [(ngModel)]="productPreparation.imageUrl" value="{{ productPreparation.imageUrl }}" class="form-control" id="image-url">
                 </div>
               </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button (click)="handleClose()" type="button" class="btn btn-secondary">Close</button>
+          <button (click)="handleSubmit()" type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
