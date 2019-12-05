@@ -1,13 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { setProductCode } from "src/store/actions/productActions";
-
-/*
-  I'm currently able to dispatch an action to reducer successfully each time I click,
-
-  need to wire up the data so I can
-
-*/
+import { getProductPageState, ProductPageState } from "src/store/reducers/productListReducer";
+declare var $: any;
 
 @Component({
   selector: "app-product-list-footer",
@@ -18,14 +13,16 @@ export class ProductListFooterComponent implements OnInit {
 
   isChecked: boolean;
 
-  constructor(private store: Store<any>) { }
+  constructor(private store: Store<ProductPageState>) { }
 
   ngOnInit() {
-    this.store.pipe(select("products")).subscribe(products => {
-      this.isChecked = products.productCode;
-    });
+    this.store.pipe(select(getProductPageState)).subscribe(
+        (productCode: boolean) => this.isChecked = productCode
+      );
   }
 
   checkBoxClicked = (value: boolean) => this.store.dispatch(setProductCode(value));
+
+  handleClick = () => $("#productModal").modal("show");
 
 }

@@ -95,7 +95,10 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js", 
+              "node_modules/boostrap/dist/js/bootstrap.min.js"
+            ]
           }
         },
         "lint": {

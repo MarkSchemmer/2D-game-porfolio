@@ -1,0 +1,41 @@
+
+<!-- Modal -->
+  <div class="modal" id="productModal" tabindex="1" role="dialog" aria-labelledby="productModalTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <!-- Product form for adding product 
+            
+                Product must have:
+
+                        - Name
+                        - image url? if empty then give a generic or random generated image of product.... 
+                        - then generate id and product id behind the scenes 
+                        - show spinner of time loading then close the modal, 
+                            if passes clear NgRx form data 
+
+            -->
+            <form>
+                <div class="form-group">
+                  <label for="product-name">Name of Product</label>
+                  <input class="form-control" id="product-name" aria-describedby="emailHelp">
+                </div>
+                <div class="form-group">
+                  <label for="image-url">Image url</label>
+                  <input class="form-control" id="image-url">
+                </div>
+              </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>

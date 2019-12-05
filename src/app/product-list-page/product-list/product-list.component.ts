@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { Product } from "schemas/product-list/product-list-schema";
 import { R } from "schemas/rType";
 import { setProductList } from "src/store/actions/productActions";
+import { getProductListPageState, ProductPageState } from "src/store/reducers/productListReducer";
 import { ProductService } from "../../product-list-page/product.service";
 
 @Component({
@@ -15,18 +16,18 @@ export class ProductListComponent implements OnInit {
 
   products: R<Product[]> = [];
 
-  constructor(private prodService: ProductService, private store: Store<any>) { }
+  constructor(private prodService: ProductService, private store: Store<ProductPageState>) { }
 
   ngOnInit() {
-    const productObservable: Observable<Product[]> = this.prodService.getProducts();
+    const productObservable: Observable<R<Product[]>> = this.prodService.getProducts();
 
-    productObservable.subscribe((productData: Product[]) => {
+    productObservable.subscribe((productData: R<Product[]>) => {
       this.store.dispatch(setProductList(productData));
     });
 
-    this.store.pipe(select("products")).subscribe(products => {
-      this.products = products.productList;
-    });
+    this.store.pipe(select(getProductListPageState)).subscribe(
+        (products: R<Product[]>) => this.products = products
+    );
   }
 
 }

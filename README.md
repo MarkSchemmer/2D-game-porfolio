@@ -49,8 +49,6 @@ Features that this project is going to implement...
 - Implementing linter 
 - make sure to create method that creates unique guid for id. 
 
-
-
 Angular redux pattern aka => NgRx 
 
 Rdux principles: 
@@ -66,17 +64,8 @@ For setting up the store:
     - Note: will need to create a root reducer with StoreState type... 
     - Will need to define multiple reducers, like in Redux -> so use the combineReducer -> Feature Module State Composition
 
-
-Todos: 
-- Need to take existing home page and port that to another component, separate 
-  out the static header and footer and all body pages need to have a top level component, 
-  then if needed create sub nested components like in ReactJs...  
-- Need to setup  header that directs to different pages...
-  while providing a home page about all the projects that I'm adding 
-- Create random guid generator
-- Create interface types to match data
-- Create fake data to wet store
-- Create R<T> type
-
-
-- Need to understand Module 
+A quick note on defining global state for redux application: 
+    - define state for every slice that is in use, export that interface 
+    - then define a global state and use all of the exported
+         interface slices of state to compose the global state
+    

@@ -5,4 +5,5 @@ footer {
     margin-left: calc(50% - 150px); // Note(Mark): half of page minus half of width should center the footer
     position: fixed;
     bottom: 5%;
+    z-index: -1;
 }
