@@ -9,8 +9,8 @@ export enum ProductEnums {
 }
 
 export interface ProductAction<T> {
-    type: ProductEnums;
-    payload: T;
+    readonly type: ProductEnums;
+    readonly payload: T;
 }
 
 export const setProductCode = (value: boolean): ProductAction<boolean> => ({

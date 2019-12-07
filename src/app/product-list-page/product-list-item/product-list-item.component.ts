@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { Product } from "schemas/product-list/product-list-schema";
+import { R } from "schemas/rType";
+import { setProductList } from "src/store/actions/productActions";
+import { getProductListPageState, getProductPageState, ProductPageState } from "src/store/reducers/productListReducer";
 
 @Component({
   selector: "app-product-list-item",
@@ -16,12 +19,34 @@ export class ProductListItemComponent implements OnInit {
 
   shouldShow: boolean;
 
-  constructor(private store: Store<any>) { }
+  showMenu: boolean = false;
+
+  productList: R<Product[]>;
+
+  constructor(private store: Store<ProductPageState>) { }
 
   ngOnInit() {
-    this.store.pipe(select("products")).subscribe(products => {
-      this.shouldShow = products.productCode;
-    });
+    this.store.pipe(select(getProductPageState)).subscribe(
+        productCode => this.shouldShow = productCode
+    );
+
+    this.store.pipe(select(getProductListPageState)).subscribe(
+        products => this.productList = products
+    );
+  }
+
+  onHoverShow = () => {
+    this.showMenu = true;
+  }
+
+  onLeave = () => {
+    this.showMenu = false;
+  }
+
+  handleDeleteClick = () => {
+    this.store.dispatch(setProductList(
+      this.productList.filter(prod => prod.id !== this.product.id)
+    ));
   }
 
 }

@@ -6,4 +6,53 @@ div, button {
     font-size: xx-small;
     font-weight: bolder;
     font-family: monospace;
+    width: 100%;
+}
+
+@keyframes changeWidth {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 75%;
+    }
+}
+
+.product-hovered {
+    width: 75% !important;
+    display: inline-block;
+}
+
+.menu-items {
+    width: 25%;
+    vertical-align: bottom;
+    height: 100%;
+    border: none;
+    border-radius: 2px;
+    height: 50px;
+    float: right;
+}
+
+.menu-item {
+    height: 100%;
+    border: none;
+    border-radius: 2px;
+    width: 50% !important;
+    display: inline-block;
+    border: 1px solid black;
+    text-align: center;
+    padding-top: 12%;
+    font-size: 0.8em;
+}
+
+.menu-item:hover {
+    cursor: pointer;
+}
+
+.prod-item-name-code {
+    height: 50px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }

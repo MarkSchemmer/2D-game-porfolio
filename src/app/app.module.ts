@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { RouterModule } from "@angular/router";
 import { StoreModule } from "@ngrx/store";
 import { StoreDevtoolsModule } from "@ngrx/store-devtools";
@@ -10,7 +11,6 @@ import { ProductListPageModule } from "./product-list-page/product-list-page-mod
 import { StaticFooterComponent } from "./static-footer/static-footer.component";
 import { StaticHeaderComponent } from "./static-header/static-header.component";
 import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [

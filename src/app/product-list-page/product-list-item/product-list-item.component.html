@@ -1,3 +1,15 @@
-<button class="list-group-item list-group-item-action">{{ product.name }} 
-    <span class="product-id" *ngIf="shouldShow">{{ product.productIdCode }}</span>
-</button>
+<div class="list-container"         
+(mouseenter)="onHoverShow()" 
+(mouseleave)="onLeave()">
+    <button class="prod-item-name-code list-group-item list-group-item-action  {{ showMenu ? 'product-hovered' : ''}}" 
+    >{{ product.name }} 
+        <span class="product-id" *ngIf="shouldShow">{{ product.productIdCode }}</span>
+    </button>
+    <div class="menu-items" *ngIf="showMenu">
+        <div class=" btn-danger menu-item "
+        (click)="handleDeleteClick()"
+        >Delete</div>
+        <div class=" btn-primary menu-item ">Edit</div>
+    </div>
+</div>
+<!-- Need to show menu hovered on -->
