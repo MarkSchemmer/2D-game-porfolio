@@ -39,11 +39,11 @@ export const listOfProductImages: ProductPreparation[] = [
     },
     {
       name: "Linus Tarvalds clone",
-      imageUrl: baseImageUrl + "/linus-torvalds.jfif",
+      imageUrl: "",
     },
     {
       name: "Liberal tears",
-      imageUrl: baseImageUrl + "libtard.jfif",
+      imageUrl: baseImageUrl + "/libtard.jfif",
     }
 ];
 

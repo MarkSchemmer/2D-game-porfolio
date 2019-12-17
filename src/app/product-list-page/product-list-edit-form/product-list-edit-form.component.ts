@@ -37,10 +37,6 @@ export class ProductListEditFormComponent implements OnInit {
           });
         }
       );
-
-    console.log(this.product);
-
-    console.log(this.isValidProduct());
   }
 
   isValidProduct = () => isValue(this.product) && isValue(this.product.id);

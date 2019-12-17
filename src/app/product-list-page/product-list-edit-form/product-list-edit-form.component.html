@@ -32,3 +32,7 @@
           <button (click)="edit()" type="submit" class="btn btn-success">Update Product</button>
       </form>
 </div>
+
+<div *ngIf="isValidProduct()">
+    <img src="{{ product.imageUrl }}" />
+</div>
