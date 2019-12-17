@@ -9,6 +9,18 @@ export const productsSelector: string = "products";
 export interface ProductPageState {
     productList: R<Product[]>;
     productCode: boolean;
+    productToEdit: R<Product>;
+}
+
+export interface ProductAndList {
+    product: R<Product>;
+    productList: R<Product[]>;
+}
+
+export interface ProductPageStateReducer {
+    productList: (state: R<Product[]>, action: ProductAction<R<Product[]>>) => R<Product[]>;
+    productCode: (state: boolean, action: ProductAction<boolean>) => boolean;
+    productToEdit: (state: R<Product>, action: ProductAction<R<Product>>) => R<Product>;
 }
 
 // Reducers
@@ -34,6 +46,17 @@ export const productCode = (state: boolean = false, action: ProductAction<boolea
     }
 };
 
+export const productToEdit = (state: R<Product> = null, action: ProductAction<R<Product>>): R<Product> => {
+    switch (action.type) {
+        case ProductEnums.PRODUCT_TO_EDIT: {
+            return action.payload;
+        }
+        default: {
+            return state;
+        }
+    }
+};
+
 // Selectors
 const getProductFeatureState = createFeatureSelector<ProductPageState>(productsSelector);
 
@@ -46,3 +69,27 @@ export const getProductListPageState = createSelector(
     getProductFeatureState,
     state => state.productList
 );
+
+export const getProductToSelectPageState = createSelector(
+    getProductFeatureState,
+    state => state.productToEdit
+);
+
+export const getProductAndProductList = createSelector(
+    getProductToSelectPageState,
+    getProductListPageState,
+    (product: R<Product>, prodList: R<Product[]>) => {
+        const productAndList: ProductAndList = {
+            product,
+            productList: prodList
+        };
+
+        return productAndList;
+    }
+);
+
+export const ProductPageRootReducer: ProductPageStateReducer = {
+    productList,
+    productCode,
+    productToEdit,
+};

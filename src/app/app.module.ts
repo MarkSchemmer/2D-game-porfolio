@@ -17,7 +17,7 @@ import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
     AppComponent,
     StaticHeaderComponent,
     StaticFooterComponent,
-    WelcomePageComponent,
+    WelcomePageComponent
   ],
   imports: [
     BrowserModule,

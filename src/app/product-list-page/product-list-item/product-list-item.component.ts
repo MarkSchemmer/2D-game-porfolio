@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { Product } from "schemas/product-list/product-list-schema";
 import { R } from "schemas/rType";
-import { setProductList } from "src/store/actions/productActions";
+import { setProductList, setProductToEdit } from "src/store/actions/productActions";
 import { getProductListPageState, getProductPageState, ProductPageState } from "src/store/reducers/productListReducer";
 
 @Component({
@@ -43,9 +43,17 @@ export class ProductListItemComponent implements OnInit {
     this.showMenu = false;
   }
 
+  productListThunk = (productList: R<Product[]>, id: string) => productList.filter(prod => prod.id !== id);
+
   handleDeleteClick = () => {
     this.store.dispatch(setProductList(
-      this.productList.filter(prod => prod.id !== this.product.id)
+      this.productListThunk(this.productList, this.product.id)
+    ));
+  }
+
+  handleEditClick = () => {
+    this.store.dispatch(setProductToEdit(
+      this.product
     ));
   }
 

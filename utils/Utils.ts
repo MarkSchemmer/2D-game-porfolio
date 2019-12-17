@@ -18,6 +18,12 @@ const showProductModalOptions = {
 export const showProductModal = () => $(productModal).modal(showProductModalOptions);
 export const hideProductModal = () => $(productModal).modal(hide);
 
+export const isNullOrUndefined = (value: unknown): boolean => value === null || value === undefined;
+
+export const not = (value: boolean): boolean => !value;
+
+export const isValue = (value: unknown): boolean => not(isNullOrUndefined(value));
+
 export const generateRandomGuid = (): string => {
     let u = "";
     const m = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
@@ -52,3 +58,12 @@ export const generateProductWithNameAndImageUrl = (name: string, imageUrl: strin
 
   return prod;
 };
+
+// const findId = (id: string) => (prod: Product) => prod.id === id;
+const notById = (id: string) => (prod: Product) => not(prod.id === id);
+
+export const filterListById = (id: string, productList: R<Product[]>): R<Product[]> =>
+        productList.filter(notById(id));
+
+export const updateItemInList = (product: Product, productList: R<Product[]>): R<Product[]> =>
+        productList.map((prod: Product) => product.id === prod.id ? product : prod);

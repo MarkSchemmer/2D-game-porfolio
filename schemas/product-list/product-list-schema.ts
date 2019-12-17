@@ -9,12 +9,14 @@ export interface Product {
 }
 
 /*
+
     Note(Mark): list of products:
         1. asus laptop
         2. New ford gt
         3. New Android phone
         4. Linus Tarvalds clone
         5. Liberal tears
+
 */
 
 export interface ProductPreparation {
