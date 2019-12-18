@@ -24,6 +24,8 @@ export const not = (value: boolean): boolean => !value;
 
 export const isValue = (value: unknown): boolean => not(isNullOrUndefined(value));
 
+export const isNonEmptyArray = (value: Array<unknown>): boolean => isValue(value) && value.length > 0;
+
 export const generateRandomGuid = (): string => {
     let u = "";
     const m = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
@@ -67,3 +69,18 @@ export const filterListById = (id: string, productList: R<Product[]>): R<Product
 
 export const updateItemInList = (product: Product, productList: R<Product[]>): R<Product[]> =>
         productList.map((prod: Product) => product.id === prod.id ? product : prod);
+
+export const range = (x: number, y: number, incrementer: number = 1): number[] => {
+          const which = x < y;
+          const xx = which ? x : y;
+          const yy = which ? y : x;
+
+          const calculator = (xxx: number = xx, yyy: number = yy, rango = []) => {
+              const newMappedArray = xxx <= yyy ? acendingOrDecendingArr(rango, xxx, which) : rango;
+              return xxx >= yyy ? newMappedArray : calculator(xxx + incrementer, yyy, newMappedArray);
+          };
+
+          return calculator(xx, yy);
+      };
+
+export const acendingOrDecendingArr = (arr: number[], elem: number, which: boolean): number[] => which ? [...arr, elem] : [elem, ...arr];

@@ -1,4 +1,5 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
+import { isValue } from "utils/Utils";
 
 @Component({
   selector: "app-square",
@@ -7,9 +8,12 @@ import { Component, OnInit } from "@angular/core";
 })
 export class SquareComponent implements OnInit {
 
+  @Input() square: string;
+
   constructor() { }
 
   ngOnInit() {
+    this.square = isValue(this.square) ? this.square : null;
   }
 
 }
