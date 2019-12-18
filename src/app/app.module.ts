@@ -10,6 +10,7 @@ import { AppComponent } from "./app.component";
 import { ProductListPageModule } from "./product-list-page/product-list-page-module.module";
 import { StaticFooterComponent } from "./static-footer/static-footer.component";
 import { StaticHeaderComponent } from "./static-header/static-header.component";
+import { TicTacToeModule } from "./tic-tac-toe-page/tic-tac-toe.module";
 import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
 
 @NgModule({
@@ -30,6 +31,7 @@ import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
       logOnly: environment.production,
     }),
     ProductListPageModule,
+    TicTacToeModule,
     BrowserAnimationsModule,
   ],
   providers: [],

@@ -1,0 +1,11 @@
+@import "../../../_variables.scss";
+
+.board {
+    // border: $board-border;
+    height: $board-height-width;
+    width: $board-height-width;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}

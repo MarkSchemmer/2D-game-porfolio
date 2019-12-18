@@ -1,0 +1,20 @@
+@import "../../../_variables.scss";
+
+.square {
+    border: $board-border;
+    width: $square-width-height;
+    height: $square-width-height;
+    display: inline-block;
+    flex-wrap: wrap;
+    margin: 1px;
+    text-align: center;
+    font-size: $tic-tac-toe-font-size;
+    padding-top: 15%;
+}
+
+
+.square:hover {
+    background-color: $square-hovered-on;
+    opacity: 0.5;
+    cursor: pointer;
+}
