@@ -16,6 +16,7 @@ const showProductModalOptions = {
 };
 
 export const showProductModal = () => $(productModal).modal(showProductModalOptions);
+
 export const hideProductModal = () => $(productModal).modal(hide);
 
 export const isNullOrUndefined = (value: unknown): boolean => value === null || value === undefined;
@@ -83,4 +84,6 @@ export const range = (x: number, y: number, incrementer: number = 1): number[] =
           return calculator(xx, yy);
       };
 
-export const acendingOrDecendingArr = (arr: number[], elem: number, which: boolean): number[] => which ? [...arr, elem] : [elem, ...arr];
+export const acendingOrDecendingArr =
+      (arr: number[], elem: number, which: boolean): number[] =>
+                    which ? [...arr, elem] : [elem, ...arr];
