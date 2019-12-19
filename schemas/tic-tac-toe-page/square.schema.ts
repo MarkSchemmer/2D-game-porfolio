@@ -1,11 +1,11 @@
-import { generateRandomGuid } from "utils/Utils";
+import { generateRandomGuid } from "../../utils/Utils";
 
-enum PlayerType {
+export enum PlayerType {
     PlayerX = "X",
-    PlayerType = "O"
+    PlayerY = "O"
 }
 
-interface ISquare {
+export interface ISquare {
     id: string;
     playerType?: PlayerType;
     isWinningSquare: boolean;

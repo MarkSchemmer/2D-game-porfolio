@@ -27,6 +27,7 @@
     "@ngrx/store": "^8.5.2",
     "@ngrx/store-devtools": "^8.5.2",
     "bootstrap": "^4.4.1",
+    "chai": "^4.2.0",
     "font-awesome": "^4.7.0",
     "jquery": "^3.4.1",
     "rxjs": "^6.4.0",

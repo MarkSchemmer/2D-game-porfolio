@@ -1,7 +1,7 @@
-import { Square } from "schemas/tic-tac-toe-page/square.schema";
-import { isNonEmptyArray, range } from "utils/Utils";
+import { Square } from "../../schemas/tic-tac-toe-page/square.schema";
+import { isNonEmptyArray, range } from "../Utils";
 
-const winningSeriesInArray = [
+export const winningSeriesInArray = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -12,8 +12,8 @@ const winningSeriesInArray = [
     [2, 4, 6]
 ];
 
-const createSquare = (): Square => new Square();
-const getWinningSquare = (square: Square): boolean => square.isWinningSquare;
+export const createSquare = (): Square => new Square();
+export const getWinningSquare = (square: Square): boolean => square.isWinningSquare;
 
 export const generateBoard = () => range(1, 9).map(createSquare);
 

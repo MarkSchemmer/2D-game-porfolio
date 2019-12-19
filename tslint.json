@@ -73,7 +73,23 @@
       true,
       "double"
     ],
-    "trailing-comma": true,
+    "trailing-comma": [
+      false,
+      {
+        "multiline": {
+          "objects": "never",
+          "arrays": "never",
+          "functions": "always",
+          "typeLiterals": "never"
+        }, 
+        "singleline": {
+          "objects": "never",
+          "arrays": "never",
+          "functions": "always",
+          "typeLiterals": "never"
+        }
+      }
+    ],
     "no-conflicting-lifecycle": true,
     "no-host-metadata-property": true,
     "no-input-rename": true,
