@@ -10,6 +10,8 @@ export class SquareComponent implements OnInit {
 
   @Input() square: string;
 
+  @Input() handleSquareClick: any;
+
   constructor() { }
 
   ngOnInit() {

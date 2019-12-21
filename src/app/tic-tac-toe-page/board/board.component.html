@@ -1,6 +1,8 @@
 <div class="board">
     <!-- Need to generate squares... -->
     <div *ngFor="let square of squares">
-        <app-square [square]="square"></app-square>
+        <app-square 
+        [handleSquareClick]="handleSquareClick"
+        [square]="square"></app-square>
     </div>
 </div>
