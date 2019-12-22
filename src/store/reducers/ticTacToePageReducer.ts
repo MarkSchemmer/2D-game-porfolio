@@ -1,16 +1,21 @@
 import { R } from "schemas/rType";
-import { Square } from "schemas/tic-tac-toe-page/square.schema";
+import { PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
 import { generateBoard } from "utils/tic-tac-toe/Utils";
 import { TicTacToeAction, ticTacToeEnums } from "../actions/ticTacToeActions";
 
 export interface TicTacToePageState {
     squareList: R<Square[]>;
     playStep: number;
+    winner: PlayerType;
 }
 
 export interface SquaresAndList {
     squareList: R<Square[]>;
     playStep: number;
+}
+
+export interface Winner {
+    winner: PlayerType;
 }
 
 export const squareList = (state: R<Square[]> = generateBoard(), action: TicTacToeAction<R<Square[]>>): R<Square[]> => {
@@ -35,12 +40,25 @@ export const playStep = (state: number = 1, action: TicTacToeAction<number>): nu
     }
 };
 
+export const winner = (state: PlayerType = null, action: TicTacToeAction<PlayerType>): PlayerType => {
+    switch (action.type) {
+        case ticTacToeEnums.SET_WINNER: {
+            return action.payload;
+        }
+        default: {
+            return state;
+        }
+    }
+};
+
 export interface TicTacToePageReducer {
     squareList: (state: R<Square[]>, action: TicTacToeAction<R<Square[]>>) => R<Square[]>;
     playStep: (state: number, action: TicTacToeAction<number>) => number;
+    winner: (state: PlayerType, action: TicTacToeAction<PlayerType>) => PlayerType;
 }
 
 export const TicTacToeRootReducer: TicTacToePageReducer = {
     squareList,
-    playStep
+    playStep,
+    winner
 };

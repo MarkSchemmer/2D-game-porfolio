@@ -1,9 +1,10 @@
 import { R } from "schemas/rType";
-import { Square } from "schemas/tic-tac-toe-page/square.schema";
+import { PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
 
 export enum ticTacToeEnums {
     SET_SQUARE = "SET_SQUARE",
     SET_PLAY_STEP = "SET_PLAY_STEP",
+    SET_WINNER = "SET_WINNER"
 }
 
 export interface TicTacToeAction<T> {
@@ -18,5 +19,10 @@ export const setSquare = (value: R<Square[]>): TicTacToeAction<R<Square[]>> => (
 
 export const setPlayStep = (value: number): TicTacToeAction<number> => ({
     type: ticTacToeEnums.SET_PLAY_STEP,
+    payload: value
+});
+
+export const setWinner = (value: PlayerType): TicTacToeAction<PlayerType> => ({
+    type: ticTacToeEnums.SET_WINNER,
     payload: value
 });

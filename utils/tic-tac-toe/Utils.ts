@@ -44,4 +44,5 @@ export const hasAnyBodyWon = (squareArray: R<Square[]>, setsToCheck: number[][] 
     return isNonEmptyArray(result.total) ? result : null;
 };
 
-export const whichPlayerType = (step: number): PlayerType => step % 2 === 1 ? PlayerType.PlayerX : PlayerType.PlayerY;
+export const whichPlayerType = (step: number): PlayerType =>
+                step % 2 === 1 ? PlayerType.PlayerX : PlayerType.PlayerY;

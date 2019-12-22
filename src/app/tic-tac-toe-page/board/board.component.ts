@@ -2,10 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { R } from "schemas/rType";
 import { PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
-import { setPlayStep, setSquare } from "src/store/actions/ticTacToeActions";
-import { SquaresAndList, TicTacToePageState } from "src/store/reducers/ticTacToePageReducer";
-import { getStepAndSquares } from "src/store/selectors/tictactoeSelectors";
-import { hasAnyBodyWon, whichPlayerType } from "utils/tic-tac-toe/Utils";
+import { setPlayStep, setSquare, setWinner } from "src/store/actions/ticTacToeActions";
+import { TicTacToePageState } from "src/store/reducers/ticTacToePageReducer";
+import { getStepAndSquares, SquareSelector } from "src/store/selectors/tictactoeSelectors";
+import { hasAnyBodyWon, whichPlayerType, generateBoard } from "utils/tic-tac-toe/Utils";
 import { isValue } from "utils/Utils";
 
 @Component({
@@ -25,8 +25,11 @@ export class BoardComponent implements OnInit {
 
   ngOnInit() {
     this.store.pipe(select(getStepAndSquares)).subscribe(
-      (response: SquaresAndList) => (this.squares = response.squareList, this.playStep = response.playStep)
-    );
+      (response: SquareSelector) => (
+                            this.squares = response.squareList,
+                            this.playStep = response.playStep,
+                            this.winner = response.winner
+                          ));
   }
 
   handleSquareClick = (square: Square) => {
@@ -36,32 +39,37 @@ export class BoardComponent implements OnInit {
     this.store.dispatch(
       setSquare(
         this.squares.map((sq: Square) => {
-          return sq.id === square.id ? (sq.playerType = whichPlayerType(this.playStep), sq) : sq;
+          return sq.id === square.id ?
+          (sq.playerType = whichPlayerType(this.playStep), sq)
+          : sq;
         })
       )
     );
 
-    this.store.dispatch(
-      setPlayStep(this.playStep + 1)
-    );
+    this.store.dispatch(setPlayStep(this.playStep + 1));
 
     const anyBodyWon = hasAnyBodyWon(this.squares);
 
     if (anyBodyWon) {
       const { total, setOfWinningSquares } = anyBodyWon;
-      console.log("winning squares I guess: ", total);
-      this.winner = total[0].playerType;
 
       this.store.dispatch(
         setSquare(
           this.squares.map((sq: Square, idx: number) => {
-            return setOfWinningSquares.includes(idx) ? (sq.isWinningSquare = true, sq) : sq;
+            return setOfWinningSquares.includes(idx) ?
+            (sq.isWinningSquare = true, sq) : sq;
           })
         )
       );
 
+      this.store.dispatch(setWinner(total[0].playerType));
     }
 
   }
 
+  playAgain = () => {
+    this.store.dispatch(setSquare(generateBoard()));
+    this.store.dispatch(setWinner(null));
+    this.store.dispatch(setPlayStep(1));
+  }
 }
