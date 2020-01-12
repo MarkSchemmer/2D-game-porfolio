@@ -5,7 +5,7 @@ import { PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
 import { setPlayStep, setSquare, setWinner } from "src/store/actions/ticTacToeActions";
 import { TicTacToePageState } from "src/store/reducers/ticTacToePageReducer";
 import { getStepAndSquares, SquareSelector } from "src/store/selectors/tictactoeSelectors";
-import { hasAnyBodyWon, whichPlayerType, generateBoard } from "utils/tic-tac-toe/Utils";
+import { generateBoard, hasAnyBodyWon, whichPlayerType } from "utils/tic-tac-toe/Utils";
 import { isValue } from "utils/Utils";
 
 @Component({
@@ -70,6 +70,6 @@ export class BoardComponent implements OnInit {
   playAgain = () => {
     this.store.dispatch(setSquare(generateBoard()));
     this.store.dispatch(setWinner(null));
-    this.store.dispatch(setPlayStep(1));
+    this.store.dispatch(setPlayStep(0));
   }
 }

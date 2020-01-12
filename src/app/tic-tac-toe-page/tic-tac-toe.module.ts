@@ -5,6 +5,7 @@ import { TicTacToeRootReducer } from "src/store/reducers/ticTacToePageReducer";
 import { ticTacToeSelector } from "src/store/selectors/tictactoeSelectors";
 import { BoardComponent } from "./board/board.component";
 import { SquareComponent } from "./square/square.component";
+import { StepHistoryComponent } from "./step-history/step-history.component";
 import { TicTacToePageComponent } from "./tic-tac-toe-page.component";
 
 @NgModule({
@@ -12,6 +13,7 @@ import { TicTacToePageComponent } from "./tic-tac-toe-page.component";
     TicTacToePageComponent,
     BoardComponent,
     SquareComponent,
+    StepHistoryComponent,
   ],
   imports: [
     CommonModule,

@@ -29,7 +29,7 @@ export const squareList = (state: R<Square[]> = generateBoard(), action: TicTacT
     }
 };
 
-export const playStep = (state: number = 1, action: TicTacToeAction<number>): number => {
+export const playStep = (state: number = 0, action: TicTacToeAction<number>): number => {
     switch (action.type) {
         case ticTacToeEnums.SET_PLAY_STEP: {
             return action.payload;
