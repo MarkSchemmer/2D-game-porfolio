@@ -1,11 +1,16 @@
-<div *ngIf="winner">
-    Player {{ winner }} won the match!
+<div class="button-board"*ngIf="winner">
+    <span>Player {{ winner }} won the match!</span>
     <button 
     (click)="playAgain()"
     class="btn btn-sm btn-success">Play again?</button>
+    <button 
+    class="btn btn-sm btn-info">Slow Replay</button>
+    <button class="btn btn-sm btn-danger">Play again but against AI</button>
 </div>
 
-<div class="board">
+
+
+<div class="board  {{ winner ? 'winner' : ''}}">
     <!-- Need to generate squares... -->
     <div *ngFor="let square of squares">
         <app-square 

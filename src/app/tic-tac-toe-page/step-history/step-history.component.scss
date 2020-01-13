@@ -1,0 +1,17 @@
+.step-history {
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    left: 70%;
+    bottom: 48%;
+    border: 1px solid black;
+    padding: 10px;
+
+    .moves button {
+        display: block;
+        margin-bottom: 2px;
+        width: 200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
