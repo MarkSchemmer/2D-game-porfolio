@@ -46,3 +46,7 @@ export const hasAnyBodyWon = (squareArray: R<Square[]>, setsToCheck: number[][] 
 
 export const whichPlayerType = (step: number): PlayerType =>
                 step % 2 === 0 ? PlayerType.PlayerX : PlayerType.PlayerY;
+
+export const deepClone = obj => {
+    return JSON.parse(JSON.stringify(obj));
+};

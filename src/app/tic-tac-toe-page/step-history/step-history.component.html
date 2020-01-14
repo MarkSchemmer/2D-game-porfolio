@@ -1,9 +1,9 @@
 <div class="step-history">
     <h3>Move History</h3>
 
-    <div class="moves">
-        <button class="btn btn-sm btn-info">move</button>
-        <button class="btn btn-sm btn-info">move</button>
-        <button class="btn btn-sm btn-info">move</button>
+    <div class="moves" *ngFor="let square of board"> 
+
+        <button class="btn btn-sm btn-info">{{ square | json }}</button>
+
     </div>
 </div>

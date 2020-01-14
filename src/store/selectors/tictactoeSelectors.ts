@@ -27,7 +27,7 @@ export const getStepAndSquares = createSelector(
     getSquares,
     getPlayStep,
     getWinner,
-    (squareList: Square[], playStep: number, winner: PlayerType) => {
+    (squareList: Square[][], playStep: number, winner: PlayerType) => {
         const squareListAndStep: SquareSelector = {
             squareList,
             playStep,

@@ -15,6 +15,7 @@ import { isValue } from "utils/Utils";
 })
 export class BoardComponent implements OnInit {
 
+  board: R<Square[][]> = null;
   squares: R<Square[]> = [];
   playStep: number = null;
   winner: PlayerType = null;
@@ -26,9 +27,11 @@ export class BoardComponent implements OnInit {
   ngOnInit() {
     this.store.pipe(select(getStepAndSquares)).subscribe(
       (response: SquareSelector) => (
-                            this.squares = response.squareList,
+                            console.log(response.squareList),
+                            this.board = response.squareList,
                             this.playStep = response.playStep,
-                            this.winner = response.winner
+                            this.winner = response.winner,
+                            this.squares = response.squareList[this.playStep]
                           ));
   }
 
@@ -36,39 +39,40 @@ export class BoardComponent implements OnInit {
 
     if (isValue(square.playerType) || isValue(this.winner)) { return; }
 
-    this.store.dispatch(
-      setSquare(
-        this.squares.map((sq: Square) => {
-          return sq.id === square.id ?
-          (sq.playerType = whichPlayerType(this.playStep), sq)
-          : sq;
-        })
-      )
-    );
+    let copyOfBoard = this.board.slice(0, this.playStep + 1);
+    console.log(copyOfBoard);
+    const newBoard = copyOfBoard[this.playStep].map((sq: Square) => {
+      return sq.id === square.id ?
+      (sq.playerType = whichPlayerType(this.playStep), sq)
+      : sq;
+    });
+    copyOfBoard = [ ...copyOfBoard, newBoard ];
+
+    this.store.dispatch( setSquare( copyOfBoard ) );
 
     this.store.dispatch(setPlayStep(this.playStep + 1));
 
-    const anyBodyWon = hasAnyBodyWon(this.squares);
+    const anyBodyWon = hasAnyBodyWon(newBoard);
 
     if (anyBodyWon) {
+
       const { total, setOfWinningSquares } = anyBodyWon;
 
+      const highlightWinningBoard =  copyOfBoard[this.playStep].map((sq: Square, idx: number) => {
+        return setOfWinningSquares.includes(idx) ?
+        (sq.isWinningSquare = true, sq) : sq;
+      });
+
       this.store.dispatch(
-        setSquare(
-          this.squares.map((sq: Square, idx: number) => {
-            return setOfWinningSquares.includes(idx) ?
-            (sq.isWinningSquare = true, sq) : sq;
-          })
-        )
+        setSquare( [ ...copyOfBoard, highlightWinningBoard ] )
       );
 
       this.store.dispatch(setWinner(total[0].playerType));
     }
-
   }
 
   playAgain = () => {
-    this.store.dispatch(setSquare(generateBoard()));
+    this.store.dispatch( setSquare( [ generateBoard() ] ) );
     this.store.dispatch(setWinner(null));
     this.store.dispatch(setPlayStep(0));
   }

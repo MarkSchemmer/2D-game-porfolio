@@ -12,7 +12,7 @@ export interface TicTacToeAction<T> {
     readonly payload: T;
 }
 
-export const setSquare = (value: R<Square[]>): TicTacToeAction<R<Square[]>> => ({
+export const setSquare = (value: R<Square[][]>): TicTacToeAction<R<Square[][]>> => ({
     type: ticTacToeEnums.SET_SQUARE,
     payload: value
 });
