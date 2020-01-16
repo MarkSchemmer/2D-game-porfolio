@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
+import { R } from "schemas/rType";
+import { MoveHistory, PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
 import { SquaresAndList, TicTacToePageState, Winner } from "../reducers/ticTacToePageReducer";
 
 export type SquareSelector = SquaresAndList & Winner;
@@ -23,15 +24,22 @@ export const getWinner = createSelector(
     state => state.winner
 );
 
+export const getMoveHistory = createSelector(
+    getTicTacToeState,
+    state => state.moveHistory
+);
+
 export const getStepAndSquares = createSelector(
     getSquares,
     getPlayStep,
     getWinner,
-    (squareList: Square[][], playStep: number, winner: PlayerType) => {
+    getMoveHistory,
+    (squareList: Square[][], playStep: number, winner: PlayerType, moveHistory: R<MoveHistory[]>) => {
         const squareListAndStep: SquareSelector = {
             squareList,
             playStep,
-            winner
+            winner,
+            moveHistory
         };
         return squareListAndStep;
     }

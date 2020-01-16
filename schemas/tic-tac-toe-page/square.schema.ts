@@ -1,3 +1,4 @@
+import { whichPlayerType } from "utils/tic-tac-toe/Utils";
 import { generateRandomGuid } from "../../utils/Utils";
 
 export enum PlayerType {
@@ -16,8 +17,42 @@ export class Square implements ISquare {
     readonly id: string;
     playerType: PlayerType = null;
     isWinningSquare: boolean = false;
+    coordinateIndex: string = null;
 
-    constructor() {
+    constructor(coordinateIndex?: number) {
         this.id = generateRandomGuid();
+        this.coordinateIndex = squareCoordinates[coordinateIndex];
     }
+}
+
+export const squareCoordinates = {
+    0: "(0, 0)",
+    1: "(0, 1)",
+    2: "(0, 2)",
+    3: "(1, 0)",
+    4: "(1, 1)",
+    5: "(1, 2)",
+    6: "(2, 0)",
+    7: "(2, 1)",
+    8: "(2, 2)"
+};
+
+export class MoveHistory {
+
+    coordinate: string = null;
+    player: PlayerType = null;
+
+    step: number = null;
+
+    constructor(playStep: number, coor: string) {
+        this.player = whichPlayerType(playStep);
+        this.coordinate = coor;
+        this.step = playStep;
+     }
+
+     displayMoveText = (): string => {
+         if (this.step === 0) { return "Game Start: "; }
+         return `Player: ${this.player}: ${this.coordinate}, move#:${(this.step).toString()}`;
+     }
+
 }

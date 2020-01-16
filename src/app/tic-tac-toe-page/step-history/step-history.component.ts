@@ -9,11 +9,10 @@ import { Square } from "schemas/tic-tac-toe-page/square.schema";
 })
 export class StepHistoryComponent implements OnInit {
 
-  @Input() board: R<Square[][]> = null;
+  @Input() board: R<Square[]> = null;
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }

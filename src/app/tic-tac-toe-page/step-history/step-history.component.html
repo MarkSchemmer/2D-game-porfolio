@@ -2,8 +2,6 @@
     <h3>Move History</h3>
 
     <div class="moves" *ngFor="let square of board"> 
-
-        <button class="btn btn-sm btn-info">{{ square | json }}</button>
-
+        <button class="btn btn-sm btn-info">{{ square.displayMoveText() }}</button>
     </div>
 </div>

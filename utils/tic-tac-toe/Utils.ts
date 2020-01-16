@@ -18,7 +18,7 @@ export const winningSeriesInArray = [
     [2, 4, 6]
 ];
 
-export const createSquare = (): Square => new Square();
+export const createSquare = (item, index): Square => new Square(index);
 export const getWinningSquare = (square: Square): boolean => square.isWinningSquare;
 
 export const generateBoard = () => range(1, 9).map(createSquare);
@@ -50,3 +50,11 @@ export const whichPlayerType = (step: number): PlayerType =>
 export const deepClone = obj => {
     return JSON.parse(JSON.stringify(obj));
 };
+
+/*
+    Need to make deepClone that is not using JSON.parse strategy
+    Make a curry function using bind()
+    Make a pipe function using bind()
+    Make a partial curry using bind()
+
+*/
