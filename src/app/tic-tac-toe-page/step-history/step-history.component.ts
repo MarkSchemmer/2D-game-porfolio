@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { R } from "schemas/rType";
-import { Square } from "schemas/tic-tac-toe-page/square.schema";
+import { MoveHistory } from "schemas/tic-tac-toe-page/square.schema";
 
 @Component({
   selector: "app-step-history",
@@ -9,8 +9,8 @@ import { Square } from "schemas/tic-tac-toe-page/square.schema";
 })
 export class StepHistoryComponent implements OnInit {
 
-  @Input() board: R<Square[]> = null;
-
+  @Input() board: R<MoveHistory[]> = null;
+  @Input() handleStepHistClick: any;
   constructor() { }
 
   ngOnInit() { }

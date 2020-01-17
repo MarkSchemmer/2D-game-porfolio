@@ -1,9 +1,11 @@
+import { R } from "schemas/rType";
 import { whichPlayerType } from "utils/tic-tac-toe/Utils";
 import { generateRandomGuid } from "../../utils/Utils";
 
 export enum PlayerType {
     PlayerX = "X",
-    PlayerY = "O"
+    PlayerY = "O",
+    Tie = "Tie Game"
 }
 
 export interface ISquare {
@@ -41,13 +43,17 @@ export class MoveHistory {
 
     coordinate: string = null;
     player: PlayerType = null;
-
     step: number = null;
 
-    constructor(playStep: number, coor: string) {
+    copyOfBoard: R<Square[][]>;
+
+    public currentMove: boolean = null;
+
+    constructor(playStep: number, coor: string, copyOfBoard: R<Square[][]>) {
         this.player = whichPlayerType(playStep);
         this.coordinate = coor;
         this.step = playStep;
+        this.copyOfBoard = copyOfBoard;
      }
 
      displayMoveText = (): string => {

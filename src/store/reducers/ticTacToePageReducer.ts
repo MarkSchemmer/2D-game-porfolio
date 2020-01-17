@@ -1,6 +1,6 @@
 import { R } from "schemas/rType";
 import { MoveHistory, PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
-import { generateBoard } from "utils/tic-tac-toe/Utils";
+import { generateBoard, deepClone } from "utils/tic-tac-toe/Utils";
 import { TicTacToeAction, ticTacToeEnums } from "../actions/ticTacToeActions";
 
 export interface TicTacToePageState {
@@ -20,7 +20,9 @@ export interface Winner {
     winner: PlayerType;
 }
 
-export const squareList = (state: R<Square[][]> = [ generateBoard() ], action: TicTacToeAction<R<Square[][]>>): R<Square[][]> => {
+const gameBoardStart = deepClone([ generateBoard() ]);
+
+export const squareList = (state: R<Square[][]> = gameBoardStart, action: TicTacToeAction<R<Square[][]>>): R<Square[][]> => {
     switch (action.type) {
         case ticTacToeEnums.SET_SQUARE: {
             return action.payload;
@@ -47,13 +49,16 @@ export const winner = (state: PlayerType = null, action: TicTacToeAction<PlayerT
         case ticTacToeEnums.SET_WINNER: {
             return action.payload;
         }
+        case ticTacToeEnums.MAKE_TIE: {
+            return action.payload;
+        }
         default: {
             return state;
         }
     }
 };
 
-export const moveHistory = (state: R<MoveHistory[]> = [ new MoveHistory(0, null) ]
+export const moveHistory = (state: R<MoveHistory[]> = [ new MoveHistory(0, null, gameBoardStart) ]
 ,                           action: TicTacToeAction<R<MoveHistory[]>>): R<MoveHistory[]> => {
     switch (action.type) {
         case ticTacToeEnums.SET_MOVE_HISTORY: {

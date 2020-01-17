@@ -21,9 +21,9 @@ export const hideProductModal = () => $(productModal).modal(hide);
 
 export const isNullOrUndefined = (value: unknown): boolean => value === null || value === undefined;
 
-export const not = (value: boolean): boolean => !value;
+export const not = fn => (...args) => !fn(...args);
 
-export const isValue = (value: unknown): boolean => not(isNullOrUndefined(value));
+export const isValue = (value: unknown): boolean => not(isNullOrUndefined)(value);
 
 export const isNonEmptyArray = (value: Array<unknown>): boolean => isValue(value) && value.length > 0;
 

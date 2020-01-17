@@ -1,6 +1,6 @@
 import { R } from "schemas/rType";
-import { PlayerType, Square } from "../../schemas/tic-tac-toe-page/square.schema";
-import { isNonEmptyArray, range } from "../Utils";
+import { MoveHistory, PlayerType, Square } from "../../schemas/tic-tac-toe-page/square.schema";
+import { isNonEmptyArray, isNullOrUndefined, range } from "../Utils";
 
 interface HasAnybodyWon {
     total: Square[];
@@ -49,6 +49,27 @@ export const whichPlayerType = (step: number): PlayerType =>
 
 export const deepClone = obj => {
     return JSON.parse(JSON.stringify(obj));
+};
+
+const allSquaresHaveValue = (board: R<Square[]>): boolean => {
+    return board.every(sq => sq.playerType === PlayerType.PlayerX || sq.playerType === PlayerType.PlayerY);
+};
+
+export const isTie = (board: R<Square[][]>): boolean => {
+    return isNullOrUndefined(hasAnyBodyWon(board[board.length - 1]))
+                && allSquaresHaveValue(board[board.length - 1]);
+};
+
+export const updateNewMoveHistory = (hist: R<MoveHistory[]>, step: number) => {
+    const newHist = hist.map(ob => ({...ob } as MoveHistory) )
+    .map(htObj => {
+        htObj.currentMove = false;
+        return htObj;
+    });
+
+    newHist[step].currentMove = true;
+
+    return newHist as R<MoveHistory[]>;
 };
 
 /*

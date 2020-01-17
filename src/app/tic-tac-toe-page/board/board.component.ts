@@ -2,10 +2,11 @@ import { Component, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { R } from "schemas/rType";
 import { MoveHistory, PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
-import { clearGlobalState, setMoveHistory, setPlayStep, setSquare, setWinner } from "src/store/actions/ticTacToeActions";
+import { clearGlobalState, genericDispatch,
+  setMoveHistory, setPlayStep, setSquare, setWinner, ticTacToeEnums } from "src/store/actions/ticTacToeActions";
 import { TicTacToePageState } from "src/store/reducers/ticTacToePageReducer";
 import { getStepAndSquares, SquareSelector } from "src/store/selectors/tictactoeSelectors";
-import { hasAnyBodyWon, whichPlayerType } from "utils/tic-tac-toe/Utils";
+import { deepClone, hasAnyBodyWon, isTie, updateNewMoveHistory, whichPlayerType } from "utils/tic-tac-toe/Utils";
 import { isValue } from "utils/Utils";
 
 @Component({
@@ -41,23 +42,24 @@ export class BoardComponent implements OnInit {
 
     if (isValue(square.playerType) || isValue(this.winner)) { return; }
 
-    let copyOfBoard = this.board.slice(0, this.playStep + 1);
+    let copyOfBoard = deepClone(this.board.slice(0, this.playStep + 1));
     const newBoard = copyOfBoard[this.playStep].map((sq: Square) => {
       return sq.id === square.id ?
       (sq.playerType = whichPlayerType(this.playStep), sq)
       : sq;
     });
-    copyOfBoard = [ ...copyOfBoard, newBoard ];
+    copyOfBoard = [ ...copyOfBoard, deepClone(newBoard) ];
 
     this.store.dispatch( setSquare( copyOfBoard ) );
-
     this.store.dispatch(setPlayStep(this.playStep + 1));
 
     const anyBodyWon = hasAnyBodyWon(newBoard);
+    const moveHist =  updateNewMoveHistory(
+        [ ...this.moveHistory, new MoveHistory(this.playStep, square.coordinateIndex, this.board) ]
+        , this.playStep
+      ).slice(0, this.playStep + 1);
 
-    this.store.dispatch(setMoveHistory(
-        [ ...this.moveHistory, new MoveHistory(this.playStep, square.coordinateIndex) ]
-    ));
+    this.store.dispatch(setMoveHistory(moveHist));
 
     if (anyBodyWon) {
 
@@ -69,10 +71,16 @@ export class BoardComponent implements OnInit {
       });
 
       this.store.dispatch(
-        setSquare( [ ...copyOfBoard, highlightWinningBoard ] )
+        setSquare( [ ...this.board, highlightWinningBoard ] )
       );
 
       this.store.dispatch(setWinner(total[0].playerType));
+    }
+
+    // check if sombody has tied
+    if (isTie(this.board)) {
+      console.log("Tie Game here!");
+      this.store.dispatch(genericDispatch(PlayerType.Tie, ticTacToeEnums.MAKE_TIE));
     }
   }
 
@@ -81,5 +89,25 @@ export class BoardComponent implements OnInit {
     // this.store.dispatch(setWinner(null));
     // this.store.dispatch(setPlayStep(0));
     this.store.dispatch(clearGlobalState());
+  }
+
+  handleStepHistClick = (move: MoveHistory) => {
+    console.log(move.copyOfBoard);
+    console.log(move.step);
+    [
+      () => setMoveHistory(updateNewMoveHistory(this.moveHistory, move.step)),
+      () => setSquare( move.copyOfBoard ),
+      () => setPlayStep(move.step)
+    ].forEach(item => {
+        this.store.dispatch(item());
+    });
+  }
+
+  slowReplay = (step: number = this.playStep) => {
+    if (step === -1) { return; }
+    setTimeout(() => {
+        this.handleStepHistClick(this.moveHistory[step] as MoveHistory);
+        this.slowReplay(step - 1);
+    }, 1000);
   }
 }

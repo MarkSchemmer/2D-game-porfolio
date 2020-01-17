@@ -6,7 +6,8 @@ export enum ticTacToeEnums {
     SET_PLAY_STEP = "SET_PLAY_STEP",
     SET_WINNER = "SET_WINNER",
     SET_MOVE_HISTORY = "SET_MOVE_HISTORY",
-    CLEAR_STATE = "CLEAR_STATE"
+    CLEAR_STATE = "CLEAR_STATE",
+    MAKE_TIE = "MAKE_TIE"
 }
 
 export interface TicTacToeAction<T> {
@@ -37,4 +38,9 @@ export const setMoveHistory = (value: R<MoveHistory[]>): TicTacToeAction<R<MoveH
 export const clearGlobalState = () => ({
     type: ticTacToeEnums.CLEAR_STATE,
     payload: null
+});
+
+export const genericDispatch = (value: R<any>, type: ticTacToeEnums): TicTacToeAction<R<any>> => ({
+    type,
+    payload: value
 });
