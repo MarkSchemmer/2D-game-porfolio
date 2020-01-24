@@ -1,4 +1,4 @@
-<div class="button-board"*ngIf="winner">
+<div class="button-board" *ngIf="winner">
     <span>{{ winner === "Tie Game" ? " Tie Game " : "Player " + winner + " has won the game" }}</span>
     <button 
     (click)="playAgain()"
@@ -6,23 +6,27 @@
     <button 
     (click)="slowReplay()"
     class="btn btn-sm btn-info">Slow Replay</button>
-    <button class="btn btn-sm btn-danger">Play again but against AI</button>
+    <button 
+    (click)="backToMainMenu()"
+    class="btn btn-sm btn-danger">Back to main menu</button>
 </div>
 
-<div *ngIf="!winner">
-    Player {{ playStep % 2 === 0 ? "X" : "O"}} turn
-</div>
-
-
-<div class="board  {{ winner ? 'winner' : ''}}">
-    <!-- Need to generate squares... -->
-    <div *ngFor="let square of squares">
-        <app-square 
-        [handleSquareClick]="handleSquareClick"
-        [square]="square"></app-square>
+<div>
+    <div *ngIf="!winner">
+        Player {{ playStep % 2 === 0 ? "X" : "O"}} turn
     </div>
-</div>
 
-<app-step-history 
-[handleStepHistClick]="handleStepHistClick"
-[board]="moveHistory"></app-step-history>
+
+    <div class="board  {{ winner ? 'winner' : ''}}">
+        <!-- Need to generate squares... -->
+        <div *ngFor="let square of squares">
+            <app-square 
+            [handleSquareClick]="handleSquareClick"
+            [square]="square"></app-square>
+        </div>
+    </div>
+
+    <app-step-history 
+    [handleStepHistClick]="handleStepHistClick"
+    [board]="moveHistory"></app-step-history>
+</div>

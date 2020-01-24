@@ -1,2 +1,35 @@
-<p>tic-tac-toe-page works!</p>
-<app-board> </app-board>
+<!-- 
+
+    if playing aginst user don't do anything
+
+    if playing against ai, you get to decide who goes first
+
+    X goes first and O goes seconded... 
+
+    if play against user is false then decide if ai or user goes first... 
+
+ -->
+<div 
+*ngIf="gp.phaseOne === null">
+        <button 
+        (click)="playUser()"
+        class="btn btn-sm btn-info">Play against user</button>
+
+        <button 
+        (click)="playAI()"
+        class="btn btn-sm btn-danger">Play against Ai</button>
+</div>
+
+<div *ngIf="gp.phaseOne === undefined && gp.phaseTwo === undefined">
+    <h3>Select X or O</h3>
+    <p>Remember X goes first...</p>
+    <button class="btn btn-sm btn-success" (click)="selectX()">X</button>
+    <button class="btn btn-sm btn-warning" (click)="selectO()">O</button>
+</div>
+
+<div *ngIf="gp.startGame">
+    <app-board 
+    [playAgainstUser]="gp.playAgainstUser"
+    [ai]="gp.ai"
+    > </app-board>
+</div>

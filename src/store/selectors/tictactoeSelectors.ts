@@ -44,3 +44,8 @@ export const getStepAndSquares = createSelector(
         return squareListAndStep;
     }
 );
+
+export const getGamePhases = createSelector(
+    getTicTacToeState,
+    state => state.gamePhases
+);

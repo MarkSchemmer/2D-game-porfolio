@@ -1,4 +1,3 @@
-import { Observable } from "rxjs";
 import { Product } from "schemas/product-list/product-list-schema";
 import { R } from "schemas/rType";
 
@@ -43,10 +42,6 @@ export const generateRandomGuid = (): string => {
     return u;
   };
 
-export const ObservableWrapper = (fn: Function) => (...args: any): Observable<Product[]> => {
-    return fn(...args);
-};
-
 export const generateProductIdCode = (name: string, id: string) =>
  `(${id.split("").slice(0, 5).join("")})-${name.length > 10 ? name.split("").slice(0, 7).join("") + "..." : name}`;
 
@@ -87,3 +82,17 @@ export const range = (x: number, y: number, incrementer: number = 1): number[] =
 export const acendingOrDecendingArr =
       (arr: number[], elem: number, which: boolean): number[] =>
                     which ? [...arr, elem] : [elem, ...arr];
+
+/*
+    Need to make deepClone that is not using JSON.parse strategy
+    Make a curry function using bind()
+    Make a pipe function using bind()
+    Make a partial curry using bind()
+    Make a thunk funciton
+*/
+
+export const curry = (fn, len = fn.length) =>
+                                    len === 0
+                                    ? fn()
+                                    : p => isValue(p) ? curry(fn.bind(null, p), len - 1)
+                                                      : curry(fn, len);

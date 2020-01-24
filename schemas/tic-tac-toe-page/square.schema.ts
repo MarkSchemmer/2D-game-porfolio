@@ -50,7 +50,7 @@ export class MoveHistory {
     public currentMove: boolean = null;
 
     constructor(playStep: number, coor: string, copyOfBoard: R<Square[][]>) {
-        this.player = whichPlayerType(playStep);
+        this.player = whichPlayerType(n => n % 2 === 0 ? true : false, playStep);
         this.coordinate = coor;
         this.step = playStep;
         this.copyOfBoard = copyOfBoard;
@@ -60,5 +60,4 @@ export class MoveHistory {
          if (this.step === 0) { return "Game Start: "; }
          return `Player: ${this.player}: ${this.coordinate}, move#:${(this.step).toString()}`;
      }
-
 }

@@ -1,5 +1,6 @@
 import { R } from "schemas/rType";
 import { MoveHistory, PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
+import { GamePhases } from "../reducers/ticTacToePageReducer";
 
 export enum ticTacToeEnums {
     SET_SQUARE = "SET_SQUARE",
@@ -7,7 +8,9 @@ export enum ticTacToeEnums {
     SET_WINNER = "SET_WINNER",
     SET_MOVE_HISTORY = "SET_MOVE_HISTORY",
     CLEAR_STATE = "CLEAR_STATE",
-    MAKE_TIE = "MAKE_TIE"
+    MAKE_TIE = "MAKE_TIE",
+    UPDATE_GAMEPHASE = "UPDATE_GAMEPHASE",
+    BACK_TO_MENU = "BACK_TO_MENU"
 }
 
 export interface TicTacToeAction<T> {
@@ -40,7 +43,17 @@ export const clearGlobalState = () => ({
     payload: null
 });
 
+export const backToMenu = () => ({
+    type: ticTacToeEnums.BACK_TO_MENU,
+    payload: null
+});
+
 export const genericDispatch = (value: R<any>, type: ticTacToeEnums): TicTacToeAction<R<any>> => ({
+    type,
+    payload: value
+});
+
+export const updateGamePhase = (value: GamePhases, type: ticTacToeEnums): TicTacToeAction<GamePhases> => ({
     type,
     payload: value
 });
