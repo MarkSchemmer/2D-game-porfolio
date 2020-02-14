@@ -96,3 +96,14 @@ export const curry = (fn, len = fn.length) =>
                                     ? fn()
                                     : p => isValue(p) ? curry(fn.bind(null, p), len - 1)
                                                       : curry(fn, len);
+
+export const shuffle = arr => {
+    for (let i = 0; i < arr.length; i++) {
+      const ranomChange = Math.floor(Math.random() * (i + 1));
+      const temp = arr[i];
+      arr[i] = arr[ranomChange];
+      arr[ranomChange] = temp;
+    }
+
+    return arr;
+};
