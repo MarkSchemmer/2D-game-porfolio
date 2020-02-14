@@ -1,0 +1,74 @@
+.board {
+    background-image: url("../../../assets/cardImages/background.png");
+    width: 1800px;
+    height: 900px;
+    margin: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+
+    .dealer {
+        width: 600px;
+        height: 300px;
+        border: 1px solid lightblue;
+        margin: 10px;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .top-row {
+        width: 1000px;
+        height: 350px;
+        border: 1px solid lightblue;
+        border-radius: 5px;
+        display: inline-block;
+        vertical-align: top;
+        margin: 10px;
+        margin-left: 160px;
+        position: relative;
+
+        .col {
+            width: 200px;
+            height: 250px;
+            border: 1px solid black;
+            display: inline-block;
+            margin: 5px;
+        }
+    }
+
+    .bottom-row {
+        width: 1500px;
+        height: 350px;
+        border: 1px solid lightblue;
+        border-radius: 5px;
+        margin: auto;
+        margin-top: 150px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+
+        .bot { 
+            width: 200px;
+            height: 250px;
+            border: 1px solid black;
+            margin: 0px;
+            bottom: calc(350px - 87%);
+            margin-left: 10px;
+            display: inline-block;
+            margin-top: 50px;
+
+            .card {
+                margin: 0px;
+                // height: 100%;
+                // position: absolute;
+                padding: 0px;
+
+                img {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

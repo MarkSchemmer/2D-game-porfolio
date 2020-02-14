@@ -1,1 +1,52 @@
-<p>board works!</p>
+<div class="board">
+
+    <div class="dealer">
+
+    </div>
+
+    <div class="top-row">
+        <div class="col column-1"></div>
+        <div class="col column-2"></div>
+        <div class="col column-3"></div>
+        <div class="col column-4"></div>
+    </div>
+
+    <div class="bottom-row">
+        <div class="bot bot-1">
+                <div class="card" *ngFor="let obj of BottomRow1.source.reverse(); let i = index">
+                        <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+                </div>
+        </div>
+        <div class="bot bot-2">
+            <div class="card" *ngFor="let obj of BottomRow2.source.reverse(); let i = index">
+                <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+        <div class="bot bot-3">
+            <div class="card" *ngFor="let obj of BottomRow3.source.reverse(); let i = index">
+                <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+        <div class="bot bot-4">
+            <div class="card" *ngFor="let obj of BottomRow4.source.reverse(); let i = index">
+                <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+        <div class="bot bot-5">
+            <div class="card" *ngFor="let obj of BottomRow5.source.reverse(); let i = index">
+                <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+        <div class="bot bot-6">
+            <div class="card" *ngFor="let obj of BottomRow6.source.reverse(); let i = index">
+                <img src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+        <div class="bot bot-7">                
+            <div class="card" *ngFor="let obj of BottomRow7.source.reverse(); let i = index">
+                <img [ngStyle]="cd" src="{{ !obj.showBack ? obj.imageurl : obj.backOfCard }}" /> 
+            </div>
+        </div>
+    </div>
+
+</div>

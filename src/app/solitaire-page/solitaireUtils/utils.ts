@@ -9,10 +9,10 @@ interface ICard {
 }
 
 export enum Suits {
-    DIAMONDS = "DIAMOND",
-    HEARTS = "HEART",
-    SPADES = "SPADE",
-    CLUBS = "CLUB"
+    DIAMOND = "DIAMOND",
+    HEART = "HEART",
+    SPADE = "SPADE",
+    CLUB = "CLUB"
 }
 
 export const cardValues = {
@@ -37,15 +37,15 @@ export const generateDeckOfCards = (): Card[] =>
         (acc, cur) =>
             [...acc, ...Object.keys(cardValues).map(val => new Card(cur, val))]
     , []);
-
-class Card implements ICard {
+export const rootImage = "../../../assets/cardImages/";
+export class Card implements ICard {
     public id: string;
     public suite: string;
     public value: string;
     public power: number;
     public imageurl: string;
     // image of back of card if facedown
-    public backOfCard: string = "card_background.png";
+    public backOfCard: string = "../../../assets/cardImages/card_background.png";
 
     public showBack: boolean = true;
 
@@ -62,7 +62,7 @@ class Card implements ICard {
         this.suite = suite;
         this.value = value;
         this.power = cardValues[value];
-        this.imageurl = this.suite.toLowerCase() + "-" + this.value.toLowerCase();
+        this.imageurl = rootImage + (this.suite.toLowerCase() + "-" + this.value.toLowerCase() + ".png");
     }
 }
 
@@ -87,5 +87,35 @@ export class Deck {
         this.deck = rest;
 
         return firstCard;
+    }
+}
+
+export class Stack<T> {
+    public source: T[] = [];
+
+    constructor() { }
+
+    public pop = () => {
+        if (this.source.length === 0) { return; }
+
+        const [ first, ...rest ] = this.source;
+
+        this.source = rest;
+
+        return first;
+    }
+
+    public isEmpty = () => {
+        return this.source.length === 0;
+    }
+
+    public push = item => {
+        this.source = [ item, ...this.source ];
+    }
+
+    public peek = () => {
+        if (this.source.length === 0) { return null; }
+
+        return this.source[0];
     }
 }
