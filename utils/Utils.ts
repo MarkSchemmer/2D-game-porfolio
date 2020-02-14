@@ -77,7 +77,7 @@ export const range = (x: number, y: number, incrementer: number = 1): number[] =
           };
 
           return calculator(xx, yy);
-      };
+};
 
 export const acendingOrDecendingArr =
       (arr: number[], elem: number, which: boolean): number[] =>
@@ -99,10 +99,10 @@ export const curry = (fn, len = fn.length) =>
 
 export const shuffle = arr => {
     for (let i = 0; i < arr.length; i++) {
-      const ranomChange = Math.floor(Math.random() * (i + 1));
+      const randIndex = Math.floor(Math.random() * (i + 1));
       const temp = arr[i];
-      arr[i] = arr[ranomChange];
-      arr[ranomChange] = temp;
+      arr[i] = arr[randIndex];
+      arr[randIndex] = temp;
     }
 
     return arr;
