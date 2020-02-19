@@ -50,7 +50,7 @@
         flex-direction: row;
 
         .bot { 
-            width: 200px;
+            width: 200px !important;
             height: 250px;
             border: 1px solid black;
             margin: 0px;
@@ -71,4 +71,8 @@
             }
         }
     }
+}
+
+.card-selected {
+    border: 5px solid gold;
 }
