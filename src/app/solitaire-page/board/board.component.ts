@@ -1,4 +1,5 @@
 import { AfterViewInit, Component } from "@angular/core";
+import * as $ from "jquery";
 import { Card, Deck, Stack } from "../solitaireUtils/utils";
 
 @Component({
@@ -24,9 +25,28 @@ export class BoardComponent implements AfterViewInit {
   public BottomRow6: Stack<Card> = new Stack<Card>();
   public BottomRow7: Stack<Card> = new Stack<Card>();
 
-  public cd = {
-    // top: "30px"
+  public bottomRos = {
+    1: () => this.BottomRow1,
+    2: () => this.BottomRow2,
+    3: () => this.BottomRow3,
+    4: () => this.BottomRow4,
+    5: () => this.BottomRow5,
+    6: () => this.BottomRow6,
+    7: () => this.BottomRow7
   };
+
+  public destructurePileString = (pile: string): Stack<Card> => {
+     const [, p2 ] = pile.split("-");
+     console.log(p2);
+     return p2 in this.bottomRos ? this.bottomRos[p2]() : null;
+  }
+
+  public gettingCardById = (id: string, source: Card[]): Card => {
+    return source.find(c => c.id === id);
+  }
+
+  // tslint:disable-next-line:member-ordering
+  public cd = { };
 
   constructor() {
       this.deal();
@@ -36,7 +56,13 @@ export class BoardComponent implements AfterViewInit {
   ngAfterViewInit() {
     // need to make a deal when starting out on this which will deal to the board
     // first let's setup the board and view then 
-
+    [ ...$(".card img") ].forEach(ele => {
+      ele.addEventListener("click", (event) => {
+        console.log($(event.target).attr("class"));
+        const [pile, id] = $(event.target).attr("class").split(" ");
+        console.log(this.destructurePileString(pile));
+      });
+    });
   }
 
   public deal = () => {
@@ -62,7 +88,7 @@ export class BoardComponent implements AfterViewInit {
       pile.peek().showFront();
     });
 
-    console.log(bottomRow);
+    // console.log(bottomRow);
   }
 
   public getSource = st => {

@@ -6,6 +6,7 @@ interface ICard {
     suite: string;
     value: string;
     power: number;
+    isSelected: boolean;
 }
 
 export enum Suits {
@@ -37,6 +38,7 @@ export const generateDeckOfCards = (): Card[] =>
         (acc, cur) =>
             [...acc, ...Object.keys(cardValues).map(val => new Card(cur, val))]
     , []);
+
 export const rootImage = "../../../assets/cardImages/";
 export class Card implements ICard {
     public id: string;
@@ -44,6 +46,7 @@ export class Card implements ICard {
     public value: string;
     public power: number;
     public imageurl: string;
+    public isSelected: boolean = false;
     // image of back of card if facedown
     public backOfCard: string = "../../../assets/cardImages/card_background.png";
 

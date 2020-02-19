@@ -104,7 +104,8 @@
     "use-pipe-transform-interface": true,
     "no-trailing-whitespace": false,
     "prefer-for-of": false,
-    "ban-types": false
+    "ban-types": false,
+    "no-unused-variable": false
   },
   "rulesDirectory": [
     "codelyzer"
