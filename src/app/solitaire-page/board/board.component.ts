@@ -49,7 +49,7 @@ export class BoardComponent implements AfterViewInit {
     row: null
   };
 
-  public bottomRos = {
+  public bottomRows = {
     1: () => this.BottomRow1,
     2: () => this.BottomRow2,
     3: () => this.BottomRow3,
@@ -61,14 +61,14 @@ export class BoardComponent implements AfterViewInit {
 
   public destructurePileString = (pile: string): Stack<Card> => {
      const [ _, p2 ] = pile.split("-");
-     return p2 in this.bottomRos ? this.bottomRos[p2]() : null;
+     return p2 in this.bottomRows ? this.bottomRows[p2]() : null;
   }
 
   public destructureId = (id: string): string => {
     return id.split("+")[1];
   }
 
-  public gettingCardById = (id: string, source: Card[]): Card => {
+  public getCardById = (id: string, source: Card[]): Card => {
     return source.find(c => c.id === id);
   }
 
@@ -82,9 +82,21 @@ export class BoardComponent implements AfterViewInit {
   ngAfterViewInit() {
     // need to make a deal when starting out on this which will deal to the board
     // first let's setup the board and view then 
+    console.log([...$(".card img")].length);
     [ ...$(".card img") ].forEach(ele => {
       ele.addEventListener("click", this.handleCardClick);
     });
+  }
+
+  public defaultCardIsSelected = () => {
+    this.CardIsSelected = {
+      id: null,
+      row: null
+    };
+  }
+
+  public setCardIsSelected = (id, row) => {
+    this.CardIsSelected = { id, row };
   }
 
   public getCard = event => {
@@ -92,7 +104,12 @@ export class BoardComponent implements AfterViewInit {
       const newPile = this.destructurePileString(pile);
       console.log(newPile.source);
       const newId = this.destructureId(id);
-      return this.gettingCardById(newId, newPile.source);
+      return this.getCardById(newId, newPile.source);
+  }
+
+  public getRow = event => {
+    const [pile, id] = $(event.target).attr("class").split(" ");
+    return pile.split("-")[1];
   }
 
   /* 
@@ -109,15 +126,25 @@ export class BoardComponent implements AfterViewInit {
   */
 
   public handleCardClick = event => {
+    const card = this.getCard(event);
+    const row = +(this.getRow(event));
     // Need to know if another card is selected
     if (isValue(this.CardIsSelected.id)) { 
-
+        this.bottomRows[this.CardIsSelected.row]()
+        .source
+        .find(c => c.id === this.CardIsSelected.id).isSelected = false;
     }
+
+    if (this.CardIsSelected.id === card.id) {
+        card.isSelected = false;
+        this.defaultCardIsSelected();
+        return;
+    }
+
     // Need to be able to click that card and highlight that it's seleced
     // First step get card
-    const card = this.getCard(event);
-    console.log(card);
     card.isSelected = !card.isSelected;
+    this.setCardIsSelected(card.id, row);
   }
 
   public deal = () => {
@@ -144,10 +171,14 @@ export class BoardComponent implements AfterViewInit {
     });
 
     // console.log(bottomRow);
+
+    this.TopRow1.push(this.BottomRow1.pop());
   }
 
   public getSource = st => {
     return st.source;
   }
+
+  public handleClick = () => alert("test me");
 
 }
