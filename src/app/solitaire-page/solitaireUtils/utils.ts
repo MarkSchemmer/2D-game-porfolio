@@ -69,6 +69,8 @@ export class Card implements ICard {
     }
 }
 
+export const isShowingBack = (card: Card) => card.showBack === true;
+
 export class Deck {
     private deck: Card[] = generateDeckOfCards();
     constructor() { }
@@ -101,7 +103,7 @@ export class Stack<T> {
     public pop = () => {
         if (this.source.length === 0) { return; }
 
-        const [ first, ...rest ] = this.source;
+        const [ first, ...rest ] = this.source.reverse();
 
         this.source = rest;
 
@@ -113,12 +115,18 @@ export class Stack<T> {
     }
 
     public push = item => {
-        this.source = [ item, ...this.source ];
+        this.source = [ ...this.source, item ];
     }
 
     public peek = () => {
         if (this.source.length === 0) { return null; }
 
-        return this.source[0];
+        return this.source[this.source.length - 1];
+    }
+
+    public removeCardById = id => {
+        const cardToGet = (this.source as any).find(c => c.id === id);
+        (this.source as any).filter(c => c.id !== id);
+        return cardToGet;
     }
 }

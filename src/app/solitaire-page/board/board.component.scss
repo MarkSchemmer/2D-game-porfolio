@@ -39,7 +39,8 @@
 
             .card {
                 top: 43%;
-                left: -15%;
+                left: -4%;
+                position: absolute;
             }
         }
     }
@@ -50,7 +51,7 @@
         border: 1px solid lightblue;
         border-radius: 5px;
         margin: auto;
-        margin-top: 150px;
+        // margin-top: 150px;
         position: relative;
         display: flex;
         align-items: center;

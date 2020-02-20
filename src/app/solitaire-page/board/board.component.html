@@ -1,28 +1,23 @@
 <div class="board">
-
     <div class="dealer"></div>
-
     <div class="top-row">
-        <div class="col column-1">
-            <div class="card" *ngFor="let obj of TopRow1.source; let i = index">
+        <div (click)="handleTopRowDestinationClick(8)" class="col column-1">
+            <div class="card" *ngFor="let obj of bottomRows[8]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="8"></app-card>
             </div>
-    </div>
-
-        <div class="col column-2">
-            <div class="card" *ngFor="let obj of TopRow2.source; let i = index">
+        </div>
+        <div (click)="handleTopRowDestinationClick(9)" class="col column-2">
+            <div class="card" *ngFor="let obj of bottomRows[9]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="9"></app-card>
             </div>
         </div>
-
-        <div class="col column-3">
-            <div class="card" *ngFor="let obj of TopRow3.source; let i = index">
+        <div (click)="handleTopRowDestinationClick(10)" class="col column-3">
+            <div class="card" *ngFor="let obj of bottomRows[10]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="10"></app-card>
             </div>
         </div>
-
-        <div class="col column-4">
-            <div class="card" *ngFor="let obj of TopRow4.source; let i = index">
+        <div (click)="handleTopRowDestinationClick(11)" class="col column-4">
+            <div class="card" *ngFor="let obj of bottomRows[11]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="11"></app-card>
             </div>
         </div>
@@ -30,37 +25,37 @@
 
     <div class="bottom-row">
         <div class="bot bot-1">
-                <div class="card" *ngFor="let obj of BottomRow1.source.reverse(); let i = index">
+                <div class="card" *ngFor="let obj of bottomRows[1]().source; let i = index">
                         <app-card [card]="obj" [pileNumber]="1"></app-card>
                 </div>
         </div>
         <div class="bot bot-2">
-            <div class="card" *ngFor="let obj of BottomRow2.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[2]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="2"></app-card>
             </div>
         </div>
         <div class="bot bot-3">
-            <div class="card" *ngFor="let obj of BottomRow3.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[3]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="3"></app-card>
             </div>
         </div>
         <div class="bot bot-4">
-            <div class="card" *ngFor="let obj of BottomRow4.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[4]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="4"></app-card>
             </div>
         </div>
         <div class="bot bot-5">
-            <div class="card" *ngFor="let obj of BottomRow5.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[5]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="5"></app-card>
             </div>
         </div>
         <div class="bot bot-6">
-            <div class="card" *ngFor="let obj of BottomRow6.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[6]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="6"></app-card>
             </div>
         </div>
         <div class="bot bot-7">                
-            <div class="card" *ngFor="let obj of BottomRow7.source.reverse(); let i = index">
+            <div class="card" *ngFor="let obj of bottomRows[7]().source; let i = index">
                 <app-card [card]="obj" [pileNumber]="7"></app-card>
             </div>
         </div>

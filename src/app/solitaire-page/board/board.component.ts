@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
-import { Card, Deck, Stack } from "../solitaireUtils/utils";
-import { isValue } from 'utils/Utils';
+import { Card, Deck, Stack, isShowingBack } from "../solitaireUtils/utils";
+import { isValue } from "utils/Utils";
 
 /*
 
@@ -27,7 +27,6 @@ import { isValue } from 'utils/Utils';
   styleUrls: ["./board.component.scss"]
 })
 export class BoardComponent implements AfterViewInit {
-
   public dealer: Deck = new Deck();
 
   // First row that starts with aces and moves down... 
@@ -76,6 +75,14 @@ export class BoardComponent implements AfterViewInit {
     return source.find(c => c.id === id);
   }
 
+  public canBeClicked = (id: string, row: number) => {
+    let tempSource;
+    return row in this.bottomRows ? (
+      tempSource = this.bottomRows[row]().source.findIndex(c => c.id === id),
+      tempSource === this.bottomRows[row]().source.length - 1
+    ) : false;
+  }
+
   // tslint:disable-next-line:member-ordering
   public cd = { };
 
@@ -106,7 +113,6 @@ export class BoardComponent implements AfterViewInit {
   public getCard = event => {
       const [pile, id] = $(event.target).attr("class").split(" ");
       const newPile = this.destructurePileString(pile);
-      console.log(newPile.source);
       const newId = this.destructureId(id);
       return this.getCardById(newId, newPile.source);
   }
@@ -114,6 +120,11 @@ export class BoardComponent implements AfterViewInit {
   public getRow = event => {
     const [pile, id] = $(event.target).attr("class").split(" ");
     return pile.split("-")[1];
+  }
+
+  public getId = event => {
+    const [pile, id] = $(event.target).attr("class").split(" ");
+    return this.destructureId(id);
   }
 
   /* 
@@ -132,6 +143,16 @@ export class BoardComponent implements AfterViewInit {
   public handleCardClick = event => {
     const card = this.getCard(event);
     const row = +(this.getRow(event));
+    // check if it is last card in set
+    if (isValue(this.getId(event)) && !this.canBeClicked(this.getId(event), row)) {
+      return;
+    }
+
+    if (isValue(this.getId(event)) && this.canBeClicked(this.getId(event), row) && isShowingBack(card)) {
+      card.showFront();
+      return;
+    }
+
     // Need to know if another card is selected
     if (isValue(this.CardIsSelected.id)) { 
         this.bottomRows[this.CardIsSelected.row]()
@@ -170,19 +191,42 @@ export class BoardComponent implements AfterViewInit {
       });
     }
 
-    bottomRow.forEach(pile => {
+    bottomRow.slice(1).forEach(pile => {
       pile.peek().showFront();
     });
 
     // console.log(bottomRow);
 
-    this.TopRow1.push(this.BottomRow1.pop());
+    // this.TopRow1.push(this.BottomRow1.pop());
+
+    // this.BottomRow1.source[0].isSelected = true;
   }
 
   public getSource = st => {
     return st.source;
   }
 
-  public handleClick = () => alert("test me");
-
+  public handleTopRowDestinationClick = row => {
+    if (isValue(this.CardIsSelected.id)) {
+      // Need to move selected card to this row...
+      // Need to remove card
+      const cards = this.bottomRows[this.CardIsSelected.row]().source;
+      const card = cards.find(c => c.id === this.CardIsSelected.id);
+      this.bottomRows[this.CardIsSelected.row]().source = cards.filter(c => c.id !== this.CardIsSelected.id); 
+      // .removeCardById(this.CardIsSelected.id);
+      // Need to check if card can be added to source
+      card.isSelected = false;
+      this.bottomRows[row]().push(card);
+      this.defaultCardIsSelected();
+    } else {
+      // alert("Nothing is selected");
+      // Need to select top most card, and change it's state to isSelected 
+      // And populate defaultSelected card
+      const stack: Stack<Card> = this.bottomRows[row]();
+      if (!stack.isEmpty()) {
+        stack.peek().isSelected = true;
+        this.setCardIsSelected(stack.peek().id, row);
+      }
+    }
+  }
 }
