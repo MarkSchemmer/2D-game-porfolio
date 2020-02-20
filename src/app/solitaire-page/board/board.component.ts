@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
-import { Card, Deck, Stack, isShowingBack } from "../solitaireUtils/utils";
 import { isValue } from "utils/Utils";
+import { Card, Deck, isShowingBack, Stack } from "../solitaireUtils/utils";
 
 /*
 

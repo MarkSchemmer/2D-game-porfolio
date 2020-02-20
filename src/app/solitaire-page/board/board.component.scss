@@ -1,13 +1,15 @@
 .board {
     background-image: url("../../../assets/cardImages/background.png");
-    width: 1800px;
-    height: 900px;
+    // width: 1800px;
+    // height: 900px;
     margin: auto;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     position: absolute;
-
+    height: 100%;
+    width: 100%;
+    padding: 5%;
     .dealer {
         width: 600px;
         height: 300px;

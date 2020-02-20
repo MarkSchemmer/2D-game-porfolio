@@ -88,9 +88,7 @@ export class Deck {
     public dealCard = () => {
         if (this.deck.length === 0) { return; }
         const [firstCard, ...rest] = this.deck;
-
         this.deck = rest;
-
         return firstCard;
     }
 }
@@ -102,11 +100,8 @@ export class Stack<T> {
 
     public pop = () => {
         if (this.source.length === 0) { return; }
-
         const [ first, ...rest ] = this.source.reverse();
-
         this.source = rest;
-
         return first;
     }
 
@@ -120,7 +115,6 @@ export class Stack<T> {
 
     public peek = () => {
         if (this.source.length === 0) { return null; }
-
         return this.source[this.source.length - 1];
     }
 
