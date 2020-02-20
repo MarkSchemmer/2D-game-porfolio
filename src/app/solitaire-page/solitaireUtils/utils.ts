@@ -32,6 +32,10 @@ export const cardValues = {
     Ace: 14
 };
 
+export const isCardNextSmaller = (card: Card, stackCard: Card) => {
+    return card.power + 1 === stackCard.power;
+};
+
 export const generateDeckOfCards = (): Card[] =>
     Object.keys(Suits)
     .reduce(
@@ -87,7 +91,7 @@ export class Deck {
 
     public dealCard = () => {
         if (this.deck.length === 0) { return; }
-        const [firstCard, ...rest] = this.deck;
+        const [ firstCard, ...rest ] = this.deck;
         this.deck = rest;
         return firstCard;
     }

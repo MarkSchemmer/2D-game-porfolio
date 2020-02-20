@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
-import { isValue } from "utils/Utils";
-import { Card, Deck, isShowingBack, Stack } from "../solitaireUtils/utils";
+import { isValue, isNullOrUndefined } from "utils/Utils";
+import { Card, Deck, isShowingBack, Stack, isCardNextSmaller } from "../solitaireUtils/utils";
 
 /*
 
@@ -202,29 +202,52 @@ export class BoardComponent implements AfterViewInit {
     // this.BottomRow1.source[0].isSelected = true;
   }
 
-  public getSource = st => {
-    return st.source;
+  public canAddCardToTopRow = (card: Card, row: number): boolean => {
+    const stack = this.bottomRows[row]();
+    return  stack.isEmpty() && card.power === 14    ? true 
+            : isCardNextSmaller(card, stack.peek()) ? true
+            : false;
   }
 
+  // Need to rewrite logic for this part of the app
+  // For some reason when ace is add I can't select another card
+  // Again I need to be able to select this card and then unselect this card
   public handleTopRowDestinationClick = row => {
+    console.log(this.CardIsSelected);
+    console.log(row);
+    if (isNullOrUndefined(this.CardIsSelected.id)) {
+      const stack: Stack<Card> = this.bottomRows[row]();
+      if (!stack.isEmpty()) {
+        stack.peek().isSelected = !stack.peek().isSelected;
+        this.setCardIsSelected(stack.peek().id, row);
+        this.defaultCardIsSelected();
+      }
+    }
+
     if (isValue(this.CardIsSelected.id)) {
       // Need to move selected card to this row...
       // Need to remove card
+      const stack: Stack<Card> = this.bottomRows[row]();
       const cards = this.bottomRows[this.CardIsSelected.row]().source;
-      const card = cards.find(c => c.id === this.CardIsSelected.id);
-      this.bottomRows[this.CardIsSelected.row]().source = cards.filter(c => c.id !== this.CardIsSelected.id); 
+      const card = cards.find(c => c.id === this.CardIsSelected.id);  
+
       // .removeCardById(this.CardIsSelected.id);
       // Need to check if card can be added to source
-      card.isSelected = false;
-      this.bottomRows[row]().push(card);
-      this.defaultCardIsSelected();
+      if (this.canAddCardToTopRow(card, row)) {
+        this.bottomRows[this.CardIsSelected.row]().source = cards.filter(c => c.id !== this.CardIsSelected.id); 
+        card.isSelected = false;
+        this.bottomRows[row]().push(card);
+        this.defaultCardIsSelected();
+      }
+
     } else {
+      const stack: Stack<Card> = this.bottomRows[row]();
+      console.log(row);
       // alert("Nothing is selected");
       // Need to select top most card, and change it's state to isSelected 
       // And populate defaultSelected card
-      const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
-        stack.peek().isSelected = true;
+        stack.peek().isSelected = !stack.peek().isSelected;
         this.setCardIsSelected(stack.peek().id, row);
       }
     }
