@@ -56,7 +56,11 @@ export class BoardComponent implements AfterViewInit {
     4: () => this.BottomRow4,
     5: () => this.BottomRow5,
     6: () => this.BottomRow6,
-    7: () => this.BottomRow7
+    7: () => this.BottomRow7,
+    8: () => this.TopRow1,
+    9: () => this.TopRow2,
+    10: () => this.TopRow3,
+    11: () => this.TopRow4
   };
 
   public destructurePileString = (pile: string): Stack<Card> => {
@@ -135,7 +139,7 @@ export class BoardComponent implements AfterViewInit {
         .find(c => c.id === this.CardIsSelected.id).isSelected = false;
     }
 
-    if (this.CardIsSelected.id === card.id) {
+    if (isValue(this.CardIsSelected.id) && this.CardIsSelected.id === card.id) {
         card.isSelected = false;
         this.defaultCardIsSelected();
         return;

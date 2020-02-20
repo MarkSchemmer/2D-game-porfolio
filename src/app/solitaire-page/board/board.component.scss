@@ -30,10 +30,17 @@
 
         .col {
             width: 200px;
-            height: 250px;
+            height: 290px;
             border: 1px solid black;
             display: inline-block;
             margin: 5px;
+            // position: absolute;
+            vertical-align: top;
+
+            .card {
+                top: 43%;
+                left: -15%;
+            }
         }
     }
 
@@ -51,19 +58,22 @@
 
         .bot { 
             width: 200px !important;
-            height: 250px;
+            height: 290px;
             border: 1px solid black;
             margin: 0px;
             bottom: calc(350px - 87%);
             margin-left: 10px;
             display: inline-block;
-            margin-top: 50px;
-
+            // margin-top: 280px;
+            position: relative;
+            top: 0%;
             .card {
                 margin: 0px;
                 // height: 100%;
                 // position: absolute;
                 padding: 0px;
+                margin-top: 10%;
+                top: 39%;
 
                 img {
                     width: 100%;

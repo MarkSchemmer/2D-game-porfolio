@@ -3,22 +3,29 @@
     <div class="dealer"></div>
 
     <div class="top-row">
-        <div 
-        class="col column-1">
-    
-        <div class="card" *ngFor="let obj of TopRow1.source; let i = index">
-            <app-card
-            [card]="obj"
-            ></app-card>
-        </div>
-
+        <div class="col column-1">
+            <div class="card" *ngFor="let obj of TopRow1.source; let i = index">
+                <app-card [card]="obj" [pileNumber]="8"></app-card>
+            </div>
     </div>
 
-        <div class="col column-2"></div>
+        <div class="col column-2">
+            <div class="card" *ngFor="let obj of TopRow2.source; let i = index">
+                <app-card [card]="obj" [pileNumber]="9"></app-card>
+            </div>
+        </div>
 
-        <div class="col column-3"></div>
+        <div class="col column-3">
+            <div class="card" *ngFor="let obj of TopRow3.source; let i = index">
+                <app-card [card]="obj" [pileNumber]="10"></app-card>
+            </div>
+        </div>
 
-        <div class="col column-4"></div>
+        <div class="col column-4">
+            <div class="card" *ngFor="let obj of TopRow4.source; let i = index">
+                <app-card [card]="obj" [pileNumber]="11"></app-card>
+            </div>
+        </div>
     </div>
 
     <div class="bottom-row">
