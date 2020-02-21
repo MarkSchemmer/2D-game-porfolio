@@ -1,7 +1,8 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
 import { isNullOrUndefined, isValue } from "utils/Utils";
-import { Card, Deck, isCardNextSmaller, isShowingBack, Stack, canMoveCardOnBottomPile } from "../solitaireUtils/utils";
+import { canMoveCardOnBottomPile, Card, Deck, 
+  isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
 
 /*
 
@@ -93,6 +94,10 @@ export class BoardComponent implements AfterViewInit {
   ngAfterViewInit() {
     // need to make a deal when starting out on this which will deal to the board
     // first let's setup the board and view then 
+    this.addClickToCards();
+  }
+
+  public addClickToCards = () => {
     [ ...$(".card img") ].forEach(ele => {
       ele.addEventListener("click", this.handleCardClick);
     });
@@ -127,29 +132,39 @@ export class BoardComponent implements AfterViewInit {
   }
 
   /* 
-  
-  Need to write up instructions for game rules on game.
-  On procedure on clicking cards for where and to
-  Also on wether you can click a card and turn it over
+        Need to write up instructions for game rules on game.
+        On procedure on clicking cards for where and to
+        Also on wether you can click a card and turn it over
 
-  Need to do some thinking 
-  
-    Handle click for selecting cards 
-    
-    if this is the card 
+        Need to do some thinking 
+        
+        Handle click for selecting cards 
   */
 
-  public bottomRowPile = row => {
-    alert(row);
+  public bottomRowPile = (stack: Stack<Card>) => {
+    if (stack.isEmpty() && isValue(this.CardIsSelected.id)) {
+        const sourceStack: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
+        const sourceCard = sourceStack.source.find(c => c.id === this.CardIsSelected.id);
+
+        if (sourceCard.power === 13) {
+            sourceStack.source = sourceStack.source.filter(c => c.id !== this.CardIsSelected.id);
+            sourceCard.isSelected = false;
+            stack.push(sourceCard);
+            this.defaultCardIsSelected();
+        }
+    }
+
+    this.addClickToCards();
   }
 
   public handleCardClick = event => {
+    console.log("handle card click: ");
     const targetCard: Card = this.getCard(event);
     const targetRow: number = +(this.getRow(event));
     const targetStack: Stack<Card> = this.bottomRows[targetRow]();
 
     const sourceRow: number = this.CardIsSelected.row;
-    
+
     const sourceStack: Stack<Card> = sourceRow 
                                      ? this.bottomRows[sourceRow]() 
                                      : null;
@@ -194,9 +209,23 @@ export class BoardComponent implements AfterViewInit {
       // Need to filter out source in sourceStack
       sourceStack.source = sourceStack.source.filter(c => c.id !== sourceCard.id);
       // Need to add source to target
-      targetStack.push(sourceCard);
+
       sourceCard.isSelected = false;
       targetCard.isSelected = false;
+
+      targetStack.push(sourceCard);
+      targetStack.source = targetStack.source.map(c => {
+        c.isSelected = false;
+        return c;
+      });
+      this.defaultCardIsSelected();
+    } else if (isValue(this.CardIsSelected.id) 
+    && isValue(sourceStack)
+    && this.canAddCardToTopRow(sourceCard, targetStack)) {
+      sourceCard.isSelected = false;
+      targetCard.isSelected = false;
+      sourceStack.source = sourceStack.source.filter(c => c.id !== sourceCard.id);
+      targetStack.push(sourceCard);
       this.defaultCardIsSelected();
     } else if (isValue(this.CardIsSelected.id)) {
       targetCard.isSelected = !targetCard.isSelected;
@@ -212,6 +241,7 @@ export class BoardComponent implements AfterViewInit {
         Need to add check if card can be added to other pile
         if it can card must be 1 less and other opposite color
     */
+    this.addClickToCards();
   }
 
   public deal = () => {
@@ -230,7 +260,7 @@ export class BoardComponent implements AfterViewInit {
     const aceIndex = this.dealer.deck.findIndex(c => c.power === 14);
     const ace = this.dealer.deck[aceIndex];
 
-    const twoIndex = this.dealer.deck.findIndex(c => c.power === 2);
+    const twoIndex = this.dealer.deck.findIndex(c => c.power === 2 && c.suite === ace.suite);
     const two = this.dealer.deck[twoIndex];
 
     this.dealer.deck = this.dealer.deck.filter((c, idx) => [aceIndex, twoIndex].indexOf(idx) === -1 );
@@ -258,13 +288,13 @@ export class BoardComponent implements AfterViewInit {
   // For some reason when ace is add I can't select another card
   // Again I need to be able to select this card and then unselect this card
   public handleTopRowDestinationClick = row => {
+    console.log("handle top row: ");
     // console.log(this.CardIsSelected);
     // console.log(row);
     if (isNullOrUndefined(this.CardIsSelected.id)) {
-      console.log("Card isNullOrUndefined(): ");
       const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
-        stack.peek().isSelected = !stack.peek().isSelected;
+        stack.peek().isSelected = true;
         this.setCardIsSelected(stack.peek().id, row);
         return;
       }
@@ -290,21 +320,21 @@ export class BoardComponent implements AfterViewInit {
       // need to get card and check if it's the same as being click
       // if so then toggle the isSelect... 
       if (stack.peek().id === this.CardIsSelected.id) {
-        console.log("Toggle card");
-        stack.peek().isSelected = !stack.peek().isSelected;
+        stack.peek().isSelected = false;
         this.defaultCardIsSelected();
         return;
       }
 
     } else {
-      console.log("Toggle other in bottom else: ");
       const stack: Stack<Card> = this.bottomRows[row]();
       // Need to select top most card, and change it's state to isSelected 
       // And populate defaultSelected card
       if (!stack.isEmpty()) {
-        stack.peek().isSelected = !stack.peek().isSelected;
+        stack.peek().isSelected = true;
         this.setCardIsSelected(stack.peek().id, row);
       }
     }
+
+    this.addClickToCards();
   }
 }
