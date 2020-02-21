@@ -103,6 +103,12 @@ export class BoardComponent implements AfterViewInit {
     });
   }
 
+  public removeClick = col => {
+    [ ...$("column" + col + " img") ].forEach(ele => {
+        ele.removeEventListener("click", this.handleCardClick);
+    });
+  }
+
   public defaultCardIsSelected = () => {
     this.CardIsSelected = {
       id: null,
@@ -158,12 +164,15 @@ export class BoardComponent implements AfterViewInit {
   }
 
   public handleCardClick = event => {
-    console.log("handle card click: ");
     const targetCard: Card = this.getCard(event);
     const targetRow: number = +(this.getRow(event));
     const targetStack: Stack<Card> = this.bottomRows[targetRow]();
 
     const sourceRow: number = this.CardIsSelected.row;
+
+    // Handle click should only be for bottom rows
+    if (targetRow > 7) { return; }
+    if (sourceRow > 7) { return; }
 
     const sourceStack: Stack<Card> = sourceRow 
                                      ? this.bottomRows[sourceRow]() 
@@ -189,6 +198,7 @@ export class BoardComponent implements AfterViewInit {
           this.bottomRows[this.CardIsSelected.row]()
           .source
           .find(c => c.id === this.CardIsSelected.id).isSelected = false;
+          return;
       }
 
       if (isValue(this.CardIsSelected.id) && this.CardIsSelected.id === targetCard.id) {
@@ -226,6 +236,7 @@ export class BoardComponent implements AfterViewInit {
       targetCard.isSelected = false;
       sourceStack.source = sourceStack.source.filter(c => c.id !== sourceCard.id);
       targetStack.push(sourceCard);
+      // this.removeClick(targetRow);
       this.defaultCardIsSelected();
     } else if (isValue(this.CardIsSelected.id)) {
       targetCard.isSelected = !targetCard.isSelected;
@@ -288,13 +299,13 @@ export class BoardComponent implements AfterViewInit {
   // For some reason when ace is add I can't select another card
   // Again I need to be able to select this card and then unselect this card
   public handleTopRowDestinationClick = row => {
-    console.log("handle top row: ");
+
     // console.log(this.CardIsSelected);
     // console.log(row);
     if (isNullOrUndefined(this.CardIsSelected.id)) {
       const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
-        stack.peek().isSelected = true;
+        stack.peek().isSelected = !stack.peek().isSelected;
         this.setCardIsSelected(stack.peek().id, row);
         return;
       }
@@ -320,7 +331,7 @@ export class BoardComponent implements AfterViewInit {
       // need to get card and check if it's the same as being click
       // if so then toggle the isSelect... 
       if (stack.peek().id === this.CardIsSelected.id) {
-        stack.peek().isSelected = false;
+        stack.peek().isSelected = !stack.peek().isSelected;
         this.defaultCardIsSelected();
         return;
       }
