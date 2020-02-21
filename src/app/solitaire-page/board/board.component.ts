@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
-import { isValue, isNullOrUndefined } from "utils/Utils";
-import { Card, Deck, isShowingBack, Stack, isCardNextSmaller } from "../solitaireUtils/utils";
+import { isNullOrUndefined, isValue } from "utils/Utils";
+import { Card, Deck, isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
 
 /*
 
@@ -93,7 +93,6 @@ export class BoardComponent implements AfterViewInit {
   ngAfterViewInit() {
     // need to make a deal when starting out on this which will deal to the board
     // first let's setup the board and view then 
-    console.log([...$(".card img")].length);
     [ ...$(".card img") ].forEach(ele => {
       ele.addEventListener("click", this.handleCardClick);
     });
@@ -185,25 +184,28 @@ export class BoardComponent implements AfterViewInit {
       this.BottomRow7
     ];
 
+    const aceIndex = this.dealer.deck.findIndex(c => c.power === 14);
+    const ace = this.dealer.deck[aceIndex];
+
+    const twoIndex = this.dealer.deck.findIndex(c => c.power === 2);
+    const two = this.dealer.deck[twoIndex];
+
+    this.dealer.deck = this.dealer.deck.filter((c, idx) => [aceIndex, twoIndex].indexOf(idx) === -1 );
+
     for (let i = 0; i < 7; i++) {
       bottomRow.slice(i).forEach(pile => {
           pile.push(this.dealer.dealCard());
       });
     }
 
-    bottomRow.slice(1).forEach(pile => {
+    bottomRow[0].source = [ ace ];
+    bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
+    bottomRow.forEach(pile => {
       pile.peek().showFront();
     });
-
-    // console.log(bottomRow);
-
-    // this.TopRow1.push(this.BottomRow1.pop());
-
-    // this.BottomRow1.source[0].isSelected = true;
   }
 
-  public canAddCardToTopRow = (card: Card, row: number): boolean => {
-    const stack = this.bottomRows[row]();
+  public canAddCardToTopRow = (card: Card, stack: Stack<Card>): boolean => {
     return  stack.isEmpty() && card.power === 14    ? true 
             : isCardNextSmaller(card, stack.peek()) ? true
             : false;
@@ -213,14 +215,14 @@ export class BoardComponent implements AfterViewInit {
   // For some reason when ace is add I can't select another card
   // Again I need to be able to select this card and then unselect this card
   public handleTopRowDestinationClick = row => {
-    console.log(this.CardIsSelected);
-    console.log(row);
+    // console.log(this.CardIsSelected);
+    // console.log(row);
     if (isNullOrUndefined(this.CardIsSelected.id)) {
       const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
         stack.peek().isSelected = !stack.peek().isSelected;
         this.setCardIsSelected(stack.peek().id, row);
-        this.defaultCardIsSelected();
+        return;
       }
     }
 
@@ -229,21 +231,28 @@ export class BoardComponent implements AfterViewInit {
       // Need to remove card
       const stack: Stack<Card> = this.bottomRows[row]();
       const cards = this.bottomRows[this.CardIsSelected.row]().source;
-      const card = cards.find(c => c.id === this.CardIsSelected.id);  
+      const card = cards.find(c => c.id === this.CardIsSelected.id);
 
       // .removeCardById(this.CardIsSelected.id);
       // Need to check if card can be added to source
-      if (this.canAddCardToTopRow(card, row)) {
+      if (this.canAddCardToTopRow(card, stack)) {
         this.bottomRows[this.CardIsSelected.row]().source = cards.filter(c => c.id !== this.CardIsSelected.id); 
         card.isSelected = false;
         this.bottomRows[row]().push(card);
         this.defaultCardIsSelected();
+        return;
+      }
+
+      // need to get card and check if it's the same as being click
+      // if so then toggle the isSelect... 
+      if (stack.peek().id === this.CardIsSelected.id) {
+        stack.peek().isSelected = !stack.peek().isSelected;
+        this.defaultCardIsSelected();
+        return;
       }
 
     } else {
       const stack: Stack<Card> = this.bottomRows[row]();
-      console.log(row);
-      // alert("Nothing is selected");
       // Need to select top most card, and change it's state to isSelected 
       // And populate defaultSelected card
       if (!stack.isEmpty()) {

@@ -7,6 +7,12 @@ interface ICard {
     value: string;
     power: number;
     isSelected: boolean;
+    cardColor: CardColor;
+}
+
+export enum CardColor {
+    BLACK = "BLACK",
+    RED = "RED"
 }
 
 export enum Suits {
@@ -33,7 +39,13 @@ export const cardValues = {
 };
 
 export const isCardNextSmaller = (card: Card, stackCard: Card) => {
-    return card.power + 1 === stackCard.power;
+
+    if (card.suite !== stackCard.suite) { return false; }
+
+    if (stackCard.power === 14) {
+        return card.power === 2;
+    }
+    return card.power - 1 === stackCard.power;
 };
 
 export const generateDeckOfCards = (): Card[] =>
@@ -44,6 +56,7 @@ export const generateDeckOfCards = (): Card[] =>
     , []);
 
 export const rootImage = "../../../assets/cardImages/";
+
 export class Card implements ICard {
     public id: string;
     public suite: string;
@@ -51,6 +64,7 @@ export class Card implements ICard {
     public power: number;
     public imageurl: string;
     public isSelected: boolean = false;
+    public cardColor: CardColor;
     // image of back of card if facedown
     public backOfCard: string = "../../../assets/cardImages/card_background.png";
 
@@ -70,13 +84,14 @@ export class Card implements ICard {
         this.value = value;
         this.power = cardValues[value];
         this.imageurl = rootImage + (this.suite.toLowerCase() + "-" + this.value.toLowerCase() + ".png");
+        this.cardColor = [ Suits.DIAMOND, Suits.HEART ].indexOf((suite as Suits)) > - 1 ? CardColor.RED : CardColor.BLACK;
     }
 }
 
 export const isShowingBack = (card: Card) => card.showBack === true;
 
 export class Deck {
-    private deck: Card[] = generateDeckOfCards();
+    public deck: Card[] = generateDeckOfCards();
     constructor() { }
 
     public shuffle = () => {
