@@ -48,6 +48,11 @@ export const isCardNextSmaller = (card: Card, stackCard: Card) => {
     return card.power - 1 === stackCard.power;
 };
 
+export const canMoveCardOnBottomPile = (sourceCard: Card, targetCard: Card): boolean => {
+    return sourceCard.power + 1 === targetCard.power 
+           && sourceCard.cardColor !== targetCard.cardColor ? true : false;
+};
+
 export const generateDeckOfCards = (): Card[] =>
     Object.keys(Suits)
     .reduce(

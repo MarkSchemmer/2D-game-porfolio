@@ -1,7 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
 import { isNullOrUndefined, isValue } from "utils/Utils";
-import { Card, Deck, isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
+import { Card, Deck, isCardNextSmaller, isShowingBack, Stack, canMoveCardOnBottomPile } from "../solitaireUtils/utils";
 
 /*
 
@@ -139,36 +139,79 @@ export class BoardComponent implements AfterViewInit {
     if this is the card 
   */
 
+  public bottomRowPile = row => {
+    alert(row);
+  }
+
   public handleCardClick = event => {
-    const card = this.getCard(event);
-    const row = +(this.getRow(event));
-    // check if it is last card in set
-    if (isValue(this.getId(event)) && !this.canBeClicked(this.getId(event), row)) {
-      return;
-    }
+    const targetCard: Card = this.getCard(event);
+    const targetRow: number = +(this.getRow(event));
+    const targetStack: Stack<Card> = this.bottomRows[targetRow]();
 
-    if (isValue(this.getId(event)) && this.canBeClicked(this.getId(event), row) && isShowingBack(card)) {
-      card.showFront();
-      return;
-    }
+    const sourceRow: number = this.CardIsSelected.row;
+    
+    const sourceStack: Stack<Card> = sourceRow 
+                                     ? this.bottomRows[sourceRow]() 
+                                     : null;
 
-    // Need to know if another card is selected
-    if (isValue(this.CardIsSelected.id)) { 
-        this.bottomRows[this.CardIsSelected.row]()
-        .source
-        .find(c => c.id === this.CardIsSelected.id).isSelected = false;
-    }
+    const sourceCard: Card = sourceStack ? 
+                             sourceStack.source.find(c => c.id === this.CardIsSelected.id) 
+                             : null;
 
-    if (isValue(this.CardIsSelected.id) && this.CardIsSelected.id === card.id) {
-        card.isSelected = false;
-        this.defaultCardIsSelected();
+    if (isNullOrUndefined(this.CardIsSelected.id)) {
+      // check if it is last card in set
+      if (isValue(this.getId(event)) && !this.canBeClicked(this.getId(event), targetRow)) {
         return;
-    }
+      }
 
-    // Need to be able to click that card and highlight that it's seleced
-    // First step get card
-    card.isSelected = !card.isSelected;
-    this.setCardIsSelected(card.id, row);
+      if (isValue(this.getId(event)) && this.canBeClicked(this.getId(event), targetRow) && isShowingBack(targetCard)) {
+        targetCard.showFront();
+        return;
+      }
+
+      // Need to know if another card is selected
+      if (isValue(this.CardIsSelected.id)) { 
+          this.bottomRows[this.CardIsSelected.row]()
+          .source
+          .find(c => c.id === this.CardIsSelected.id).isSelected = false;
+      }
+
+      if (isValue(this.CardIsSelected.id) && this.CardIsSelected.id === targetCard.id) {
+          targetCard.isSelected = false;
+          this.defaultCardIsSelected();
+          return;
+      }
+
+      // Need to be able to click that card and highlight that it's seleced
+      // First step get card
+      targetCard.isSelected = !targetCard.isSelected;
+      this.setCardIsSelected(targetCard.id, targetRow);
+    } else if (isValue(this.CardIsSelected.id) && targetCard.id === this.CardIsSelected.id) {
+      targetCard.isSelected = !targetCard.isSelected;
+      this.defaultCardIsSelected();
+    } else if (isValue(this.CardIsSelected.id) && isValue(sourceStack) && canMoveCardOnBottomPile(sourceCard, targetCard)) {
+      // Need to push source into target
+      // Need to filter out source in sourceStack
+      sourceStack.source = sourceStack.source.filter(c => c.id !== sourceCard.id);
+      // Need to add source to target
+      targetStack.push(sourceCard);
+      sourceCard.isSelected = false;
+      targetCard.isSelected = false;
+      this.defaultCardIsSelected();
+    } else if (isValue(this.CardIsSelected.id)) {
+      targetCard.isSelected = !targetCard.isSelected;
+      // now change the previous selected card
+      
+      const otherCardStack: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
+      const otherCard = otherCardStack.source.find(c => c.id === this.CardIsSelected.id);
+      otherCard.isSelected = !otherCard.isSelected;
+
+      this.setCardIsSelected(targetCard.id, targetRow);
+    }
+    /*
+        Need to add check if card can be added to other pile
+        if it can card must be 1 less and other opposite color
+    */
   }
 
   public deal = () => {
@@ -218,6 +261,7 @@ export class BoardComponent implements AfterViewInit {
     // console.log(this.CardIsSelected);
     // console.log(row);
     if (isNullOrUndefined(this.CardIsSelected.id)) {
+      console.log("Card isNullOrUndefined(): ");
       const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
         stack.peek().isSelected = !stack.peek().isSelected;
@@ -246,12 +290,14 @@ export class BoardComponent implements AfterViewInit {
       // need to get card and check if it's the same as being click
       // if so then toggle the isSelect... 
       if (stack.peek().id === this.CardIsSelected.id) {
+        console.log("Toggle card");
         stack.peek().isSelected = !stack.peek().isSelected;
         this.defaultCardIsSelected();
         return;
       }
 
     } else {
+      console.log("Toggle other in bottom else: ");
       const stack: Stack<Card> = this.bottomRows[row]();
       // Need to select top most card, and change it's state to isSelected 
       // And populate defaultSelected card
