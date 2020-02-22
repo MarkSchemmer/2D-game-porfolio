@@ -60,7 +60,7 @@ export const generateDeckOfCards = (): Card[] =>
             [...acc, ...Object.keys(cardValues).map(val => new Card(cur, val))]
     , []);
 
-export const rootImage = "../../../assets/cardImages/";
+export const rootImage = "assets/cardImages/";
 
 export class Card implements ICard {
     public id: string;
@@ -71,7 +71,7 @@ export class Card implements ICard {
     public isSelected: boolean = false;
     public cardColor: CardColor;
     // image of back of card if facedown
-    public backOfCard: string = "../../../assets/cardImages/card_background.png";
+    public backOfCard: string = rootImage + "card_background.png";
 
     public showBack: boolean = true;
 
@@ -102,6 +102,10 @@ export class Deck {
     public shuffle = () => {
         this.deck = shuffle(this.deck);
         return this.deck;
+    }
+
+    public isEmptyDeck = () => {
+        return this.deck.length === 0;
     }
 
     public newDeal = () => {

@@ -14,6 +14,7 @@
     "alwaysStrict": true,
     
     "target": "es2015",
+    "allowJs": true,
     "typeRoots": [
       "node_modules/@types"
     ],

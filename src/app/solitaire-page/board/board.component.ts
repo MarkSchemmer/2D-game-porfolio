@@ -28,7 +28,9 @@ import { canMoveCardOnBottomPile, Card, Deck,
   styleUrls: ["./board.component.scss"]
 })
 export class BoardComponent implements AfterViewInit {
+  // Top left pile and accessible card stack
   public dealer: Deck = new Deck();
+  public playAbleDrawRow: Stack<Card> = new Stack<Card>();
 
   // First row that starts with aces and moves down... 
   public TopRow1: Stack<Card> = new Stack<Card>();
@@ -36,6 +38,7 @@ export class BoardComponent implements AfterViewInit {
   public TopRow3: Stack<Card> = new Stack<Card>();
   public TopRow4: Stack<Card> = new Stack<Card>();
 
+  // Bottom row piles
   public BottomRow1: Stack<Card> = new Stack<Card>();
   public BottomRow2: Stack<Card> = new Stack<Card>();
   public BottomRow3: Stack<Card> = new Stack<Card>();
@@ -60,8 +63,38 @@ export class BoardComponent implements AfterViewInit {
     8: () => this.TopRow1,
     9: () => this.TopRow2,
     10: () => this.TopRow3,
-    11: () => this.TopRow4
+    11: () => this.TopRow4,
+    12: () => this.playAbleDrawRow
   };
+
+  public handlePlayAbleDrawRow = () => {
+    if (!this.dealer.isEmptyDeck()) {
+      const card = this.dealer.dealCard();
+      card.showFront();
+      this.playAbleDrawRow.push(card);
+    }
+  }
+
+  public handlePlayAbleDrawRowWhenEmpty = () => {
+    if (this.dealer.isEmptyDeck()) {
+      this.dealer.deck = this.playAbleDrawRow.source.map((c: Card) => {
+        c.showBackOfCard();
+        return c;
+      }).reverse();
+
+      this.playAbleDrawRow.source = [];
+    }
+  }
+
+  public handlePlayAbleCardStack = (card: Card) => {
+      if (card.isSelected) {
+        card.isSelected = false;
+        this.defaultCardIsSelected();
+      } else {
+        card.isSelected = true;
+        this.setCardIsSelected(card.id, 12);
+      }
+  }
 
   public destructurePileString = (pile: string): Stack<Card> => {
      const [ _, p2 ] = pile.split("-");
@@ -148,6 +181,7 @@ export class BoardComponent implements AfterViewInit {
   */
 
   public bottomRowPile = (stack: Stack<Card>) => {
+    console.log("Bottom Pile click event");
     if (stack.isEmpty() && isValue(this.CardIsSelected.id)) {
         const sourceStack: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
         const sourceCard = sourceStack.source.find(c => c.id === this.CardIsSelected.id);
@@ -164,6 +198,7 @@ export class BoardComponent implements AfterViewInit {
   }
 
   public handleCardClick = event => {
+    console.log("handleCardClick: ");
     const targetCard: Card = this.getCard(event);
     const targetRow: number = +(this.getRow(event));
     const targetStack: Stack<Card> = this.bottomRows[targetRow]();
@@ -172,7 +207,7 @@ export class BoardComponent implements AfterViewInit {
 
     // Handle click should only be for bottom rows
     if (targetRow > 7) { return; }
-    if (sourceRow > 7) { return; }
+    // if (sourceRow > 7) { return; }
 
     const sourceStack: Stack<Card> = sourceRow 
                                      ? this.bottomRows[sourceRow]() 
@@ -290,6 +325,7 @@ export class BoardComponent implements AfterViewInit {
   }
 
   public canAddCardToTopRow = (card: Card, stack: Stack<Card>): boolean => {
+    if (stack.isEmpty() && card.power !== 14) { return false; }
     return  stack.isEmpty() && card.power === 14    ? true 
             : isCardNextSmaller(card, stack.peek()) ? true
             : false;
@@ -318,6 +354,8 @@ export class BoardComponent implements AfterViewInit {
       const cards = this.bottomRows[this.CardIsSelected.row]().source;
       const card = cards.find(c => c.id === this.CardIsSelected.id);
 
+
+
       // .removeCardById(this.CardIsSelected.id);
       // Need to check if card can be added to source
       if (this.canAddCardToTopRow(card, stack)) {
@@ -330,7 +368,7 @@ export class BoardComponent implements AfterViewInit {
 
       // need to get card and check if it's the same as being click
       // if so then toggle the isSelect... 
-      if (stack.peek().id === this.CardIsSelected.id) {
+      if (isValue(stack.peek()) && stack.peek().id === this.CardIsSelected.id) {
         stack.peek().isSelected = !stack.peek().isSelected;
         this.defaultCardIsSelected();
         return;

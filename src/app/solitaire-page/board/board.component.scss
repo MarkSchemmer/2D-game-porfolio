@@ -89,3 +89,28 @@
 .card-selected {
     border: 5px solid gold;
 }
+
+.dealer {
+
+    .reset-deck {
+        width: 200px;
+        height: 290px;
+        border: 1px solid black;
+        margin-left: 8px;
+        margin-top: 4px;
+    }
+
+    .card {
+        position: absolute;
+        top: 140px;
+    }
+
+    .playable-pile {
+        // border: 1px solid black;
+        width: 200px;
+        height: 290px;
+        margin-right: 106px;
+        margin-top: 5px;
+        float: right;
+    }
+}
