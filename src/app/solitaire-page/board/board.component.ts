@@ -80,7 +80,7 @@ export class BoardComponent implements AfterViewInit {
       this.dealer.deck = this.playAbleDrawRow.source.map((c: Card) => {
         c.showBackOfCard();
         return c;
-      }).reverse();
+      });
 
       this.playAbleDrawRow.source = [];
     }
