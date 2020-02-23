@@ -4,6 +4,8 @@
 
     - Need to fix up the css of the top row and bottom... with 
 
+    - Need to remove console errors 
+
 
     - Add a new deal button
 
