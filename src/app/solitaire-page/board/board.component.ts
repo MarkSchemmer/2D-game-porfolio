@@ -1,8 +1,8 @@
 import { AfterViewInit, Component } from "@angular/core";
 import * as $ from "jquery";
 import { isNullOrUndefined, isValue } from "utils/Utils";
-import { canMoveCardOnBottomPile, Card, Deck, 
-  isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
+import { canMoveCardOnBottomPile, Card, CardColor, 
+  Deck, isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
 
 /*
 
@@ -49,7 +49,8 @@ export class BoardComponent implements AfterViewInit {
 
   public CardIsSelected = {
     id: null,
-    row: null
+    row: null,
+    isRange: null
   };
 
   public bottomRows = {
@@ -109,7 +110,15 @@ export class BoardComponent implements AfterViewInit {
     return source.find(c => c.id === id);
   }
 
-  public canBeClicked = (id: string, row: number) => {
+  public isValidSet = (set: Card[]): boolean => {
+    return set.every((c: Card, idx: number, ar: Card[]) => {
+          const nextCard = ar[idx + 1] || null;
+          if (isNullOrUndefined(nextCard)) { return true; }
+          return c.power > nextCard.power && c.cardColor !== nextCard.cardColor;
+    });
+  }
+
+  public canBeClicked = (id: string, row: number): boolean => {
     let tempSource;
     return row in this.bottomRows ? (
       tempSource = this.bottomRows[row]().source.findIndex(c => c.id === id),
@@ -117,12 +126,88 @@ export class BoardComponent implements AfterViewInit {
     ) : false;
   }
 
+  public canBeClickedAndIsNotFirstCard = (id: string, targetRow: number) => {
+    const stack: Stack<Card> = targetRow in this.bottomRows ? this.bottomRows[targetRow]() : null;
+    if (isNullOrUndefined(stack) || stack.source.length === 1) { return null; }
+
+    const cardIndex = stack.source.findIndex((c: Card) => c.id === id);
+    // if it's last card then we don't need to select set... 
+    // or if card is showing back
+    if (cardIndex === stack.source.length || stack.source[cardIndex].showBack) { return null; }
+
+    // slices correctly when                  // Before I select, must know if set is valid
+    const st = stack.source.slice(cardIndex); // .map((c: Card) => (c.isSelected = true, c));
+    if (st.length === 1) { return null; }
+    if (!this.isValidSet(st)) { return null; }
+    st.map((c: Card) => (c.isSelected = true, c));
+    console.log(st);
+    return st;
+    // const isValidSet
+  }
+
   // tslint:disable-next-line:member-ordering
   public cd = { };
 
   constructor() {
       this.deal();
-   }
+  }
+
+  public deal = () => {
+    this.dealer.newDeal();
+
+    const bottomRow = [
+      this.BottomRow1,
+      this.BottomRow2,
+      this.BottomRow3,
+      this.BottomRow4,
+      this.BottomRow5,
+      this.BottomRow6,
+      this.BottomRow7
+    ];
+
+    const ace = this.getCardAndFilterOutOfDeck(14, CardColor.BLACK);
+    const two = this.getCardAndFilterOutOfDeck(2, CardColor.BLACK);
+    const tenRed = this.getCardAndFilterOutOfDeck(10, CardColor.RED);
+    const nineBlack = this.getCardAndFilterOutOfDeck(9, CardColor.BLACK);
+    const eightRed = this.getCardAndFilterOutOfDeck(8, CardColor.RED);
+    const jackBlack = this.getCardAndFilterOutOfDeck(11, CardColor.BLACK);
+
+    const cardsToAdd = [ tenRed, nineBlack, eightRed ]
+    .map((c: Card) => (c.showFront(), c));
+
+    for (let i = 0; i < 7; i++) {
+      bottomRow.slice(i).forEach((pile, idx) => {
+          if (i + idx === 6 && this.bottomRows[7]().source.length > 3) {
+            // just pass through... 
+            // console.log("I'm being skipped", idx);
+          } else {
+            pile.push(this.dealer.dealCard());
+          }
+      });
+    }
+
+    bottomRow[6].source = [ ...bottomRow[6].source, ...cardsToAdd ];
+
+    bottomRow[0].source = [ ace ];
+    bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
+    // Need to swamp with deck 
+    // bottomRow[1].source[1] = jackBlack;
+    bottomRow.forEach(pile => {
+      pile.peek().showFront();
+    });
+
+
+  }
+
+  public getCardAndFilterOutOfDeck = (power: Number, color: CardColor): Card => {
+      const card = this.dealer.deck.find((c: Card) => c.power === power && c. cardColor === color);
+      this.filterOutCardInDeck(card.id);
+      return card;
+  }
+
+  public filterOutCardInDeck = (id: string): void => {
+    this.dealer.deck = this.dealer.deck.filter((c: Card) => c.id !== id);
+  }
 
   ngAfterViewInit() {
     // need to make a deal when starting out on this which will deal to the board
@@ -145,12 +230,13 @@ export class BoardComponent implements AfterViewInit {
   public defaultCardIsSelected = () => {
     this.CardIsSelected = {
       id: null,
-      row: null
+      row: null,
+      isRange: null
     };
   }
 
-  public setCardIsSelected = (id, row) => {
-    this.CardIsSelected = { id, row };
+  public setCardIsSelected = (id, row, isRange = null) => {
+    this.CardIsSelected = { id, row, isRange };
   }
 
   public getCard = event => {
@@ -181,7 +267,6 @@ export class BoardComponent implements AfterViewInit {
   */
 
   public bottomRowPile = (stack: Stack<Card>) => {
-    console.log("Bottom Pile click event");
     if (stack.isEmpty() && isValue(this.CardIsSelected.id)) {
         const sourceStack: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
         const sourceCard = sourceStack.source.find(c => c.id === this.CardIsSelected.id);
@@ -198,7 +283,9 @@ export class BoardComponent implements AfterViewInit {
   }
 
   public handleCardClick = event => {
-    console.log("handleCardClick: ");
+
+    console.log("I'm clicked");
+
     const targetCard: Card = this.getCard(event);
     const targetRow: number = +(this.getRow(event));
     const targetStack: Stack<Card> = this.bottomRows[targetRow]();
@@ -217,7 +304,44 @@ export class BoardComponent implements AfterViewInit {
                              sourceStack.source.find(c => c.id === this.CardIsSelected.id) 
                              : null;
 
+    if (isValue(this.CardIsSelected.isRange)) {
+      // if location is not valid then cards should be unselected
+      const firstCard = this.CardIsSelected.id[0];
+      if (canMoveCardOnBottomPile(firstCard, targetCard)) {
+        console.log("I can move card here... ");
+        // Need to move set to target row...
+        const stack: Stack<Card> = this.bottomRows[targetRow]();
+        this.CardIsSelected.id.forEach((c: Card) => {
+            stack.push(c);
+        });
+
+        this.bottomRows[sourceRow]().source = sourceStack.source.filter(
+          (c: Card) => this.CardIsSelected.id.every((cc: Card) => cc.id !== c.id));
+      } else {
+        console.log("Can't move it there...");
+      }
+      // console.log("I have a set selected");
+      // console.log(this.CardIsSelected.id);
+      this.CardIsSelected.id.map((c: Card) => (c.isSelected = false, c));
+      this.defaultCardIsSelected();
+      return;
+    }
+
     if (isNullOrUndefined(this.CardIsSelected.id)) {
+
+      // Need to check if it's not the last and if it's not need to select all the cards
+      // When all the cards are selected
+      // First I should edit existing code to use set to more easily 
+      // Add a range of cards... 
+      // Deciding to add property to test when card is selected
+      // this.canBeClickedAndIsNotFirstCard will check if valid if valid will set and select cards
+      // Then will enter the if loop
+      const setToBeSelected = this.canBeClickedAndIsNotFirstCard(this.getId(event), targetRow);
+      if (isValue(this.getId(event)) && setToBeSelected) {
+          this.setCardIsSelected(setToBeSelected, targetRow, true);
+          return;
+      }
+
       // check if it is last card in set
       if (isValue(this.getId(event)) && !this.canBeClicked(this.getId(event), targetRow)) {
         return;
@@ -288,40 +412,6 @@ export class BoardComponent implements AfterViewInit {
         if it can card must be 1 less and other opposite color
     */
     this.addClickToCards();
-  }
-
-  public deal = () => {
-    this.dealer.newDeal();
-
-    const bottomRow = [
-      this.BottomRow1,
-      this.BottomRow2,
-      this.BottomRow3,
-      this.BottomRow4,
-      this.BottomRow5,
-      this.BottomRow6,
-      this.BottomRow7
-    ];
-
-    const aceIndex = this.dealer.deck.findIndex(c => c.power === 14);
-    const ace = this.dealer.deck[aceIndex];
-
-    const twoIndex = this.dealer.deck.findIndex(c => c.power === 2 && c.suite === ace.suite);
-    const two = this.dealer.deck[twoIndex];
-
-    this.dealer.deck = this.dealer.deck.filter((c, idx) => [aceIndex, twoIndex].indexOf(idx) === -1 );
-
-    for (let i = 0; i < 7; i++) {
-      bottomRow.slice(i).forEach(pile => {
-          pile.push(this.dealer.dealCard());
-      });
-    }
-
-    bottomRow[0].source = [ ace ];
-    bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
-    bottomRow.forEach(pile => {
-      pile.peek().showFront();
-    });
   }
 
   public canAddCardToTopRow = (card: Card, stack: Stack<Card>): boolean => {
