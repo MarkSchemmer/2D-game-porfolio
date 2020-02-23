@@ -165,38 +165,38 @@ export class BoardComponent implements AfterViewInit {
       this.BottomRow7
     ];
 
-    const ace = this.getCardAndFilterOutOfDeck(14, CardColor.BLACK);
-    const two = this.getCardAndFilterOutOfDeck(2, CardColor.BLACK);
-    const tenRed = this.getCardAndFilterOutOfDeck(10, CardColor.RED);
-    const nineBlack = this.getCardAndFilterOutOfDeck(9, CardColor.BLACK);
-    const eightRed = this.getCardAndFilterOutOfDeck(8, CardColor.RED);
-    const jackBlack = this.getCardAndFilterOutOfDeck(11, CardColor.BLACK);
+    /*
+        Everything that was commented out 
+        is only for testing purposes only
+    */
+    // const ace = this.getCardAndFilterOutOfDeck(14, CardColor.BLACK);
+    // const two = this.getCardAndFilterOutOfDeck(2, CardColor.BLACK);
+    // const tenRed = this.getCardAndFilterOutOfDeck(10, CardColor.RED);
+    // const nineBlack = this.getCardAndFilterOutOfDeck(9, CardColor.BLACK);
+    // const eightRed = this.getCardAndFilterOutOfDeck(8, CardColor.RED);
+    // const jackBlack = this.getCardAndFilterOutOfDeck(11, CardColor.BLACK);
 
-    const cardsToAdd = [ tenRed, nineBlack, eightRed ]
-    .map((c: Card) => (c.showFront(), c));
+    // const cardsToAdd = [ tenRed, nineBlack, eightRed ]
+    // .map((c: Card) => (c.showFront(), c));
 
     for (let i = 0; i < 7; i++) {
       bottomRow.slice(i).forEach((pile, idx) => {
-          if (i + idx === 6 && this.bottomRows[7]().source.length > 3) {
-            // just pass through... 
-            // console.log("I'm being skipped", idx);
-          } else {
-            pile.push(this.dealer.dealCard());
-          }
+          // if (i + idx === 6 && this.bottomRows[7]().source.length > 3) {
+          // just pass through... 
+          // } else {
+          pile.push(this.dealer.dealCard());
+          // }
       });
     }
 
-    bottomRow[6].source = [ ...bottomRow[6].source, ...cardsToAdd ];
+    // bottomRow[6].source = [ ...bottomRow[6].source, ...cardsToAdd ];
 
-    bottomRow[0].source = [ ace ];
-    bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
-    // Need to swamp with deck 
-    // bottomRow[1].source[1] = jackBlack;
+    // bottomRow[0].source = [ ace ];
+    // bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
+    // Need to swamp with deck
     bottomRow.forEach(pile => {
       pile.peek().showFront();
     });
-
-
   }
 
   public getCardAndFilterOutOfDeck = (power: Number, color: CardColor): Card => {
@@ -443,9 +443,6 @@ export class BoardComponent implements AfterViewInit {
       const stack: Stack<Card> = this.bottomRows[row]();
       const cards = this.bottomRows[this.CardIsSelected.row]().source;
       const card = cards.find(c => c.id === this.CardIsSelected.id);
-
-
-
       // .removeCardById(this.CardIsSelected.id);
       // Need to check if card can be added to source
       if (this.canAddCardToTopRow(card, stack)) {
