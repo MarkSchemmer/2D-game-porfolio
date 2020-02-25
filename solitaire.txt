@@ -1,14 +1,43 @@
 - Errors
-    - When you click on draw pile side, the card is continued to be in "isSelected" state
+
+  ---------------------------------------------------------------------------------------------
+  DONE |  - When you click on draw pile side, the card is continued to be in "isSelected" state
       Need to work out the intended functionality of the play... 
+            - This bug is now fixed... |
+  ---------------------------------------------------------------------------------------------
 
-    - Need to fix up the css of the top row and bottom... with 
+    - Need to fix up the css of the top row and bottom... with, will list out more options later on
 
-    - Need to remove console errors 
+    - Need to minimize the .card class so it is not visible on the page
 
+    - Need to make board full size of page
 
-    - Add a new deal button
+    - Board should grow with cards to overflow doesn't happen
+    
+    ------------------------------------------------------------------------------------------
+    DONE | - Need to remove console errors 
+    ------------------------------------------------------------------------------------------
 
-
+    ------------------------------------------------------------------------------------------
+    DONE | - Add a new deal button | 
+    ------------------------------------------------------------------------------------------
+    
     - Should I add a undo and redo button?
+    
     - Should I add drag functionality?
+    
+  --------------------------------------------------------------------------------------------  
+  DONE | ->  - Maybe need to move eventlistener from jquery
+                   to just an Angular event Listener(click) so that 
+                   every click is caught... 
+
+                   - later on organize clicks into different piles |
+  --------------------------------------------------------------------------------------------
+
+    - Need to cut the cards and height and width by half
+      To better fit the screen
+
+
+    - Cards fliker when moved... how to minimize that
+    
+    - Need to move this app to NgRx... 

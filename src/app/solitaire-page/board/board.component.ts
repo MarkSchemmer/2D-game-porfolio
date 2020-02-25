@@ -1,26 +1,7 @@
 import { AfterViewInit, Component } from "@angular/core";
-import * as $ from "jquery";
 import { isNullOrUndefined, isValue } from "utils/Utils";
 import { canMoveCardOnBottomPile, Card, CardColor, 
   Deck, isCardNextSmaller, isShowingBack, Stack } from "../solitaireUtils/utils";
-
-/*
-
-    [ ...$(".card img") ].forEach(ele => {
-      ele.addEventListener("click", (event) => {
-        console.log($(event.target).attr("class"));
-        // tslint:disable-next-line
-        const [ pile, id ] = $(event.target).attr("class").split(" ");
-        const newPile = this.destructurePileString(pile);
-        console.log(newPile);
-        const newId = this.destructureId(id);
-        console.log(newId);
-        const newSource = this.gettingCardById(newId, newPile.source);
-        console.log(newSource);
-      });
-    });
-
-*/
 
 @Component({
   selector: "app-board",
@@ -70,9 +51,14 @@ export class BoardComponent implements AfterViewInit {
 
   public handlePlayAbleDrawRow = () => {
     if (!this.dealer.isEmptyDeck()) {
-      const card = this.dealer.dealCard();
-      card.showFront();
-      this.playAbleDrawRow.push(card);
+      const cards = [...Array(3).keys()].reduce(
+        (acc, cur) => acc.concat(this.dealer.dealCard())
+        , []).filter((c: Card) => isValue(c));
+      if (isValue(this.playAbleDrawRow.peek())) {
+        this.playAbleDrawRow.peek().isSelected = false;
+      }
+      cards.forEach(c => (c.showFront(), this.playAbleDrawRow.push(c)) );
+      // this.playAbleDrawRow.peek().showFront();
     }
   }
 
@@ -80,6 +66,7 @@ export class BoardComponent implements AfterViewInit {
     if (this.dealer.isEmptyDeck()) {
       this.dealer.deck = this.playAbleDrawRow.source.map((c: Card) => {
         c.showBackOfCard();
+        c.isSelected = false;
         return c;
       });
 
@@ -140,7 +127,6 @@ export class BoardComponent implements AfterViewInit {
     if (st.length === 1) { return null; }
     if (!this.isValidSet(st)) { return null; }
     st.map((c: Card) => (c.isSelected = true, c));
-    console.log(st);
     return st;
     // const isValidSet
   }
@@ -150,6 +136,16 @@ export class BoardComponent implements AfterViewInit {
 
   constructor() {
       this.deal();
+  }
+
+  public newDeal = () => {
+    const rows = Object.values(this.bottomRows).map(thunk => thunk());
+
+    rows.forEach(stack => {
+      stack.source = [];
+    });
+
+    this.deal();
   }
 
   public deal = () => {
@@ -209,23 +205,7 @@ export class BoardComponent implements AfterViewInit {
     this.dealer.deck = this.dealer.deck.filter((c: Card) => c.id !== id);
   }
 
-  ngAfterViewInit() {
-    // need to make a deal when starting out on this which will deal to the board
-    // first let's setup the board and view then 
-    this.addClickToCards();
-  }
-
-  public addClickToCards = () => {
-    [ ...$(".card img") ].forEach(ele => {
-      ele.addEventListener("click", this.handleCardClick);
-    });
-  }
-
-  public removeClick = col => {
-    [ ...$("column" + col + " img") ].forEach(ele => {
-        ele.removeEventListener("click", this.handleCardClick);
-    });
-  }
+  ngAfterViewInit() { }
 
   public defaultCardIsSelected = () => {
     this.CardIsSelected = {
@@ -237,23 +217,6 @@ export class BoardComponent implements AfterViewInit {
 
   public setCardIsSelected = (id, row, isRange = null) => {
     this.CardIsSelected = { id, row, isRange };
-  }
-
-  public getCard = event => {
-      const [pile, id] = $(event.target).attr("class").split(" ");
-      const newPile = this.destructurePileString(pile);
-      const newId = this.destructureId(id);
-      return this.getCardById(newId, newPile.source);
-  }
-
-  public getRow = event => {
-    const [pile, id] = $(event.target).attr("class").split(" ");
-    return pile.split("-")[1];
-  }
-
-  public getId = event => {
-    const [pile, id] = $(event.target).attr("class").split(" ");
-    return this.destructureId(id);
   }
 
   /* 
@@ -278,16 +241,12 @@ export class BoardComponent implements AfterViewInit {
             this.defaultCardIsSelected();
         }
     }
-
-    this.addClickToCards();
   }
 
-  public handleCardClick = event => {
-
-    console.log("I'm clicked");
-
-    const targetCard: Card = this.getCard(event);
-    const targetRow: number = +(this.getRow(event));
+  // Make sure to pass in card and pile being clicked
+  public handleCardClick = (tgCard: Card, tgRow: number) => {
+    const targetCard: Card = tgCard;
+    const targetRow: number = tgRow;
     const targetStack: Stack<Card> = this.bottomRows[targetRow]();
 
     const sourceRow: number = this.CardIsSelected.row;
@@ -308,7 +267,6 @@ export class BoardComponent implements AfterViewInit {
       // if location is not valid then cards should be unselected
       const firstCard = this.CardIsSelected.id[0];
       if (canMoveCardOnBottomPile(firstCard, targetCard)) {
-        console.log("I can move card here... ");
         // Need to move set to target row...
         const stack: Stack<Card> = this.bottomRows[targetRow]();
         this.CardIsSelected.id.forEach((c: Card) => {
@@ -317,11 +275,7 @@ export class BoardComponent implements AfterViewInit {
 
         this.bottomRows[sourceRow]().source = sourceStack.source.filter(
           (c: Card) => this.CardIsSelected.id.every((cc: Card) => cc.id !== c.id));
-      } else {
-        console.log("Can't move it there...");
-      }
-      // console.log("I have a set selected");
-      // console.log(this.CardIsSelected.id);
+      } else { }
       this.CardIsSelected.id.map((c: Card) => (c.isSelected = false, c));
       this.defaultCardIsSelected();
       return;
@@ -336,18 +290,18 @@ export class BoardComponent implements AfterViewInit {
       // Deciding to add property to test when card is selected
       // this.canBeClickedAndIsNotFirstCard will check if valid if valid will set and select cards
       // Then will enter the if loop
-      const setToBeSelected = this.canBeClickedAndIsNotFirstCard(this.getId(event), targetRow);
-      if (isValue(this.getId(event)) && setToBeSelected) {
+      const setToBeSelected = this.canBeClickedAndIsNotFirstCard(targetCard.id, targetRow);
+      if (isValue(setToBeSelected)) {
           this.setCardIsSelected(setToBeSelected, targetRow, true);
           return;
       }
 
       // check if it is last card in set
-      if (isValue(this.getId(event)) && !this.canBeClicked(this.getId(event), targetRow)) {
+      if (!this.canBeClicked(targetCard.id, targetRow)) {
         return;
       }
 
-      if (isValue(this.getId(event)) && this.canBeClicked(this.getId(event), targetRow) && isShowingBack(targetCard)) {
+      if (this.canBeClicked(targetCard.id, targetRow) && isShowingBack(targetCard)) {
         targetCard.showFront();
         return;
       }
@@ -411,7 +365,6 @@ export class BoardComponent implements AfterViewInit {
         Need to add check if card can be added to other pile
         if it can card must be 1 less and other opposite color
     */
-    this.addClickToCards();
   }
 
   public canAddCardToTopRow = (card: Card, stack: Stack<Card>): boolean => {
@@ -425,9 +378,6 @@ export class BoardComponent implements AfterViewInit {
   // For some reason when ace is add I can't select another card
   // Again I need to be able to select this card and then unselect this card
   public handleTopRowDestinationClick = row => {
-
-    // console.log(this.CardIsSelected);
-    // console.log(row);
     if (isNullOrUndefined(this.CardIsSelected.id)) {
       const stack: Stack<Card> = this.bottomRows[row]();
       if (!stack.isEmpty()) {
@@ -470,7 +420,5 @@ export class BoardComponent implements AfterViewInit {
         this.setCardIsSelected(stack.peek().id, row);
       }
     }
-
-    this.addClickToCards();
   }
 }

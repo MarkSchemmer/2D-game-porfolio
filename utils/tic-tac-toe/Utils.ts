@@ -57,9 +57,6 @@ export const hasAnyBodyWon = (squareArray: R<Square[]>, setsToCheck: number[][] 
     return isNonEmptyArray(result.total) ? result : null;
 };
 
-export const whichPlayerType = (fn, step: number): PlayerType =>
-                fn(step) ? PlayerType.PlayerX : PlayerType.PlayerY;
-
 export const deepClone = obj => {
     return JSON.parse(JSON.stringify(obj));
 };
@@ -139,7 +136,6 @@ export const miniMaxIsTie = (board: R<Square[]>): boolean => {
 
 export const miniMax = (board: Square[], depth, isMaximizing) => {
     const result = miniMaxHasAnybodyWon(board);
-    // console.log(result);
     if (result !== null) {
         return PlayerTypeWinners[result];
     }
@@ -181,9 +177,7 @@ export const miniMax = (board: Square[], depth, isMaximizing) => {
 // Need to setup a way to score for O
 
 export const miniMaxOther = (board: Square[], depth, isMaximizing) => {
-    // console.log("miniMaxOther...");
     const result = miniMaxHasAnybodyWon(board);
-    // console.log(result);
     if (result !== null) {
         return PlayerTypeWinnersOthers[result];
     }

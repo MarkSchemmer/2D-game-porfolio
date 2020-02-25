@@ -57,7 +57,9 @@ export const generateDeckOfCards = (): Card[] =>
     Object.keys(Suits)
     .reduce(
         (acc, cur) =>
-            [...acc, ...Object.keys(cardValues).map(val => new Card(cur, val))]
+            shuffle(
+                [ ...acc, ...Object.keys(cardValues).map(val => new Card(cur, val)) ]
+            )
     , []);
 
 export const rootImage = "assets/cardImages/";

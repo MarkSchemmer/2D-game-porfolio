@@ -1,5 +1,4 @@
 import { R } from "schemas/rType";
-import { whichPlayerType } from "utils/tic-tac-toe/Utils";
 import { generateRandomGuid } from "../../utils/Utils";
 
 export enum PlayerType {
@@ -61,3 +60,6 @@ export class MoveHistory {
          return `Player: ${this.player}: ${this.coordinate}, move#:${(this.step).toString()}`;
      }
 }
+
+export const whichPlayerType = (fn, step: number): PlayerType =>
+                fn(step) ? PlayerType.PlayerX : PlayerType.PlayerY;

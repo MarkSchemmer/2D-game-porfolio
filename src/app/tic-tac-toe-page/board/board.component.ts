@@ -1,14 +1,14 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { R } from "schemas/rType";
-import { MoveHistory, PlayerType, Square } from "schemas/tic-tac-toe-page/square.schema";
+import { MoveHistory, PlayerType, Square, whichPlayerType } from "schemas/tic-tac-toe-page/square.schema";
 import { backToMenu, clearGlobalState,
   genericDispatch, setMoveHistory, setPlayStep, setSquare, setWinner, ticTacToeEnums } from "src/store/actions/ticTacToeActions";
 import { TicTacToePageState } from "src/store/reducers/ticTacToePageReducer";
 import { getStepAndSquares, SquareSelector } from "src/store/selectors/tictactoeSelectors";
 import { isNullOrUndefined } from "util";
 import { ai, deepClone, hasAnyBodyWon, human,
-   isTie, miniMax, miniMaxOther, updateNewMoveHistory, whichPlayerType } from "utils/tic-tac-toe/Utils";
+   isTie, miniMax, miniMaxOther, updateNewMoveHistory } from "utils/tic-tac-toe/Utils";
 import { curry, isValue } from "utils/Utils";
 
 @Component({
