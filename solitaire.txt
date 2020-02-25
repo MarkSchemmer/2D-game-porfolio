@@ -37,7 +37,8 @@
     - Need to cut the cards and height and width by half
       To better fit the screen
 
-
     - Cards fliker when moved... how to minimize that
     
     - Need to move this app to NgRx... 
+
+    - When king is selected with 

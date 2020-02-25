@@ -230,6 +230,21 @@ export class BoardComponent implements AfterViewInit {
   */
 
   public bottomRowPile = (stack: Stack<Card>) => {
+    if (stack.isEmpty() && this.CardIsSelected.isRange) {
+        const firstCard = this.CardIsSelected.id[0];
+        if (firstCard.power === 13) {
+          this.CardIsSelected.id.forEach(c => {
+            stack.push(c);
+          });
+          const st: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
+          st.source = st.source.filter(
+            (c: Card) => this.CardIsSelected.id.every((cc: Card) => cc.id !== c.id)
+          );
+          this.CardIsSelected.id.map((c: Card) => (c.isSelected = false, c));
+          this.defaultCardIsSelected();
+        }
+        return;
+    }
     if (stack.isEmpty() && isValue(this.CardIsSelected.id)) {
         const sourceStack: Stack<Card> = this.bottomRows[this.CardIsSelected.row]();
         const sourceCard = sourceStack.source.find(c => c.id === this.CardIsSelected.id);

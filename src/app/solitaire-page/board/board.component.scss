@@ -130,10 +130,17 @@
 }
 
 .dealer .card {
-    left: 7.75%;
+    left: 9.2%;
 }
 
 .top-row .col .card {
     left: 21% !important;
     position: relative;
+}
+
+.playable-pile {
+    position: relative;
+    bottom: 102%;
+    left: 10%;
+    margin-top: -1px;
 }
