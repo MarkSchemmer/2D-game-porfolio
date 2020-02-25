@@ -8,7 +8,9 @@
 
     - Need to fix up the css of the top row and bottom... with, will list out more options later on
 
-    - Need to minimize the .card class so it is not visible on the page
+    ------------------------------------------------------------------------------------------
+    DONE | - Need to minimize the .card class so it is not visible on the page
+    ------------------------------------------------------------------------------------------
 
     - Need to make board full size of page
 
@@ -41,4 +43,11 @@
     
     - Need to move this app to NgRx... 
 
-    - When king is selected with 
+    --------------------------------------------------------------------------------------------  
+    DONE | - When king is selected with and children it throws error | 
+    --------------------------------------------------------------------------------------------  
+
+    - When one bottom card is selected, and you select top card of other stack, it does not select entire row...
+      I must check if next selected has children
+
+    - When group of cards is selected and you click top pile, error is thrown

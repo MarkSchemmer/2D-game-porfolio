@@ -29,13 +29,14 @@
     .top-row {
         width: 1000px;
         height: 350px;
-        border: 1px solid lightblue;
+        // border: 1px solid lightblue;
         border-radius: 5px;
         display: inline-block;
         vertical-align: top;
         margin: 10px;
         margin-left: 160px;
         position: relative;
+        
 
         .col {
             width: 200px;
@@ -45,6 +46,8 @@
             margin: 5px;
             // position: absolute;
             vertical-align: top;
+            background-color: #00c0fd;
+            // opacity: 0.6;
 
             .card {
                 top: 43%;
@@ -57,7 +60,7 @@
     .bottom-row {
         width: 1500px;
         height: 350px;
-        border: 1px solid lightblue;
+        // border: 1px solid lightblue;
         border-radius: 5px;
         margin: auto;
         // margin-top: 150px;
@@ -84,8 +87,10 @@
                 padding: 0px;
                 margin-top: 10%;
                 top: 39%;
+                // opacity: 1 !important;
                 img {
                     width: 100%;
+                    opacity: 1;
                 }
             }
         }
