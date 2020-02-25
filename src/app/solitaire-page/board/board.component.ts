@@ -161,35 +161,12 @@ export class BoardComponent implements AfterViewInit {
       this.BottomRow7
     ];
 
-    /*
-        Everything that was commented out 
-        is only for testing purposes only
-    */
-    // const ace = this.getCardAndFilterOutOfDeck(14, CardColor.BLACK);
-    // const two = this.getCardAndFilterOutOfDeck(2, CardColor.BLACK);
-    // const tenRed = this.getCardAndFilterOutOfDeck(10, CardColor.RED);
-    // const nineBlack = this.getCardAndFilterOutOfDeck(9, CardColor.BLACK);
-    // const eightRed = this.getCardAndFilterOutOfDeck(8, CardColor.RED);
-    // const jackBlack = this.getCardAndFilterOutOfDeck(11, CardColor.BLACK);
-
-    // const cardsToAdd = [ tenRed, nineBlack, eightRed ]
-    // .map((c: Card) => (c.showFront(), c));
-
     for (let i = 0; i < 7; i++) {
       bottomRow.slice(i).forEach((pile, idx) => {
-          // if (i + idx === 6 && this.bottomRows[7]().source.length > 3) {
-          // just pass through... 
-          // } else {
           pile.push(this.dealer.dealCard());
-          // }
       });
     }
-
-    // bottomRow[6].source = [ ...bottomRow[6].source, ...cardsToAdd ];
-
-    // bottomRow[0].source = [ ace ];
-    // bottomRow[2].source = bottomRow[2].source.map((c, idx, arr) => idx === arr.length - 1 ? two : c); 
-    // Need to swamp with deck
+    
     bottomRow.forEach(pile => {
       pile.peek().showFront();
     });
