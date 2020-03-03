@@ -51,3 +51,16 @@
       I must check if next selected has children
 
     - When group of cards is selected and you click top pile, error is thrown
+
+
+    - Need add function just for top row, on wether a card can be added or not
+      I think I have some of the logic confused on this... 
+
+      I think for these reasons I need to leave some comments about if the logic is for the
+      top row or for bottom row ect... More bugs will arise until I sort out this logic 
+      to make this code bug free finally!
+
+
+      I know what changes need to take place but for the momment I'm going to
+      leave where I am on this project and just move onto the next item to 
+      work on... 
