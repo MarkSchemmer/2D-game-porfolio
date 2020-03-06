@@ -12,6 +12,8 @@ export class Cell implements ICell {
     yRange;
     createCell = () => this.isAlive = true;
     killCell = () => this.isAlive = false;
+
+    cellIsDead = () => this.isAlive === false;
 }
 
 export const genConwaysBoard = (col, row) => {
