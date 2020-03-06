@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { genConwaysBoard, Cell } from "../Util/ConwaysUtils";
+import { Cell, genConwaysBoard } from "../Util/ConwaysUtils";
 
 @Component({
   selector: "app-board",
@@ -26,8 +26,8 @@ export class BoardComponent implements OnInit {
     this.COLS = this.canvas.width / this.resolution;
     this.ROWS = this.canvas.height / this.resolution;
     this.grid = genConwaysBoard(this.COLS, this.ROWS);
-    this.board = new Grid(this.grid, this.ctx, this.resolution);
-    this.board.draw();
+    this.board = new Grid(this.grid, this.resolution);
+    this.board.draw(this.grid, this.ctx);
   }
 
   public handleBoardClick = e => {
@@ -35,10 +35,9 @@ export class BoardComponent implements OnInit {
     const y = e.pageY - this.canvas.offsetTop;
     if (y >= 0 && y <= y + this.resolution) {
       const indexOfX = Math.floor(x / this.resolution);
-      const indexOfY = Math.floor(y / this.resolution);
-      
-      this.grid[indexOfX][indexOfY].isAlive = true;
-      this.board.draw();
+      const indexOfY = Math.floor(y / this.resolution);   
+      this.grid[indexOfX][indexOfY].isAlive =  !this.grid[indexOfX][indexOfY].isAlive;
+      this.board.draw(this.grid, this.ctx);
     }
     // Need to identify which square was hit?
   }
@@ -54,41 +53,34 @@ class Grid {
   public width = 10;
   public height = 5;
   public thickness = 1;
-  public grid;
   public black = "#000";
   public resolution;
 
-  public ctx;
-
-  constructor(grid, ctx, resolution) {
-    this.grid = grid;
-    this.ctx = ctx;
+  constructor(grid, resolution) {
     this.resolution = resolution;
-    this.calculateRange();
+    this.calculateRange(grid);
   }
 
-  public calculateRange = () => {
-    for (let col = 0; col < this.grid.length; col++) {
-      for (let row = 0; row < this.grid[col].length; row++) {
-        const cell: Cell = this.grid[col][row];
+  public calculateRange = (grid) => {
+    for (let col = 0; col < grid.length; col++) {
+      for (let row = 0; row < grid[col].length; row++) {
+        const cell: Cell = grid[col][row];
         cell.xRange = (col * this.resolution);
         cell.yRange = (row * this.resolution);
       }
     }
-
-    console.log(this.grid);
   }
 
-  public draw = () => {
-    for (let col = 0; col < this.grid.length; col++) {
-      for (let row = 0; row < this.grid[col].length; row++) {
-        const cell: Cell = this.grid[col][row];
-        this.ctx.beginPath();
+  public draw = (grid, ctx) => {
+    for (let col = 0; col < grid.length; col++) {
+      for (let row = 0; row < grid[col].length; row++) {
+        ctx.clearRect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
+        const cell: Cell = grid[col][row];
+        ctx.beginPath();
         // maybe get the x and y and store that in the cell it self... 
-        this.ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
-        this.ctx.stroke();
-
-        if (cell.isAlive) { this.ctx.fill(); }
+        ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
+        ctx.stroke();
+        if (cell.isAlive) { ctx.fill(); }
       }
     }
   }
