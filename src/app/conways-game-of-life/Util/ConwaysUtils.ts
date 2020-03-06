@@ -21,3 +21,15 @@ export const genConwaysBoard = (col, row) => {
                             () => range(1, row).map(() => new Cell())
                         );
 };
+
+export const deepClone = obj => {
+    let aux = obj;
+    if (obj && typeof obj === "object") {
+        aux = { ...obj };
+        Object.getOwnPropertyNames(aux).forEach(prop => {
+            aux[prop] = deepClone(aux[prop]);
+        });
+    } 
+
+    return aux;
+};

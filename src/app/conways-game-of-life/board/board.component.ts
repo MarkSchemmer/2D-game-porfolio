@@ -13,21 +13,23 @@ export class BoardComponent implements OnInit {
   public grid; 
   public canvas;
   public ctx;
-  public resolution = 40;
+  public resolution = 20;
   public board;
+  public runBoard = true;
+  public intervalId;
 
   constructor() { }
 
   ngOnInit() {
     this.canvas = document.getElementById("board");
     this.canvas.addEventListener("click", this.handleBoardClick);
-    this.canvas.width = 400;
-    this.canvas.height = 400;
+    this.canvas.width = 500;
+    this.canvas.height = 500;
     this.ctx = this.canvas.getContext("2d");
     this.COLS = this.canvas.width / this.resolution;
     this.ROWS = this.canvas.height / this.resolution;
     this.grid = genConwaysBoard(this.COLS, this.ROWS);
-    this.board = new Grid(this.grid, this.resolution);
+    this.board = new Grid(this.grid, this.resolution, this.COLS, this.ROWS);
     this.board.draw(this.grid, this.ctx);
   }
 
@@ -50,6 +52,20 @@ export class BoardComponent implements OnInit {
     this.board.draw(this.grid, this.ctx);
   }
 
+  public stopBoard = () => {
+    clearInterval(this.intervalId);
+  }
+
+  public resetBoard = () => {
+    this.stopBoard();
+    this.grid = genConwaysBoard(this.COLS, this.ROWS);   
+    this.board.draw(this.grid, this.ctx);
+  }
+
+  public run = () => {
+    this.intervalId = setInterval(() => { this.nextGen(); }, 500);
+  }
+
 }
 
 /*
@@ -64,57 +80,62 @@ class Grid {
   public black = "#000";
   public resolution;
 
-  constructor(grid, resolution) {
+  public COLS;
+  public ROWS;
+
+  constructor(grid, resolution, c, r) {
     this.resolution = resolution;
     this.calculateRange(grid);
+    this.COLS = c;
+    this.ROWS = r;
   }
 
   public getNeighbors = (grid, col, row): Cell[] => {
-    const topNeighbor = grid[col] && grid[col][row - 1] || null;
-    const bottomNeighbor = grid[col] && grid[col][row + 1] || null;
-    const leftNeighbor = grid[col - 1] && grid[col - 1][row] || null;
-    const rightNeighbor = grid[col + 1] && grid[col + 1][row] || null;
-    const upperRight = grid[col - 1] && grid[col - 1][row - 1] || null;
-    const upperLeft = grid[col - 1] && grid[col - 1][row - 1] || null;
-    const lowerRight = grid[col - 1] && grid[col - 1][row + 1] || null;
-    const lowerLeft = grid[col - 1] && grid[col - 1][row + 1] || null;
-    const neighbors = [ 
-              topNeighbor, bottomNeighbor, 
-              leftNeighbor, rightNeighbor, 
-              upperLeft, upperRight, 
-              lowerRight, lowerLeft 
-           ];
-    // if (col === 4 && row === 4) { console.log(neighbors); }
-    const newNeighbors = neighbors.filter(c => c && c.isAlive === true);
-    return newNeighbors;    
+    let neighbors = [];    
+    for (let i = -1; i < 2; i++) {
+        for (let j = -1; j < 2; j++) {
+
+            if (i === 0 && j === 0) {
+              continue;
+            }
+
+            // tslint:disable-next-line: variable-name
+            const x_cell = col + i;
+            // tslint:disable-next-line: variable-name
+            const y_cell = row + j;
+
+            if (x_cell >= 0 && y_cell >= 0 && x_cell < this.COLS && y_cell < this.ROWS) {
+                const cell: Cell = grid[col + i][row + j];
+                neighbors = neighbors.concat(cell);
+            }
+        }
+    }
+
+    const res = neighbors.filter(c => c.isAlive === true);
+    return res;
   }
 
   public calculateNextGeneration = grid => {
-    console.log(
-      grid.map(col => col.map(c => c.isAlive)).reduce((acc, cur) => acc.concat(cur)).filter(c => c === true)
-    );
+    const Nextgrid = grid.map(c => c.map(cc => ({...cc} as Cell)));
+
     for (let col = 0; col < grid.length; col++) {
       for (let row = 0; row < grid[col].length; row++) {
 
-          const cell: Cell = grid[col][row];
+          const cell: Cell = Nextgrid[col][row];
+          const oldCell: Cell = grid[col][row];
           // get function for getting neighbors
           const neighbors = this.getNeighbors(grid, col, row);
-          if (col === 4 && row === 4) {
-            // console.log(neighbors);
-            // console.log(grid);
-          }
-          if (cell.isAlive && neighbors.length === 2 || neighbors.length === 3) {
-          } else if (cell.cellIsDead() && neighbors.length >= 2) {
+          if (oldCell.isAlive === true && (neighbors.length === 2 || neighbors.length === 3)) {
+            cell.isAlive = true;
+          } else if (oldCell.isAlive === false && neighbors.length === 3) {
              cell.isAlive = true;
-          } else if (cell.isAlive) {
+          } else if (oldCell.isAlive === true) {
             cell.isAlive = false;
           }
       }
     }
-    console.log(
-      grid.map(col => col.map(c => c.isAlive)).reduce((acc, cur) => acc.concat(cur)).filter(c => c === true)
-    );
-    return grid;
+
+    return Nextgrid;
   }
 
   public calculateRange = grid => {
@@ -133,7 +154,6 @@ class Grid {
         ctx.clearRect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
         const cell: Cell = grid[col][row];
         ctx.beginPath();
-        // maybe get the x and y and store that in the cell it self... 
         ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
         ctx.stroke();
         if (cell.isAlive) { ctx.fill(); }
