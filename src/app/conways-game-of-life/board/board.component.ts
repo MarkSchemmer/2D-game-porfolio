@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { isValue } from "utils/Utils";
 import { Cell, genConwaysBoard } from "../Util/ConwaysUtils";
 
 @Component({
@@ -41,9 +40,7 @@ export class BoardComponent implements OnInit {
       const indexOfY = Math.floor(y / this.resolution);   
       this.grid[indexOfX][indexOfY].isAlive =  !this.grid[indexOfX][indexOfY].isAlive;
       this.board.draw(this.grid, this.ctx);
-      // console.log(this.grid);
     }
-    // Need to identify which square was hit?
   }
 
   public nextGen = () => {
@@ -63,14 +60,10 @@ export class BoardComponent implements OnInit {
   }
 
   public run = () => {
-    this.intervalId = setInterval(() => { this.nextGen(); }, 500);
+    this.intervalId = setInterval(() => { this.nextGen(); }, 100);
   }
 
 }
-
-/*
-  How to clear the screen
-*/
 
 class Grid {
  // dimension of each square
