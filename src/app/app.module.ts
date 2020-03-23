@@ -9,6 +9,7 @@ import { clearState } from "src/store/reducers/ticTacToePageReducer";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { ConwaysGameOfLifeModule } from "./conways-game-of-life/conways-game-of-life.module";
+import { PongModule } from "./pong/pong.module";
 import { ProductListPageModule } from "./product-list-page/product-list-page-module.module";
 import { SolitairePageModule } from "./solitaire-page/solitaire-page.module";
 import { StaticFooterComponent } from "./static-footer/static-footer.component";
@@ -37,7 +38,8 @@ import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
     TicTacToeModule,
     SolitairePageModule,
     BrowserAnimationsModule,
-    ConwaysGameOfLifeModule
+    ConwaysGameOfLifeModule,
+    PongModule
   ],
   providers: [],
   bootstrap: [AppComponent]
