@@ -33,7 +33,7 @@ export class PongBoardComponent implements OnInit {
     this.leftPaddle.startingPositionOfPaddle();
   }
 
-  handleKeyPress = e => {
+  handleKeyPress = (e: KeyboardEvent) => {
     const code = e.keyCode;
     switch(code) {
       // move up
