@@ -19,10 +19,14 @@ export class PongBoardComponent implements OnInit {
   public y = 375;
 
   public leftPaddle;
-  public ball;
+  public leftPaddleYPosition = (800 / 2) - (this.paddleHeight - 50);
 
-  public ballDirection = false;
-  public ballDelta = 10;
+  public ball;
+  public ballRadius = 10;
+
+  public ballXDelta = 10;
+
+  public gameSpeed = 45;
 
   constructor() { }
 
@@ -35,33 +39,71 @@ export class PongBoardComponent implements OnInit {
     document.onkeypress = this.handleKeyPress;
 
     document.onclick = () => {
-      this.ballDirection = !this.ballDirection;
+      this.ballXDelta = this.ballXDelta * -1;
     };
 
     this.pongBoard.width = this.boardDimensions;
     this.pongBoard.height = this.boardDimensions;
 
     this.ctx = this.pongBoard.getContext("2d");
-    this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.resolution);
-    this.ball = new Ball(this.ctx);
+    this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
+    this.ball = new Ball(this.ctx, this.ballRadius);
     this.leftPaddle.startingPositionOfPaddle();
     this.ball.drawBall(this.x, this.y);
 
-    setInterval(this.gameLoop, 50);
+    setInterval(this.gameLoop, this.gameSpeed);
+  }
+
+  /*
+      1. Need to tell when ball hits left paddle
+      2. Then need to change the x delta... 
+      3. Need to figure out if paddle was moving up or down and this will effect the y delta 
+
+      4. Need to have the ball bounce of all walls and 
+  */
+
+  changeBallDeltX = () => {
+    this.ballXDelta = this.ballXDelta * -1;
   }
 
   handleBallChange = () => {
-    if (this.ballDirection) {
-      // this.x -= this.ballDelta;
-    } else {
-      // this.x += this.ballDelta;
+    const ballRightBorder = Math.abs(this.x + this.ballRadius) >= this.boardDimensions;
+
+    // ballLeftBorder will be used to determine if AI has scored point or not
+    // And whether the game should pause and count down
+    const ballLeftBorder = (this.x - this.ballRadius) <= 0;
+
+    const paddleX = this.leftPaddle.getPaddleXPosition();
+    const paddleY = this.leftPaddle.getPaddleYPosition();
+
+    // Determine if ball has hit left paddle
+    const ballHitLeftPaddle = this.x  >= paddleX && 
+                              this.x <= paddleX + this.paddleWidth && 
+                              this.y >= paddleY && 
+                              this.y <= paddleY + this.paddleHeight;
+
+    if (ballRightBorder || ballHitLeftPaddle) { this.changeBallDeltX(); }
+
+    if (ballLeftBorder) {
+      // for the moment just change the direction... 
+      // But later on will add point and pause and will  let user click to
+      // start timer and then game will start again... 
+      this.changeBallDeltX();
     }
+
+    // This is where we calculate X delta 
+    this.x -= this.ballXDelta;
+
+    // Need to calculate the y delta
   }
 
   handleBallMovement = () => {
     this.ctx.clearRect(0, 0, 800, 800);
     
     this.ball.drawBall(this.x, this.y);
+    // console.log(this.x);
+    console.log(this.y, "Ball Y");
+    console.log(this.leftPaddle.getPaddleYPosition(), "Paddle Y position");
     this.leftPaddle.drawPaddle();
 
     // change direction of ball???
@@ -79,7 +121,7 @@ export class PongBoardComponent implements OnInit {
 
   handleKeyDown = (e: KeyboardEvent) => {
     const code = e.keyCode;
-    switch(code) {
+    switch (code) {
       // move up
       case 38: {
         this.leftPaddle.movePaddleUp();
@@ -99,14 +141,15 @@ export class PongBoardComponent implements OnInit {
 }
 
 class Ball {
-  public raidus = 10;
+  public raidus;
   public PI = Math.PI;
   public ballColor = "#07a";
 
   public ctx;
 
-  constructor(ctx) {
+  constructor(ctx, radius) {
     this.ctx = ctx;
+    this.raidus = radius;
   }
 
   drawBall = (x, y) => {
@@ -123,17 +166,29 @@ class Paddle {
   private readonly width;
   private readonly ctx;
   private readonly black = "#000";
-  private readonly resolution;
 
   private readonly spaceFromBoard = 10;
   private yPosition;
 
-  constructor(width, height, ctx, res) {
+  private paddleYChange = 10;
+
+  changePaddleYDelta = () => {
+    this.paddleYChange = this.paddleYChange * -1;
+  }
+
+  constructor(width, height, ctx, yPosition) {
     this.height = height;
     this.width = width;
     this.ctx = ctx;
-    this.resolution = res;
-    this.yPosition = (800 / 2) - (this.height - 50);
+    this.yPosition = yPosition;
+  }
+
+  getPaddleYPosition = () => {
+    return this.yPosition;
+  }
+
+  getPaddleXPosition = () => {
+    return this.spaceFromBoard;
   }
 
   startingPositionOfPaddle = () => {
@@ -158,8 +213,9 @@ class Paddle {
 
   movePaddleDown = () => {  
     const pos = (this.yPosition + (this.height + 10));
-    if (pos < 800) { 
-      this.yPosition +=  10;
+    if (pos < 800) {
+      if (this.paddleYChange > 0) { this.changePaddleYDelta(); }
+      this.yPosition -=  this.paddleYChange;
       this.ctx.beginPath();
       this.ctx.fillStyle = this.black;
       this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
@@ -171,7 +227,8 @@ class Paddle {
   movePaddleUp = () => {
     const pos = this.yPosition - 10;
     if (pos > 0) {
-      this.yPosition -=  10;
+      if (this.paddleYChange < 0) { this.changePaddleYDelta(); }
+      this.yPosition -= this.paddleYChange;
       this.ctx.beginPath();
       this.ctx.fillStyle = this.black;
       this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
@@ -180,3 +237,7 @@ class Paddle {
     }
   }
 }
+
+/*
+    Some notable goals for this project, 
+*/
