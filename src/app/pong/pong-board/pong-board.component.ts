@@ -15,7 +15,14 @@ export class PongBoardComponent implements OnInit {
   public paddleWidth = 10;
   public paddleHeight = 175;
 
+  public x = 400;
+  public y = 375;
+
   public leftPaddle;
+  public ball;
+
+  public ballDirection = false;
+  public ballDelta = 10;
 
   constructor() { }
 
@@ -23,17 +30,54 @@ export class PongBoardComponent implements OnInit {
     this.pongBoard = document.getElementById("pong-board");
     window.addEventListener("onkeydown", this.handleKeyPress);
 
-    document.onkeydown = this.handleKeyPress;
+    document.onkeydown = this.handleKeyDown;
+
+    document.onkeypress = this.handleKeyPress;
+
+    document.onclick = () => {
+      this.ballDirection = !this.ballDirection;
+    };
 
     this.pongBoard.width = this.boardDimensions;
     this.pongBoard.height = this.boardDimensions;
 
     this.ctx = this.pongBoard.getContext("2d");
     this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.resolution);
+    this.ball = new Ball(this.ctx);
     this.leftPaddle.startingPositionOfPaddle();
+    this.ball.drawBall(this.x, this.y);
+
+    setInterval(this.gameLoop, 50);
   }
 
-  handleKeyPress = (e: KeyboardEvent) => {
+  handleBallChange = () => {
+    if (this.ballDirection) {
+      // this.x -= this.ballDelta;
+    } else {
+      // this.x += this.ballDelta;
+    }
+  }
+
+  handleBallMovement = () => {
+    this.ctx.clearRect(0, 0, 800, 800);
+    
+    this.ball.drawBall(this.x, this.y);
+    this.leftPaddle.drawPaddle();
+
+    // change direction of ball???
+    this.handleBallChange();
+  }
+
+  gameLoop = () => {
+    this.handleBallMovement();
+  }
+
+  handleKeyPress = e => {
+    console.log("Hold key down:");
+    console.log(e);
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
     const code = e.keyCode;
     switch(code) {
       // move up
@@ -52,7 +96,26 @@ export class PongBoardComponent implements OnInit {
       }
     }
   }
+}
 
+class Ball {
+  public raidus = 10;
+  public PI = Math.PI;
+  public ballColor = "#07a";
+
+  public ctx;
+
+  constructor(ctx) {
+    this.ctx = ctx;
+  }
+
+  drawBall = (x, y) => {
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, this.raidus, 0, this.PI * 2);
+    this.ctx.fillStyle = this.ballColor;
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
 }
 
 class Paddle {
@@ -83,11 +146,9 @@ class Paddle {
   drawPaddle = () => {
     this.ctx.beginPath();
     this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
-
-  }
-
-  clearCurrentPaddlePosition = () => {
-    this.ctx.clearRect(0, 0, 800, 800);
+    this.ctx.fillStyle = this.black;
+    this.ctx.fill();
+    this.ctx.closePath();
   }
 
   strokeAndFillPaddle = () => {
@@ -99,8 +160,8 @@ class Paddle {
     const pos = (this.yPosition + (this.height + 10));
     if (pos < 800) { 
       this.yPosition +=  10;
-      this.clearCurrentPaddlePosition();
       this.ctx.beginPath();
+      this.ctx.fillStyle = this.black;
       this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
       this.ctx.fill();
       this.ctx.closePath();
@@ -110,9 +171,9 @@ class Paddle {
   movePaddleUp = () => {
     const pos = this.yPosition - 10;
     if (pos > 0) {
-      this.clearCurrentPaddlePosition();
       this.yPosition -=  10;
       this.ctx.beginPath();
+      this.ctx.fillStyle = this.black;
       this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
       this.ctx.fill();
       this.ctx.closePath();
