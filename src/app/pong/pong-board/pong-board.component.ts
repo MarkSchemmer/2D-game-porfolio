@@ -55,16 +55,33 @@ export class PongBoardComponent implements OnInit {
   }
 
   /*
-      1. Need to tell when ball hits left paddle
-      2. Then need to change the x delta... 
-      3. Need to figure out if paddle was moving up or down and this will effect the y delta 
+      1. Need to tell when ball hits left paddle -> done
+      2. Then need to change the x delta... -> done
+
+      before we proceed to 3:
+        Need to add affect of paddling moving down or up... 
+
+      3. Need to figure out if paddle was moving 
+      up or down and this will effect the y delta 
 
       4. Need to have the ball bounce of all walls and 
+
+      Now when all this is done... things to look into:
+      animation of ball and paddle... 
+
+      Adding score system and what happens when the ball hits 
+      either left or right side need to add scoring system
+
+      Finally AI which will just calculate where ball is going to hit  
+      and the paddle must adjust for that position... 
+
+      Also need to add countdown state... 
+      and a menu for when the game needs to be reset
+
+      Add a state for when game ends, end game menu.
   */
 
-  changeBallDeltX = () => {
-    this.ballXDelta = this.ballXDelta * -1;
-  }
+  changeBallDeltX = () => this.ballXDelta = this.ballXDelta * -1;
 
   handleBallChange = () => {
     const ballRightBorder = Math.abs(this.x + this.ballRadius) >= this.boardDimensions;
