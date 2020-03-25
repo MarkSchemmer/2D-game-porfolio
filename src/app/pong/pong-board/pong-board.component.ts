@@ -353,9 +353,12 @@ class Paddle {
       ----------------------------------------------------
       ----------------------------------------------------
 
-      Bug: When user pushs on up or down key, the paddle 
+      Bug.1: When user pushs on up or down key, the paddle 
       moves up then stops, rememdy: would be adding event for
       when key is pressed down 
+
+      Bug.2: Issue with restart, doesn't even restart properly... 
+      Need to fix this before move even forward...
 */
 
   /*
@@ -370,6 +373,8 @@ class Paddle {
 
       4. Need to have the ball bounce of all walls and -> Done
 
-      5. Add ability for AI pong paddle to actually detect ball and hit it
+      5. Add ability for AI pong paddle to actually detect ball and hit it -> Done
+
+      6. Resolve Bug.2, need to be able restart game
 
   */
