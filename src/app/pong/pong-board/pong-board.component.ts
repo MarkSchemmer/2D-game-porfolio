@@ -18,8 +18,16 @@ export class PongBoardComponent implements OnInit {
 
   public ball;
   public ballRadius = 10;
+
+  public originalX = 400;
+  public originalY = 375;
+
   public x = 400;
   public y = 375;
+
+  public ballXDeltaOriginal = 10;
+  public ballYDeltaOriginal = 0;
+
   public ballXDelta = 10;
   public ballYDelta = 0;
 
@@ -30,6 +38,8 @@ export class PongBoardComponent implements OnInit {
   public rightPaddleYAIPostition = this.startingPaddleYPos;
 
   public gameSpeed = 45;
+
+  public gameLooper;
 
   constructor() { }
 
@@ -50,28 +60,48 @@ export class PongBoardComponent implements OnInit {
     this.rightAIPaddle.startingPositionOfPaddle();
     this.ball.drawBall(this.x, this.y);
 
-    setInterval(this.gameLoop, this.gameSpeed);
+    this.start();
   }
 
-  /*
-      1. Need to tell when ball hits left paddle -> done
-      2. Then need to change the x delta... -> done
+  start = () => {
+    this.gameLooper = setInterval(this.gameLoop, this.gameSpeed);
+  }
 
-      before we proceed to 3:
-        Need to add affect of paddling moving down or up... 
+  stopGame = () => {
+    clearInterval(this.gameLooper);
+    this.gameLooper = null;
+  }
 
-      3. Need to figure out if paddle was moving 
-      up or down and this will effect the y delta -> Done
+  clearEntireBoard = () => {
+    this.ctx.clearRect(0, 0, 800, 800);
+  }
 
-      4. Need to have the ball bounce of all walls and -> Done
+  restartGame = () => {
+    this.stopGame();
+    this.clearEntireBoard();
+    
+    this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
+    this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
 
-  */
+    this.ball = new Ball(this.ctx, this.ballRadius);
+
+    this.leftPaddle.startingPositionOfPaddle();
+    this.rightAIPaddle.startingPositionOfPaddle();
+
+    this.ball.drawBall(this.originalX, this.originalY);
+    // When timer is ready to be added, can add count down here
+    this.ballXDelta = this.ballXDeltaOriginal;
+    this.ballYDelta = this.ballYDeltaOriginal;
+    this.start();
+    // this.rightAIPaddle.startingPositionOfPaddle();
+    // this.ball.drawBall(this.originalX, this.originalY);
+  }
 
   changeBallDeltaX = () => this.ballXDelta = this.ballXDelta * -1;
   changeBallDeltaYVerticalBorders = () => this.ballYDelta = this.ballYDelta * -1;
 
   changeBallDeltaY = (paddleY) => {
-    const paddleCenter = paddleY + this.paddleHeight / 2;
+    const paddleCenter = Math.abs(Math.floor(paddleY + this.paddleHeight / 2));
     const d = paddleCenter - this.y;
     this.ballYDelta += d * -0.1;
   }
@@ -97,16 +127,6 @@ export class PongBoardComponent implements OnInit {
     const paddleXAI = this.rightAIPaddle.getPaddleXPosition();
     const paddleYAI = this.rightAIPaddle.getPaddleYPosition();
 
-    if (ballRightBorder) { this.changeBallDeltaX(); return; }
-
-    if (ballLeftBorder) {
-      // for the moment just change the direction... 
-      // But later on will add point and pause and will  let user click to
-      // start timer and then game will start again... 
-      this.changeBallDeltaX(); 
-      return;
-    }
-
     // Determine if ball has hit left paddle
     const ballHitLeftPaddle = this.x  >= paddleX && 
                               this.x <= paddleX + this.paddleWidth && 
@@ -118,17 +138,36 @@ export class PongBoardComponent implements OnInit {
     // is moving 
 
     if (ballHitLeftPaddle) { 
-      this.changeBallDeltaX(); 
-      this.changeBallDeltaY(paddleY);
-      return;
+       this.changeBallDeltaX(); 
+       this.changeBallDeltaY(paddleY);
+       return;
+    }
+
+    const ballHitRightPaddle = this.x >= paddleXAI &&
+                               this.x <= paddleXAI + this.paddleWidth &&
+                               this.y >= paddleYAI &&
+                               this.y <= paddleYAI + this.paddleHeight;
+    
+    if (ballHitRightPaddle) {
+       this.changeBallDeltaX();
+       this.changeBallDeltaY(paddleYAI);
+       return;
     }
 
     // Hit's vertical top border or hit's veritical bottom border
     if (ballHitVerticalBorders) { this.changeBallDeltaYVerticalBorders(); return; }
+
+    // Did someone score?
+    // When adding scoring system, will check if ball hits or passes line, then 
+    // game will pause increment points and then will restart game with countdown
+    if (ballLeftBorder || ballRightBorder) {
+      this.restartGame();
+      return;
+    }
   }
 
   calculateAIPaddleMovement = () => {
-      if (this.x > 300 && this.ballXDelta < 0) {     
+      if (this.x > 400 && this.ballXDelta < 0) {     
         const rightPaddleAIY = this.rightAIPaddle.getPaddleYPosition();
         const isHittingMiddle = rightPaddleAIY;
         // must get the difference between the two and should be
@@ -142,29 +181,14 @@ export class PongBoardComponent implements OnInit {
       }
   }
 
-  /*
-      373.75 - 295 = 78.75
-      36.25 - 5 = 31.25
-  */ 
-
   handleBallMovement = () => {
     this.ctx.clearRect(0, 0, 800, 800);
     
     this.ball.drawBall(this.x, this.y);
-
-    // console.log(this.y, "Ball Y coordinate:");
-    const paddleAIYCoordinate = this.rightAIPaddle.getPaddleYPosition();
-    // console.log(paddleAIYCoordinate);
-
-    // Need to get the difference between Ball.Y and Paddle.Y
-    // console.log(Math.abs(this.y - paddleAIYCoordinate));
-
     // Need to calulate ball direction and move 
     // AI paddle to position closer to where the ball is going... 
     this.calculateAIPaddleMovement();
-    // console.log(this.x);
-    // console.log(this.y, "Ball Y");
-    // console.log(this.leftPaddle.getPaddleYPosition(), "Paddle Y position");
+
     this.leftPaddle.drawPaddle();
 
     // draw AI paddle
@@ -333,3 +357,19 @@ class Paddle {
       moves up then stops, rememdy: would be adding event for
       when key is pressed down 
 */
+
+  /*
+      1. Need to tell when ball hits left paddle -> done
+      2. Then need to change the x delta... -> done
+
+      before we proceed to 3:
+        Need to add affect of paddling moving down or up... 
+
+      3. Need to figure out if paddle was moving 
+      up or down and this will effect the y delta -> Done
+
+      4. Need to have the ball bounce of all walls and -> Done
+
+      5. Add ability for AI pong paddle to actually detect ball and hit it
+
+  */
