@@ -240,12 +240,10 @@ export class PongBoardComponent implements OnInit {
   }
 
   handleKeyUp = (e: KeyboardEvent) => {
-    console.log(e.keyCode, "key up");
     this.canMovePaddle = null;
   }
 
   handleKeyDown = (e: KeyboardEvent) => {
-    console.log(e.keyCode, "key down");
     this.canMovePaddle = e.keyCode;
   }
 
@@ -263,7 +261,7 @@ export class PongBoardComponent implements OnInit {
       }
       default: {
         // log and forget
-        console.log(code);
+        // console.log(code);
       }
     }
   }
@@ -402,6 +400,8 @@ class Paddle {
 
       Bug.2: Issue with restart, doesn't even restart properly... 
       Need to fix this before move even forward...
+
+      Bug.3: Issue with Ball being stuck behind paddle and radically bouncing back and fourth
 */
 
   /*
@@ -418,6 +418,8 @@ class Paddle {
 
       5. Add ability for AI pong paddle to actually detect ball and hit it -> Done
 
-      6. Resolve Bug.2, need to be able restart game
+      6. Resolve Bug.2, need to be able restart game -> Done
+
+      7. Resolve Bug.1, need to make the movement of paddle seemless -> Done
 
   */
