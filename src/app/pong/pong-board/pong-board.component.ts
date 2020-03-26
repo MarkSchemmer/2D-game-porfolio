@@ -13,7 +13,7 @@ const initGameState = {
   ballYDelta: 0,
   leftPaddle: null,
   rightAIPaddle: null,
-  startingPaddleYPos: 375,
+  startingPaddleYPos: 350,
   gameSpeed: 45,
   gameLooper: null
 };
@@ -32,7 +32,7 @@ export class PongBoardComponent implements OnInit {
 
   public paddleWidth = 10;
   public paddleHeight = 175;
-  public startingPaddleYPos = (800 / 2) - (this.paddleHeight - 50);
+  public startingPaddleYPos = (800 / 2) - (this.paddleHeight - 25);
 
   public ball;
   public ballRadius = 10;
@@ -51,6 +51,9 @@ export class PongBoardComponent implements OnInit {
 
   public gameSpeed = 45;
 
+  // Will hold key code to determine if paddle can move
+  public canMovePaddle = null;
+
   public gameLooper;
 
   constructor() { }
@@ -62,6 +65,7 @@ export class PongBoardComponent implements OnInit {
   setupGame = () => {
       this.pongBoard = document.getElementById("pong-board");
       document.onkeydown = this.handleKeyDown;
+      document.onkeyup = this.handleKeyUp;
 
       this.pongBoard.width = this.boardDimensions;
       this.pongBoard.height = this.boardDimensions;
@@ -109,7 +113,6 @@ export class PongBoardComponent implements OnInit {
     this.clearEntireBoard();
     this.pongBoard = document.getElementById("pong-board");
     this.ctx = this.pongBoard.getContext("2d");
-    document.onkeydown = this.handleKeyDown;
 
     this.pongBoard.width = this.boardDimensions;
     this.pongBoard.height = this.boardDimensions;
@@ -213,6 +216,8 @@ export class PongBoardComponent implements OnInit {
   handleBallMovement = () => {
     this.ctx.clearRect(0, 0, 800, 800);
     
+    this.shouldPaddleMove(this.canMovePaddle);
+
     this.ball.drawBall(this.x, this.y);
     // Need to calulate ball direction and move 
     // AI paddle to position closer to where the ball is going... 
@@ -234,8 +239,17 @@ export class PongBoardComponent implements OnInit {
     this.handleBallMovement();
   }
 
+  handleKeyUp = (e: KeyboardEvent) => {
+    console.log(e.keyCode, "key up");
+    this.canMovePaddle = null;
+  }
+
   handleKeyDown = (e: KeyboardEvent) => {
-    const code = e.keyCode;
+    console.log(e.keyCode, "key down");
+    this.canMovePaddle = e.keyCode;
+  }
+
+  shouldPaddleMove = code => {
     switch (code) {
       // move up
       case 38: {
@@ -249,7 +263,7 @@ export class PongBoardComponent implements OnInit {
       }
       default: {
         // log and forget
-        console.log(e.keyCode);
+        console.log(code);
       }
     }
   }
