@@ -1,5 +1,23 @@
 import { Component, OnInit } from "@angular/core";
 
+const initGameState = {
+  boardDimensions: 800,
+  resolution: 20,
+  paddleWidth: 10,
+  paddleHeight: 175,
+  ballRadius: 10,
+  ball: null,
+  x: 400,
+  y: 375,
+  ballXDelta: 10,
+  ballYDelta: 0,
+  leftPaddle: null,
+  rightAIPaddle: null,
+  startingPaddleYPos: 375,
+  gameSpeed: 45,
+  gameLooper: null
+};
+
 @Component({
   selector: "app-pong-board",
   templateUrl: "./pong-board.component.html",
@@ -19,14 +37,8 @@ export class PongBoardComponent implements OnInit {
   public ball;
   public ballRadius = 10;
 
-  public originalX = 400;
-  public originalY = 375;
-
   public x = 400;
   public y = 375;
-
-  public ballXDeltaOriginal = 10;
-  public ballYDeltaOriginal = 0;
 
   public ballXDelta = 10;
   public ballYDelta = 0;
@@ -44,23 +56,27 @@ export class PongBoardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this.pongBoard = document.getElementById("pong-board");
-    document.onkeydown = this.handleKeyDown;
+    this.setupGame();
+  }
 
-    this.pongBoard.width = this.boardDimensions;
-    this.pongBoard.height = this.boardDimensions;
+  setupGame = () => {
+      this.pongBoard = document.getElementById("pong-board");
+      document.onkeydown = this.handleKeyDown;
 
-    this.ctx = this.pongBoard.getContext("2d");
-    this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
-    this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
+      this.pongBoard.width = this.boardDimensions;
+      this.pongBoard.height = this.boardDimensions;
 
-    this.ball = new Ball(this.ctx, this.ballRadius);
+      this.ctx = this.pongBoard.getContext("2d");
+      this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
+      this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
 
-    this.leftPaddle.startingPositionOfPaddle();
-    this.rightAIPaddle.startingPositionOfPaddle();
-    this.ball.drawBall(this.x, this.y);
+      this.ball = new Ball(this.ctx, this.ballRadius);
 
-    this.start();
+      this.leftPaddle.startingPositionOfPaddle();
+      this.rightAIPaddle.startingPositionOfPaddle();
+      this.ball.drawBall(this.x, this.y);
+
+      this.start();
   }
 
   start = () => {
@@ -77,9 +93,27 @@ export class PongBoardComponent implements OnInit {
   }
 
   restartGame = () => {
+    const { boardDimensions, paddleWidth, paddleHeight, 
+      startingPaddleYPos, ballXDelta, ballYDelta, x, y } = initGameState;
+    this.boardDimensions = boardDimensions;
+    this.paddleHeight = paddleHeight;
+    this.paddleWidth = paddleWidth;
+    this.leftPaddleYPosition = startingPaddleYPos;
+    this.rightPaddleYAIPostition = startingPaddleYPos;
+    this.ballXDelta = ballXDelta;
+    this.ballYDelta = ballYDelta;
+    this.x = x;
+    this.y = y;
+
     this.stopGame();
     this.clearEntireBoard();
-    
+    this.pongBoard = document.getElementById("pong-board");
+    this.ctx = this.pongBoard.getContext("2d");
+    document.onkeydown = this.handleKeyDown;
+
+    this.pongBoard.width = this.boardDimensions;
+    this.pongBoard.height = this.boardDimensions;
+
     this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
     this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
 
@@ -87,14 +121,9 @@ export class PongBoardComponent implements OnInit {
 
     this.leftPaddle.startingPositionOfPaddle();
     this.rightAIPaddle.startingPositionOfPaddle();
+    this.ball.drawBall(this.x, this.y);
 
-    this.ball.drawBall(this.originalX, this.originalY);
-    // When timer is ready to be added, can add count down here
-    this.ballXDelta = this.ballXDeltaOriginal;
-    this.ballYDelta = this.ballYDeltaOriginal;
     this.start();
-    // this.rightAIPaddle.startingPositionOfPaddle();
-    // this.ball.drawBall(this.originalX, this.originalY);
   }
 
   changeBallDeltaX = () => this.ballXDelta = this.ballXDelta * -1;
