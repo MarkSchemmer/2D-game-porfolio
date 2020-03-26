@@ -126,6 +126,8 @@ export class PongBoardComponent implements OnInit {
     this.rightAIPaddle.startingPositionOfPaddle();
     this.ball.drawBall(this.x, this.y);
 
+    // will add countdown here
+
     this.start();
   }
 
@@ -193,6 +195,8 @@ export class PongBoardComponent implements OnInit {
     // When adding scoring system, will check if ball hits or passes line, then 
     // game will pause increment points and then will restart game with countdown
     if (ballLeftBorder || ballRightBorder) {
+      // need to add scoring system here
+      // increment players score 
       this.restartGame();
       return;
     }
@@ -422,4 +426,13 @@ class Paddle {
 
       7. Resolve Bug.1, need to make the movement of paddle seemless -> Done
 
+      8. Add score system
+
+      9. Add countdown clock, after someone scores
+
+      10. Game controls such as pause, start, restart, stop
+
+      11. Add difficulty levels to make it harder to beat ai 
+
+      12. End game, and look to resolve any outstand bugs
   */
