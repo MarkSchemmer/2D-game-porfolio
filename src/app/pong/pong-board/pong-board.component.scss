@@ -1,5 +1,26 @@
+.container {
+    // margin: auto;
+    max-width: 1560px;
+    margin: auto;
+}
+
 #pong-board {
     border: 1px solid black;
-    margin-left: calc(50% - 400px);
-    margin-top: 50px;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.score-board {
+    border: 1px solid black;
+    width: 300px;
+    height: 100px;
+    display: inline-block;
+}
+
+.player-1 {
+    vertical-align: top;
+}
+
+.ai {
+    vertical-align: top;
 }

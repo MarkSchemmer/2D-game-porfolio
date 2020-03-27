@@ -15,7 +15,13 @@ const initGameState = {
   rightAIPaddle: null,
   startingPaddleYPos: 350,
   gameSpeed: 45,
-  gameLooper: null
+  gameLooper: null,
+  playerScores: {
+    palyerOneScore: 0,
+    aiScore: 0
+  },
+  aiBallDetectionVision: 400,
+
 };
 
 @Component({
@@ -51,6 +57,11 @@ export class PongBoardComponent implements OnInit {
 
   public gameSpeed = 45;
 
+  public aiScore = 0;
+  public playerOneScore = 0;
+
+  public aiBallDetectionVision = 400;
+
   // Will hold key code to determine if paddle can move
   public canMovePaddle = null;
 
@@ -60,6 +71,22 @@ export class PongBoardComponent implements OnInit {
 
   ngOnInit() {
     this.setupGame();
+  }
+
+  incrementScore = player => {
+      if (player === Players.ai) {
+        this.aiScore++;
+      }
+
+      if (player === Players.playerOne) {
+        this.playerOneScore++;
+      }
+  }
+
+  increaseDifficultyOfGameForPlayer = () => {
+      // ai now has more vision 
+      this.aiBallDetectionVision = this.aiBallDetectionVision - 50;
+      console.log(this.aiBallDetectionVision);
   }
 
   setupGame = () => {
@@ -98,7 +125,7 @@ export class PongBoardComponent implements OnInit {
 
   restartGame = () => {
     const { boardDimensions, paddleWidth, paddleHeight, 
-      startingPaddleYPos, ballXDelta, ballYDelta, x, y } = initGameState;
+      startingPaddleYPos, ballXDelta, ballYDelta, x, y, playerScores, aiBallDetectionVision } = initGameState;
     this.boardDimensions = boardDimensions;
     this.paddleHeight = paddleHeight;
     this.paddleWidth = paddleWidth;
@@ -108,6 +135,8 @@ export class PongBoardComponent implements OnInit {
     this.ballYDelta = ballYDelta;
     this.x = x;
     this.y = y;
+
+    this.aiBallDetectionVision = aiBallDetectionVision;
 
     this.stopGame();
     this.clearEntireBoard();
@@ -194,16 +223,30 @@ export class PongBoardComponent implements OnInit {
     // Did someone score?
     // When adding scoring system, will check if ball hits or passes line, then 
     // game will pause increment points and then will restart game with countdown
-    if (ballLeftBorder || ballRightBorder) {
-      // need to add scoring system here
-      // increment players score 
+    // if (ballLeftBorder || ballRightBorder) {
+    //   // need to add scoring system here
+    //   // increment players score 
+    //   this.restartGame();
+    //   return;
+    // }
+
+    if (ballLeftBorder) {
+      this.incrementScore(Players.ai);
+      this.restartGame();
+      return;
+    }
+
+    if (ballRightBorder) {
+      this.incrementScore(Players.playerOne);
+      // increase difficulty of game
+      this.increaseDifficultyOfGameForPlayer();
       this.restartGame();
       return;
     }
   }
 
   calculateAIPaddleMovement = () => {
-      if (this.x > 400 && this.ballXDelta < 0) {     
+      if (this.x > this.aiBallDetectionVision && this.ballXDelta < 0) {     
         const rightPaddleAIY = this.rightAIPaddle.getPaddleYPosition();
         const isHittingMiddle = rightPaddleAIY;
         // must get the difference between the two and should be
@@ -371,6 +414,11 @@ class Paddle {
   }
 }
 
+enum Players {
+  ai = "ai",
+  playerOne = "playerOne"
+}
+
 /*
     Some notable goals for this project, 
 */
@@ -426,7 +474,11 @@ class Paddle {
 
       7. Resolve Bug.1, need to make the movement of paddle seemless -> Done
 
-      8. Add score system
+      8. Add score system -> In process -> Done
+
+      8.1. When player scores will increase the skill of the ai, incrementally 
+      -> In process to do this, must create new function endRound, which do everything but keep difficulty of game
+      needs to be restarted
 
       9. Add countdown clock, after someone scores
 
