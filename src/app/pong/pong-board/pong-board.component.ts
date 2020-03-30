@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { isValue } from "utils/Utils";
 
 const initGameState = {
@@ -30,7 +30,7 @@ const initGameState = {
   templateUrl: "./pong-board.component.html",
   styleUrls: ["./pong-board.component.scss"]
 })
-export class PongBoardComponent implements OnInit {
+export class PongBoardComponent implements OnInit, OnDestroy {
 
   public pongBoard;
   public ctx;
@@ -74,6 +74,10 @@ export class PongBoardComponent implements OnInit {
 
   ngOnInit() {
     this.setupGame();
+  }
+
+  ngOnDestroy() {
+    this.stopGame();
   }
 
   incrementScore = player => {
