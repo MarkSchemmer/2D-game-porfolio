@@ -63,6 +63,8 @@ export class PongBoardComponent implements OnInit {
 
   public aiBallDetectionVision = 400;
 
+  public startGame = false;
+
   // Will hold key code to determine if paddle can move
   public canMovePaddle = null;
 
@@ -82,6 +84,11 @@ export class PongBoardComponent implements OnInit {
       if (player === Players.playerOne) {
         this.playerOneScore++;
       }
+  }
+
+  startNewGame = () => {
+    this.start();
+    this.startGame = true;
   }
 
   increaseDifficultyOfGameForPlayer = () => {
@@ -132,12 +139,14 @@ export class PongBoardComponent implements OnInit {
   didAPlayerWin = () => {
     if (this.aiScore === 3) {
       this.restartGame();
+      this.startGame = null;
       alert("AI wins!");
       return true;
     }
 
     if (this.playerOneScore === 3) {
       this.restartGame();
+      this.startGame = null;
       alert("Player One Wins! ");
       return true;
     }
@@ -150,9 +159,6 @@ export class PongBoardComponent implements OnInit {
       this.resetBoard();
       this.start();
     }
-
-    console.log(this.aiBallDetectionVision);
-    console.log(this.rightAIPaddle.getPaddleYChange());
   }
 
   resetBoard = () => {
@@ -177,10 +183,8 @@ export class PongBoardComponent implements OnInit {
     this.pongBoard.width = this.boardDimensions;
     this.pongBoard.height = this.boardDimensions;
 
-    // this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
-    // this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
-
-    // this.ball = new Ball(this.ctx, this.ballRadius);
+    this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
+    this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
 
     this.leftPaddle.startingPositionOfPaddle();
     this.rightAIPaddle.startingPositionOfPaddle();
@@ -287,16 +291,6 @@ export class PongBoardComponent implements OnInit {
 
     // Hit's vertical top border or hit's veritical bottom border
     if (ballHitVerticalBorders) { this.changeBallDeltaYVerticalBorders(); return; }
-
-    // Did someone score?
-    // When adding scoring system, will check if ball hits or passes line, then 
-    // game will pause increment points and then will restart game with countdown
-    // if (ballLeftBorder || ballRightBorder) {
-    //   // need to add scoring system here
-    //   // increment players score 
-    //   this.restartGame();
-    //   return;
-    // }
 
     if (ballLeftBorder) {
       this.nextRound(
@@ -414,6 +408,7 @@ class Paddle {
   private readonly black = "#000";
 
   private spaceFromBoard = 10;
+  private originalYPos;
   private yPosition;
 
   private paddleYChange = 10;
@@ -428,7 +423,9 @@ class Paddle {
     this.height = height;
     this.width = width;
     this.ctx = ctx;
+
     this.yPosition = yPosition;
+    this.originalYPos = yPosition;
     this.isAi = isAi;
 
     if (isAi) { this.spaceFromBoard = 780; }
@@ -458,7 +455,7 @@ class Paddle {
 
   startingPositionOfPaddle = () => {
     this.ctx.beginPath();
-    this.ctx.rect(this.spaceFromBoard, this.yPosition, this.width, this.height);
+    this.ctx.rect(this.spaceFromBoard, this.originalYPos, this.width, this.height);
     this.ctx.fill();
     this.ctx.closePath();
   }
