@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { isValue } from "utils/Utils";
 
 const initGameState = {
   boardDimensions: 800,
@@ -17,7 +18,7 @@ const initGameState = {
   gameSpeed: 45,
   gameLooper: null,
   playerScores: {
-    palyerOneScore: 0,
+    playerOneScore: 0,
     aiScore: 0
   },
   aiBallDetectionVision: 400,
@@ -85,8 +86,13 @@ export class PongBoardComponent implements OnInit {
 
   increaseDifficultyOfGameForPlayer = () => {
       // ai now has more vision 
-      this.aiBallDetectionVision = this.aiBallDetectionVision - 50;
-      console.log(this.aiBallDetectionVision);
+      this.aiBallDetectionVision = this.aiBallDetectionVision - 15;
+
+      // AI paddle now moves faster
+      this.rightAIPaddle.increasePaddleMovementSpeed();
+
+      // Increase game speed by 5 milliseconds
+      this.gameSpeed = this.gameSpeed - 10;
   }
 
   setupGame = () => {
@@ -123,9 +129,36 @@ export class PongBoardComponent implements OnInit {
     this.ctx.clearRect(0, 0, 800, 800);
   }
 
-  restartGame = () => {
+  didAPlayerWin = () => {
+    if (this.aiScore === 3) {
+      this.restartGame();
+      alert("AI wins!");
+      return true;
+    }
+
+    if (this.playerOneScore === 3) {
+      this.restartGame();
+      alert("Player One Wins! ");
+      return true;
+    }
+  }
+
+  nextRound = (fnForScore) => {
+    fnForScore();
+    // determine if someone has scored and won the game
+    if (!isValue(this.didAPlayerWin())) {
+      this.resetBoard();
+      this.start();
+    }
+
+    console.log(this.aiBallDetectionVision);
+    console.log(this.rightAIPaddle.getPaddleYChange());
+  }
+
+  resetBoard = () => {
     const { boardDimensions, paddleWidth, paddleHeight, 
-      startingPaddleYPos, ballXDelta, ballYDelta, x, y, playerScores, aiBallDetectionVision } = initGameState;
+      startingPaddleYPos, ballXDelta, ballYDelta, x, y, gameSpeed } = initGameState;
+
     this.boardDimensions = boardDimensions;
     this.paddleHeight = paddleHeight;
     this.paddleWidth = paddleWidth;
@@ -135,6 +168,45 @@ export class PongBoardComponent implements OnInit {
     this.ballYDelta = ballYDelta;
     this.x = x;
     this.y = y;
+
+    this.stopGame();
+    this.clearEntireBoard();
+    this.pongBoard = document.getElementById("pong-board");
+    this.ctx = this.pongBoard.getContext("2d");
+
+    this.pongBoard.width = this.boardDimensions;
+    this.pongBoard.height = this.boardDimensions;
+
+    // this.leftPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.leftPaddleYPosition);
+    // this.rightAIPaddle = new Paddle(this.paddleWidth, this.paddleHeight, this.ctx, this.rightPaddleYAIPostition, true);
+
+    // this.ball = new Ball(this.ctx, this.ballRadius);
+
+    this.leftPaddle.startingPositionOfPaddle();
+    this.rightAIPaddle.startingPositionOfPaddle();
+    this.ball.drawBall(this.x, this.y);
+  }
+
+  restartGame = () => {
+    const { boardDimensions, paddleWidth, paddleHeight, 
+      startingPaddleYPos, ballXDelta, ballYDelta, x, y, 
+      playerScores, aiBallDetectionVision, gameSpeed } = initGameState;
+
+    const { aiScore, playerOneScore } = playerScores;
+
+    this.aiScore = aiScore;
+    this.playerOneScore = playerOneScore;
+
+    this.boardDimensions = boardDimensions;
+    this.paddleHeight = paddleHeight;
+    this.paddleWidth = paddleWidth;
+    this.leftPaddleYPosition = startingPaddleYPos;
+    this.rightPaddleYAIPostition = startingPaddleYPos;
+    this.ballXDelta = ballXDelta;
+    this.ballYDelta = ballYDelta;
+    this.x = x;
+    this.y = y;
+    this.gameSpeed = gameSpeed;
 
     this.aiBallDetectionVision = aiBallDetectionVision;
 
@@ -154,10 +226,6 @@ export class PongBoardComponent implements OnInit {
     this.leftPaddle.startingPositionOfPaddle();
     this.rightAIPaddle.startingPositionOfPaddle();
     this.ball.drawBall(this.x, this.y);
-
-    // will add countdown here
-
-    this.start();
   }
 
   changeBallDeltaX = () => this.ballXDelta = this.ballXDelta * -1;
@@ -231,16 +299,20 @@ export class PongBoardComponent implements OnInit {
     // }
 
     if (ballLeftBorder) {
-      this.incrementScore(Players.ai);
-      this.restartGame();
+      this.nextRound(
+        () => this.incrementScore(Players.ai)
+      );
       return;
     }
 
     if (ballRightBorder) {
-      this.incrementScore(Players.playerOne);
+      
       // increase difficulty of game
       this.increaseDifficultyOfGameForPlayer();
-      this.restartGame();
+      console.log("Player One has scored");
+      this.nextRound(
+        () => this.incrementScore(Players.playerOne)
+      );
       return;
     }
   }
@@ -346,6 +418,8 @@ class Paddle {
 
   private paddleYChange = 10;
 
+  private isAi;
+
   changePaddleYDelta = () => {
     this.paddleYChange = this.paddleYChange * -1;
   }
@@ -355,9 +429,24 @@ class Paddle {
     this.width = width;
     this.ctx = ctx;
     this.yPosition = yPosition;
+    this.isAi = isAi;
 
     if (isAi) { this.spaceFromBoard = 780; }
   }
+
+  increasePaddleMovementSpeed = () => {
+    if (this.isAi) {
+      if (this.paddleYChange < 0) {
+        this.paddleYChange = (this.paddleYChange * -1) + 1.5;
+      } else {
+        this.paddleYChange = this.paddleYChange + 1.5;
+      }
+    }
+  }
+
+   getPaddleYChange = () => {
+     return this.paddleYChange;
+   }
 
   getPaddleYPosition = () => {
     return this.yPosition;
@@ -418,73 +507,3 @@ enum Players {
   ai = "ai",
   playerOne = "playerOne"
 }
-
-/*
-    Some notable goals for this project, 
-*/
-
-/*
-      Todos: 
-
-      Now when all this is done... things to look into:
-      animation of ball and paddle... -> Done noted it as a bug
-
-      Adding score system and what happens when the ball hits 
-      either left or right side need to add scoring system
-
-      Finally AI which will just calculate where ball is going to hit  
-      and the paddle must adjust for that position... 
-
-      Also need to add countdown state... 
-      and a menu for when the game needs to be reset
-
-      Add a state for when game ends, end game menu.
-
-      Add AI paddle and then program AI to be able to react
-      to the change of the ball... 
-
-      ----------------------------------------------------
-      ----------------------------------------------------
-
-      Bug.1: When user pushs on up or down key, the paddle 
-      moves up then stops, rememdy: would be adding event for
-      when key is pressed down 
-
-      Bug.2: Issue with restart, doesn't even restart properly... 
-      Need to fix this before move even forward...
-
-      Bug.3: Issue with Ball being stuck behind paddle and radically bouncing back and fourth
-*/
-
-  /*
-      1. Need to tell when ball hits left paddle -> done
-      2. Then need to change the x delta... -> done
-
-      before we proceed to 3:
-        Need to add affect of paddling moving down or up... 
-
-      3. Need to figure out if paddle was moving 
-      up or down and this will effect the y delta -> Done
-
-      4. Need to have the ball bounce of all walls and -> Done
-
-      5. Add ability for AI pong paddle to actually detect ball and hit it -> Done
-
-      6. Resolve Bug.2, need to be able restart game -> Done
-
-      7. Resolve Bug.1, need to make the movement of paddle seemless -> Done
-
-      8. Add score system -> In process -> Done
-
-      8.1. When player scores will increase the skill of the ai, incrementally 
-      -> In process to do this, must create new function endRound, which do everything but keep difficulty of game
-      needs to be restarted
-
-      9. Add countdown clock, after someone scores
-
-      10. Game controls such as pause, start, restart, stop
-
-      11. Add difficulty levels to make it harder to beat ai 
-
-      12. End game, and look to resolve any outstand bugs
-  */
