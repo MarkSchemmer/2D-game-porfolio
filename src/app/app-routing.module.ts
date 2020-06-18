@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
+import { AsteroidsMainComponent } from "./asteroids/asteroids-main/asteroids-main.component";
 import { BoardComponent as ConWaysGameOfLifeBoard } from "./conways-game-of-life/board/board.component";
 import { PongBoardComponent } from "./pong/pong-board/pong-board.component";
 import { ProductListPageComponent } from "./product-list-page/product-list-page.component";
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: "tic-tac-toe", component: TicTacToePageComponent },
   { path: "solitaire", component: BoardComponent },
   { path: "cgol", component: ConWaysGameOfLifeBoard },
-  { path: "classic-pong", component: PongBoardComponent }
+  { path: "classic-pong", component: PongBoardComponent },
+  { path: "asteroids", component: AsteroidsMainComponent }
 ];
 
 @NgModule({

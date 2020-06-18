@@ -8,6 +8,7 @@ import { environment } from "src/environments/environment";
 import { clearState } from "src/store/reducers/ticTacToePageReducer";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { AsteroidsModule } from "./asteroids/asteroids.module";
 import { ConwaysGameOfLifeModule } from "./conways-game-of-life/conways-game-of-life.module";
 import { PongModule } from "./pong/pong.module";
 import { ProductListPageModule } from "./product-list-page/product-list-page-module.module";
@@ -39,7 +40,8 @@ import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
     SolitairePageModule,
     BrowserAnimationsModule,
     ConwaysGameOfLifeModule,
-    PongModule
+    PongModule,
+    AsteroidsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
