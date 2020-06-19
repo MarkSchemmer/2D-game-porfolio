@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { gameObject } from "../Schemas/game-object";
+import { Ship } from "../Schemas/ship";
 
 @Component({
   selector: "app-asteroids-main",
@@ -8,11 +9,14 @@ import { gameObject } from "../Schemas/game-object";
 })
 export class AsteroidsMainComponent implements OnInit {
 
-  public ship = null;
+  public ship: Ship = null;
   public board = null;
+  public boardDimensions = 800; // If I want a smaller board... 
 
-  public boardWidth = null;
-  public boardHeight = null;
+  public boardWidth;
+  public boardHeight;
+
+  public fullElement;
 
   // board context
   public ctx = null;
@@ -23,6 +27,9 @@ export class AsteroidsMainComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeBoardAndContext();
+    this.initializeGameObject();
+
+    this.prepGameBeforeStart();
   }
 
   public gameLooper = fn => {
@@ -33,13 +40,22 @@ export class AsteroidsMainComponent implements OnInit {
     this.board = document.getElementById("aster");
     this.ctx = this.board.getContext("2d");
 
-    // Get board width and height
-    this.boardWidth = this.board.offsetWidth;
-    this.boardHeight = this.board.offsetHeight;
+    const mainContainer = document.getElementById("main");
+    this.boardWidth = mainContainer.offsetWidth;
+    this.boardHeight = mainContainer.offsetHeight;
+
+    // Need to write some notes on how to get full width of screen
+    this.board.width = this.boardWidth;
+    this.board.height = this.boardHeight;
   }
 
   public initializeGameObject = (): void => {
-    this.gameObject = gameObject(this.boardWidth, this.boardHeight, this.ctx);
+    this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx);
     this.ship = this.gameObject.ship;
+  }
+
+  public prepGameBeforeStart = (): void => {
+    // Draw ship
+    this.ship.drawTriangle();
   }
 }

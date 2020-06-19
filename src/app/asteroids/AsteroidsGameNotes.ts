@@ -19,7 +19,6 @@
     - 4. Create Ship class which will have all important information and things my ship can do
 
     *********************** Architecture notes ********************************
-
     Notes for Game Object: 
     
     Why is Game-Object needed? 
@@ -32,5 +31,12 @@
 
     Flow of Game (Scenes): 
     To be determined... 
+    ***************************************************************************
+    
+    --------------------------------------------------------------------------
+
+    ***************************** Coding Notes ********************************
+    Getting full dimensions of element:
+    - docuemnt.getElementById("item").offsetWidth or .offsetHeight
     ***************************************************************************
 */
