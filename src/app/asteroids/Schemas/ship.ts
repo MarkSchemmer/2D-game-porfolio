@@ -1,3 +1,4 @@
+import { GameObj } from "./IGlobalGameObjectProps";
 
 interface IShip {
     shipWidth: number;
@@ -7,7 +8,7 @@ interface IShip {
     drawTriangle: () => void;
 }
 
-export class Ship implements IShip {
+export class Ship implements IShip, GameObj {
 
     public shipWidth = 10;
     public shipHeight = 10;
@@ -30,7 +31,7 @@ export class Ship implements IShip {
         this.ctx = ctx;
     }
 
-    drawTriangle() {
+    drawTriangle = () => {
         this.ctx.beginPath();
         // this.ctx.fillStyle = this.shipColor;
         this.ctx.strokeStyle = this.shipColor;
@@ -40,6 +41,20 @@ export class Ship implements IShip {
         this.ctx.closePath();
         // this.ctx.fill();
         this.ctx.stroke();
+    }
+
+    draw = () => {
+        this.drawTriangle();
+    }
+
+    moveShip = () => {
+        // should account for directional movement and rotational as well
+        // Also account for is booster is on or not
+        // Also take into account for leftover energy that has been already applied... 
+
+        // For the moment were going to just upate the x axis with the engine to get the ship
+        // Moving in a primitive way... without any controls... 
+        this.x += 2;
     }
 
 }
