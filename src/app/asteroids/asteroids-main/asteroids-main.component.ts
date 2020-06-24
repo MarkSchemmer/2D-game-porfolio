@@ -13,22 +13,13 @@ export class AsteroidsMainComponent implements OnInit {
   public ship: Ship = null;
   // canvas
   public board = null;
-
   public boardWidth;
   public boardHeight;
-
-  public fullElement;
-
   // board context
   public ctx = null;
-
   public gameObject = null;
-
   public pause = false;
   public eng;
-
-  public pressedKeys = [];
-
   public frames = 50;
 
   constructor() { }
@@ -52,11 +43,7 @@ export class AsteroidsMainComponent implements OnInit {
     }
   }
 
-  // need a start engine and a stop engine type functions
-
   nextCalculations = () => {
-    // this.ship.rotateRight();
-    // this.ship.rotateRight();
     this.ship.calculateShipsNextPosition();
   }
 
@@ -65,13 +52,10 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public loop = () => {
-    // // clear screen
-    // this.clearBoard();
-    this.clearCanvas(this.board);
     // must calculate next positons for all objects
     this.nextCalculations();
-    // cleear screan again
-    this.clearBoard();
+    // // clear screen
+    this.clearCanvas(this.board);
     // re-draw and update all objects
     this.reDrawObjects();
   }
@@ -105,27 +89,21 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public clearBoard = () => {
-    console.log(this.board.width);
-    console.log(this.board.height);
     this.ctx.clearRect(0, 0, this.ctx.canvas.height, this.ctx.canvas.width);
   }
 
-  clearCanvas(canvas) {
-    const ctx = canvas.getContext("2d");
-    ctx.save();
-    ctx.globalCompositeOperation = "copy";
-    ctx.strokeStyle = "transparent";
-    ctx.beginPath();
-    ctx.lineTo(0, 0);
-    ctx.stroke();
-    ctx.restore();
+  public clearCanvas(canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.save();
+      ctx.globalCompositeOperation = "copy";
+      ctx.strokeStyle = "transparent";
+      ctx.beginPath();
+      ctx.lineTo(0, 0);
+      ctx.stroke();
+      ctx.restore();
   }
 
   public handleKeyUp = e => {
-    // console.log("handleKeyUp: ", e.keyCode);
-    // const li = this.pressedKeys[e.keyCode];
-    // this.pressedKeys = this.pressedKeys.filter(i => i !== li);
-    // console.log("up keys: ", this.pressedKeys);
     switch (e.keyCode) {
       case 81: {
         this.ship.shipControls.left = false;
@@ -146,18 +124,6 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public handleKeyDown = e => {
-    // Handle key presses 
-    // So directional key presses 
-    // Wether to show engine fume or not ect... 
-    // console.log("handleKeyDown: ", e.keyCode);
-    // console.log(e);
-    // const li = this.pressedKeys[e.keyCode];
-    // if (!li) {
-    //   this.pressedKeys[e.keyCode] = e.keyCode;
-    // }
-
-    console.log(e.keyCode);
-
     switch (e.keyCode) {
       case 81: {
         this.ship.shipControls.left = true;
@@ -180,7 +146,7 @@ export class AsteroidsMainComponent implements OnInit {
   public handleKeyPress = e => {
     // which will handle instructions such as
     // stop, start, instructions menu, new game ect... 
-    console.log("handleKeyPress: ", e.keyCode);
+    // console.log("handleKeyPress: ", e.keyCode);
 
     switch (e.keyCode) {
       case 112: {

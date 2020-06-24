@@ -37,45 +37,6 @@ export class Point implements IPoint {
     }
 }
 
-// function getRegularPolygonPoints(center, numSides, sideLength) {
-//     const points = [];
-//     const alpha = 2 * Math.PI / numSides;  
-//     for (let i = 0; i < numSides; i++) {
-//       points.push(new Point( 
-//         center.x + sideLength * Math.cos(alpha * i),
-//         center.y + sideLength * Math.sin(alpha * i))
-//       );
-//     }  
-//     return points;
-//   }
-
-// Add to Ship class
-// function drawPolygon(ctx, points) {
-//     ctx.beginPath();
-//     ctx.moveTo(points[0].x, points[0].y); 
-//     for (let i = 1; i < points.length; i++) {
-//       ctx.lineTo(points[i].x, points[i].y);
-//     }
-//     // ctx.lineTo(points[0].x, points[0].y); 
-//     //  close the shape
-
-//     ctx.lineWidth = 1;
-//     ctx.fillStyle = "#ffffff";
-//     ctx.fill();
-//     ctx.stroke();
-//     ctx.closePath();
-//   }
-  
-// function rotatePolygon(polygonPoints, phi, pointAround) {
-//     const pointAroundInv = new Point(-pointAround.x, -pointAround.y);
-    
-//     for (let i = 0; i < polygonPoints.length; i++) {
-//       polygonPoints[i].translate(pointAroundInv); //  translate to origin
-//       polygonPoints[i].rotate(phi); //  rotate
-//       polygonPoints[i].translate(pointAround); // translate back to it's original position
-//     }
-//   }
-
 class ShipControles {
     public left = false;
     public right = false;
@@ -86,7 +47,7 @@ export class Ship implements GameObj {
     public curve = 0.5;
     public curve1 = 0.25;
     public curve2  = 0.75;
-    public radius = 150;
+    public radius = 10;
     public shipColor = "#ffffff";
     public ctx = null;
     public angle = 0.5 * Math.PI / 2;
@@ -101,6 +62,8 @@ export class Ship implements GameObj {
 
     public rowRight = 0.5 * Math.PI / 10;
     public rowLeft = -this.rowRight;
+
+    public rotation = 0;
 
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
@@ -119,23 +82,14 @@ export class Ship implements GameObj {
     }
 
     draw = () => {
-        const {x, y} = this.shipCenterPoint;
-        // this.ctx.translate(x, y);
-        // this.drawPolygon();
-        // this.ctx.moveTo(x, y);
         this.drawPolygon2();
     }
 
     rotateRight = () => { 
-        // this.rotatePolygon();
-        // this.angle = this.angle;
-        // console.log(this.angle);
         this.ctx.rotate(this.rowRight);
     }
 
     rotateLeft = () => {
-        // this.angle = this.angle + 0.000075;
-        // this.rotatePolygon(this.shipPoints, -this.angle, this.shipCenterPoint);
         this.ctx.rotate(this.rowLeft);
     }
 
@@ -152,14 +106,10 @@ export class Ship implements GameObj {
                 Calculate curve and how forward force 
                 can push ship forwards and backwards
             */
-            this.shipCenterPoint.set(
-                this.shipCenterPoint.x, 
-                this.shipCenterPoint.y - 10 // this is a simplified version
-            );
 
-            this.shipPoints.forEach(point => {
-                point.set(point.x, point.y - 10);
-            });
+            // Maybe just translate on a constant... 
+            this.ctx.translate(10, 0); // translate it
+            this.ctx.restore(); // restore back to last saved... 
         }
     }
 
@@ -186,7 +136,6 @@ export class Ship implements GameObj {
         // }
         const set1 = points[1], set2 = points[2];
         const x1 = set1.x, y1 = set1.y, x2 = set2.x, y2 = set2.y;
-        // ctx.arcTo(x1, y1, x2, y2, this.radius);
         // The base point, will need to create an angle in an arc
         ctx.lineTo(x1, y1);
         ctx.lineTo(x2, y2);
@@ -201,16 +150,11 @@ export class Ship implements GameObj {
       }
 
       public drawPolygon2(ctx = this.ctx, points = this.shipPoints) {
-        
-        const x0 = points[0].x, y0 = points[0].y;
-        const set1 = points[1], set2 = points[2];
-        const x1 = set1.x, y1 = set1.y, x2 = set2.x, y2 = set2.y;
-        // ctx.save();
+        ctx.save();
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.shipColor;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
-        // ctx.stroke();
         ctx.moveTo(this.radius, 0);
 
         ctx.quadraticCurveTo(
@@ -231,20 +175,15 @@ export class Ship implements GameObj {
             this.radius, 0
         );
 
-        // ctx.closePath();
-        // ctx.stroke();
-
         // Center guide for control point
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.shipColor;
-        // ctx.beginPath();
         ctx.moveTo(-this.radius, 0);
         ctx.lineTo(0, 0);
-        // ctx.stroke();
         ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
-        // ctx.restore();
+        ctx.restore();
       }
 
     public rotatePolygon = 
