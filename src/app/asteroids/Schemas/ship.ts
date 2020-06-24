@@ -1,60 +1,261 @@
+import { calculateXSin, calculateYCos } from "../physicis/physicis-library";
 import { GameObj } from "./IGlobalGameObjectProps";
 
-interface IShip {
-    shipWidth: number;
-    shipHeight: number;
+interface IPoint {
     x: number;
     y: number;
-    drawTriangle: () => void;
+    set: (x: number, y: number) => void;
+    translate: (p: IPoint) => void;
+    rotate: (radians: number) => void;
 }
 
-export class Ship implements IShip, GameObj {
-
-    public shipWidth = 10;
-    public shipHeight = 10;
-    public triangleY = this.shipHeight / 2 - this.shipWidth / 2;
+export class Point implements IPoint {
     
-    public shipColor = "#ffffff";
-
     public x: number;
     public y: number;
+
+    constructor(x = 0, y = 0) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public set = (x: number, y: number): void => {
+        this.x = x;
+        this.y = y;
+    }
+
+    public translate = (p: Point): void => {
+        this.x += p.x;
+        this.y += p.y;
+    }
+
+    public rotate = (angle: number): void => {
+        this.set(
+          this.x * Math.cos(angle) - this.y * Math.sin(angle),
+          this.x * Math.sin(angle) + this.y * Math.cos(angle)
+        );
+    }
+}
+
+// function getRegularPolygonPoints(center, numSides, sideLength) {
+//     const points = [];
+//     const alpha = 2 * Math.PI / numSides;  
+//     for (let i = 0; i < numSides; i++) {
+//       points.push(new Point( 
+//         center.x + sideLength * Math.cos(alpha * i),
+//         center.y + sideLength * Math.sin(alpha * i))
+//       );
+//     }  
+//     return points;
+//   }
+
+// Add to Ship class
+// function drawPolygon(ctx, points) {
+//     ctx.beginPath();
+//     ctx.moveTo(points[0].x, points[0].y); 
+//     for (let i = 1; i < points.length; i++) {
+//       ctx.lineTo(points[i].x, points[i].y);
+//     }
+//     // ctx.lineTo(points[0].x, points[0].y); 
+//     //  close the shape
+
+//     ctx.lineWidth = 1;
+//     ctx.fillStyle = "#ffffff";
+//     ctx.fill();
+//     ctx.stroke();
+//     ctx.closePath();
+//   }
+  
+// function rotatePolygon(polygonPoints, phi, pointAround) {
+//     const pointAroundInv = new Point(-pointAround.x, -pointAround.y);
+    
+//     for (let i = 0; i < polygonPoints.length; i++) {
+//       polygonPoints[i].translate(pointAroundInv); //  translate to origin
+//       polygonPoints[i].rotate(phi); //  rotate
+//       polygonPoints[i].translate(pointAround); // translate back to it's original position
+//     }
+//   }
+
+class ShipControles {
+    public left = false;
+    public right = false;
+    public forwardForce = false;
+}
+
+export class Ship implements GameObj {
+    public curve = 0.5;
+    public curve1 = 0.25;
+    public curve2  = 0.75;
+    public radius = 150;
+    public shipColor = "#ffffff";
     public ctx = null;
+    public angle = 0.5 * Math.PI / 2;
+    public sides = 3;
+
+    public shipControls: ShipControles = new ShipControles();
+
+    // Need to track ship points...
+    // Track center and both bottom points
+    public shipCenterPoint: Point;
+    public shipPoints: Point[];
+
+    public rowRight = 0.5 * Math.PI / 10;
+    public rowLeft = -this.rowRight;
 
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
 
     // Need to know how to find which direction is north
+    // To do this we can add curves to denote what is the bottom side
 
     constructor(width, height, ctx) {
-        this.x = width;
-        this.y = height;
         this.ctx = ctx;
-    }
-
-    drawTriangle = () => {
-        this.ctx.beginPath();
-        // this.ctx.fillStyle = this.shipColor;
-        this.ctx.strokeStyle = this.shipColor;
-        this.ctx.moveTo(this.x, this.y);
-        this.ctx.lineTo(this.x + this.shipWidth, this.y + this.shipHeight);
-        this.ctx.lineTo(this.x - this.shipWidth, this.y + this.shipHeight);
-        this.ctx.closePath();
-        // this.ctx.fill();
-        this.ctx.stroke();
+        this.shipCenterPoint = new Point(width, height / 2);
+        this.shipPoints = this.getRegularPolygonPoints();
+        const {x, y} = this.shipCenterPoint;
+        this.ctx.translate(x, y);
+        this.ctx.rotate(-Math.PI / 2);
+        this.draw();
     }
 
     draw = () => {
-        this.drawTriangle();
+        const {x, y} = this.shipCenterPoint;
+        // this.ctx.translate(x, y);
+        // this.drawPolygon();
+        // this.ctx.moveTo(x, y);
+        this.drawPolygon2();
     }
 
-    moveShip = () => {
-        // should account for directional movement and rotational as well
-        // Also account for is booster is on or not
-        // Also take into account for leftover energy that has been already applied... 
-
-        // For the moment were going to just upate the x axis with the engine to get the ship
-        // Moving in a primitive way... without any controls... 
-        this.x += 2;
+    rotateRight = () => { 
+        // this.rotatePolygon();
+        // this.angle = this.angle;
+        // console.log(this.angle);
+        this.ctx.rotate(this.rowRight);
     }
+
+    rotateLeft = () => {
+        // this.angle = this.angle + 0.000075;
+        // this.rotatePolygon(this.shipPoints, -this.angle, this.shipCenterPoint);
+        this.ctx.rotate(this.rowLeft);
+    }
+
+    public calculateShipsNextPosition = () => {
+        if (this.shipControls.left) {
+            this.rotateLeft();
+        } else if (this.shipControls.right) {
+            this.rotateRight();
+        }
+
+        if (this.shipControls.forwardForce) {
+            // calculate (x, y) center point 
+            /*
+                Calculate curve and how forward force 
+                can push ship forwards and backwards
+            */
+            this.shipCenterPoint.set(
+                this.shipCenterPoint.x, 
+                this.shipCenterPoint.y - 10 // this is a simplified version
+            );
+
+            this.shipPoints.forEach(point => {
+                point.set(point.x, point.y - 10);
+            });
+        }
+    }
+
+    // Building polygon, a triangle is a polygon...
+    public getRegularPolygonPoints = 
+    (center = this.shipCenterPoint, numSides = this.sides, sideLength = this.radius): Point[] => {
+        const points = [];
+        const alpha = 2 * Math.PI / numSides;  
+        for (let i = 0; i < numSides; i++) {
+          points.push(new Point( 
+            center.x + sideLength * Math.cos(alpha * i),
+            center.y + sideLength * Math.sin(alpha * i))
+          );
+        }  
+        return points;
+      }
+
+    public drawPolygon(ctx = this.ctx, points = this.shipPoints) {
+        ctx.beginPath();
+        const x0 = points[0].x, y0 = points[0].y;
+        ctx.moveTo(x0, y0); 
+        // for (let i = 1; i < points.length; i++) {
+        //   ctx.lineTo(points[i].x, points[i].y);
+        // }
+        const set1 = points[1], set2 = points[2];
+        const x1 = set1.x, y1 = set1.y, x2 = set2.x, y2 = set2.y;
+        // ctx.arcTo(x1, y1, x2, y2, this.radius);
+        // The base point, will need to create an angle in an arc
+        ctx.lineTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        // ctx.arc(points[0].x, points[0].y); 
+        //  close the shape
+        ctx.lineWidth = 1;
+        // ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "#ffffff";
+        // ctx.fill();
+        ctx.closePath();
+        ctx.stroke();
+      }
+
+      public drawPolygon2(ctx = this.ctx, points = this.shipPoints) {
+        
+        const x0 = points[0].x, y0 = points[0].y;
+        const set1 = points[1], set2 = points[2];
+        const x1 = set1.x, y1 = set1.y, x2 = set2.x, y2 = set2.y;
+        // ctx.save();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.shipColor;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
+        // ctx.stroke();
+        ctx.moveTo(this.radius, 0);
+
+        ctx.quadraticCurveTo(
+            Math.cos(this.angle) * this.radius * this.curve2,
+            Math.sin(this.angle) * this.radius * this.curve2,
+            Math.cos(Math.PI - this.angle) * this.radius,
+            Math.sin(Math.PI - this.angle) * this.radius
+        ); 
+
+        ctx.quadraticCurveTo(-this.radius * this.curve, 0, 
+            Math.cos(Math.PI + this.angle) * this.radius,
+            Math.sin(Math.PI + this.angle) * this.radius
+        );
+
+        ctx.quadraticCurveTo( 
+            Math.cos(-this.angle) * this.radius * this.curve2,
+            Math.sin(-this.angle) * this.radius * this.curve2,
+            this.radius, 0
+        );
+
+        // ctx.closePath();
+        // ctx.stroke();
+
+        // Center guide for control point
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = this.shipColor;
+        // ctx.beginPath();
+        ctx.moveTo(-this.radius, 0);
+        ctx.lineTo(0, 0);
+        // ctx.stroke();
+        ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        // ctx.restore();
+      }
+
+    public rotatePolygon = 
+    (polygonPoints = this.shipPoints, angle = this.angle, pointAround = this.shipCenterPoint): void => {
+        const pointAroundInv = new Point(-pointAround.x, -pointAround.y);
+        
+        for (let i = 0; i < polygonPoints.length; i++) {
+          polygonPoints[i].translate(pointAroundInv); //  translate to origin
+          polygonPoints[i].rotate(angle); //  rotate
+          polygonPoints[i].translate(pointAround); // translate back to it's original position
+        }
+      }
 
 }

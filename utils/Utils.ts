@@ -97,6 +97,8 @@ export const curry = (fn, len = fn.length) =>
                                     : p => isValue(p) ? curry(fn.bind(null, p), len - 1)
                                                       : curry(fn, len);
 
+// Add pipe() function... 
+
 export const shuffle = arr => {
     for (let i = 0; i < arr.length; i++) {
       const randIndex = Math.floor(Math.random() * (i + 1));
