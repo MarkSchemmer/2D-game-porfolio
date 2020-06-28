@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { isValue } from "utils/Utils";
+import { Directions } from "../Schemas/Game-Direction-Types";
 import { gameObject } from "../Schemas/game-object";
+import { giveTextForDiv } from "../Schemas/GameNotesAndOtherInstructions";
 import { Ship } from "../Schemas/ship";
 
 @Component({
@@ -22,6 +24,12 @@ export class AsteroidsMainComponent implements OnInit {
   public eng;
   public frames = 50;
 
+  public boardDimensions = 800;
+
+  // Function will bind the game context, and then draw text in 
+  // Upper right hand corner each game frame
+  public writeGameActiveText: string;
+
   constructor() { }
 
   ngOnInit(): void {
@@ -40,11 +48,15 @@ export class AsteroidsMainComponent implements OnInit {
     if (this.eng) {
       clearInterval(this.eng);
       this.eng = undefined;
+      this.writeGameActiveText = giveTextForDiv(this.eng);
     }
   }
 
   nextCalculations = () => {
     this.ship.calculateShipsNextPosition();
+
+    // Calculate board text showing if game is running or not
+    this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
   reDrawObjects = () => {
@@ -65,8 +77,8 @@ export class AsteroidsMainComponent implements OnInit {
     this.ctx = this.board.getContext("2d");
 
     const mainContainer = document.getElementById("main");
-    this.boardWidth = mainContainer.offsetWidth;
-    this.boardHeight = mainContainer.offsetHeight;
+    this.boardWidth = this.boardDimensions + 400;
+    this.boardHeight = this.boardDimensions;
 
     // Need to write some notes on how to get full width of screen
     this.board.width = this.boardWidth;
@@ -81,11 +93,15 @@ export class AsteroidsMainComponent implements OnInit {
   public initializeGameObject = (): void => {
     this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx);
     this.ship = this.gameObject.ship;
+
+    // Function to draw whether the game is paused or active
+    this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
   public prepGameBeforeStart = (): void => {
     // Draw ship
     // this.ship.drawTriangle();
+    this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
   public clearBoard = () => {
@@ -104,16 +120,18 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public handleKeyUp = e => {
+    // Uncomment when you want to see what key code is being pressed
+    // console.log(e.keyCode);
     switch (e.keyCode) {
-      case 81: {
+      case Directions.Left: {
         this.ship.shipControls.left = false;
         break;
       }
-      case 87: {
+      case Directions.Right: {
         this.ship.shipControls.right = false;
         break;
       }
-      case 38: {
+      case Directions.ForwardThrusters: {
         this.ship.shipControls.forwardForce = false;
         break;
       }
@@ -124,16 +142,18 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public handleKeyDown = e => {
+    // Uncomment when you want to see what key code is being pressed
+    // console.log(e.keyCode);
     switch (e.keyCode) {
-      case 81: {
+      case Directions.Left: {
         this.ship.shipControls.left = true;
         break;
       }
-      case 87: {
+      case Directions.Right: {
         this.ship.shipControls.right = true;
         break;
       }
-      case 38: {
+      case Directions.ForwardThrusters: {
         this.ship.shipControls.forwardForce = true;
         break;
       }

@@ -65,6 +65,8 @@ export class Ship implements GameObj {
 
     public rotation = 0;
 
+    public force = 0;
+
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
 
@@ -79,6 +81,28 @@ export class Ship implements GameObj {
         this.ctx.translate(x, y);
         this.ctx.rotate(-Math.PI / 2);
         this.draw();
+    }
+
+    calcForce = () => {
+        const oldForce = this.force;
+        if (this.force < 10) {
+            this.force += 2;
+        }
+
+        return oldForce;
+    }
+
+    calcForceDecrease = () => {
+        const oldForce = this.force;
+        if (this.force > 0) {
+            this.force -= 0.5;
+        }
+
+        if (this.force < 0) {
+            this.force = 0;
+        }
+
+        return oldForce;
     }
 
     draw = () => {
@@ -108,8 +132,11 @@ export class Ship implements GameObj {
             */
 
             // Maybe just translate on a constant... 
-            this.ctx.translate(10, 0); // translate it
+            this.ctx.translate(this.calcForce(), 0); // translate it
             this.ctx.restore(); // restore back to last saved... 
+        } else if (this.force > 0) {
+            this.ctx.translate(this.calcForceDecrease(), 0);
+            this.ctx.restore();
         }
     }
 

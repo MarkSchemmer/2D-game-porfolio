@@ -14,12 +14,17 @@
     -> Then create dummy functions to achieve this
     - 4. Create Ship class which will have all important information and things my ship can do
     - 5. refactor ship.ts, clean up ship.ts class and clean up Point class, add Interface as well... 
+    - 6. Refactor handle key up and key down to use constants
+        * Makes it easier to add keys and to understand what is being changed... 
+    - 7. Add pause play sign to show whether game is paused or it's active 
+        -> Need to shrink the board and center it
+    - 9. Investigate some sort of model which slowly starts and stops like a space ship
+
+    Shelved: 
+    - 8. Activly change width and height of game baord update all entities that's needed
+        -> Not going to implement this, going to stick to a 800 x 800 box... 
 
     Todo:  
-    - 6. Refactor handle key up and key down to use constants
-    - 7. Add pause play sign to show whether game is paused or it's active
-    - 8. Activly change width and height of game baord update all entities that's needed
-    - 9. Investigate some sort of model which slowly starts and stops like a space ship
     - 10. Determine what happens when ship crosses border -> it should appear on the opposite side... 
 
     *********************** Architecture notes ********************************
