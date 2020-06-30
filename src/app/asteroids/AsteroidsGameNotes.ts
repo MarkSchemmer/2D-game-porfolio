@@ -21,6 +21,7 @@
     - 9. Investigate some sort of model which slowly starts and stops like a space ship
     - 10. Determine what happens when ship crosses border -> it should appear on the opposite side... 
         -> right now ship will not be able to cross border
+    - 13. Need to refactor calcForce() and calcForceDecrease() to become and remove the if else statement
 
     Shelved: 
     - 8. Activly change width and height of game baord update all entities that's needed

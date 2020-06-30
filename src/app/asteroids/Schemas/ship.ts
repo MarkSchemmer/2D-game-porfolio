@@ -131,11 +131,20 @@ export class Ship implements GameObj {
 
     public calcForce = () => {
         const oldForce = this.force;
-        if (this.force < 10) {
-            this.force += 2;
-        }
+        const forwardForce = this.shipControls.forwardForce;
+        const force = oldForce < 10 && forwardForce 
+        ? (this.force += 2, this.force) : forwardForce 
+        ? this.force : oldForce > 0 
+        ? (this.force -= 0.75, this.force) : this.force < 0 
+        ? (this.force = 0, this.force) : this.force;
+        const nextProjectCoordinates = this.calcNextTranslate(force, 0, [ ...this.matrix ]);
+        const projectedNextY = nextProjectCoordinates.y;
+        const projectedNextX = nextProjectCoordinates.x;
+        const isShipInsideBorders = this.shipIsInsideBorders(projectedNextX, projectedNextY);
 
-        return oldForce;
+        if ((forwardForce || oldForce > 0) && isShipInsideBorders) {
+            this.translate(force, 0);
+        }
     }
 
     public calcForceDecrease = () => {
@@ -172,20 +181,7 @@ export class Ship implements GameObj {
             this.rotateRight();
         }
 
-        const nextProjectCoordinates = this.calcNextTranslate(this.force, 0, [ ...this.matrix ]);
-        const projectedNextY = nextProjectCoordinates.y;
-        const projectedNextX = nextProjectCoordinates.x;
-
-        if (this.shipControls.forwardForce) {
-            if (this.shipIsInsideBorders(projectedNextX, projectedNextY)) {
-                this.translate(this.calcForce(), 0); // translate it
-            }
-
-        } else if (this.force > 0) {
-            if (this.shipIsInsideBorders(projectedNextX, projectedNextY)) {
-                this.translate(this.calcForceDecrease(), 0);
-            }
-        }
+        this.calcForce(); // calculating next movement and moving.
     }
 
     public shipIsInsideBorders = (x, y) => y > 0 && y < 800 && x > 0 && x < 800;
