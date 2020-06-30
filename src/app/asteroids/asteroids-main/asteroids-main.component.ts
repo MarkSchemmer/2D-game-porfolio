@@ -77,7 +77,7 @@ export class AsteroidsMainComponent implements OnInit {
     this.ctx = this.board.getContext("2d");
 
     const mainContainer = document.getElementById("main");
-    this.boardWidth = this.boardDimensions + 400;
+    this.boardWidth = this.boardDimensions;
     this.boardHeight = this.boardDimensions;
 
     // Need to write some notes on how to get full width of screen

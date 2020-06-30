@@ -53,6 +53,8 @@ export class Ship implements GameObj {
     public angle = 0.5 * Math.PI / 2;
     public sides = 3;
 
+    public canvas = document.getElementById("aster");
+
     public shipControls: ShipControles = new ShipControles();
 
     // Need to track ship points...
@@ -67,6 +69,10 @@ export class Ship implements GameObj {
 
     public force = 0;
 
+    public angleToTrack = -Math.PI / 2;
+
+    public matrix = [1, 0, 0, 1, 0, 0];
+
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
 
@@ -77,13 +83,53 @@ export class Ship implements GameObj {
         this.ctx = ctx;
         this.shipCenterPoint = new Point(width, height / 2);
         this.shipPoints = this.getRegularPolygonPoints();
-        const {x, y} = this.shipCenterPoint;
-        this.ctx.translate(x, y);
-        this.ctx.rotate(-Math.PI / 2);
+        this.translate();
+        this.rotate(-Math.PI / 2);
         this.draw();
     }
 
-    calcForce = () => {
+    public translate = 
+    (x = this.shipCenterPoint.x, y = this.shipCenterPoint.y, ctx = this.ctx, matrix = this.matrix) => {
+        matrix[4] += matrix[0] * x + matrix[2] * y;
+        matrix[5] += matrix[1] * x + matrix[3] * y;
+        ctx.translate(x, y);
+        const newCoordinates = this.getXYOfShip();
+        this.shipCenterPoint.set(
+            newCoordinates.x,
+            newCoordinates.y
+        );
+    }
+
+    public calcNextTranslate = 
+    (x, y, matrix) => {
+        matrix[4] += matrix[0] * x + matrix[2] * y;
+        matrix[5] += matrix[1] * x + matrix[3] * y;
+        const newCoordinates = this.getXYOfShip(matrix);
+        return newCoordinates;
+    }
+
+    public rotate = (radians, matrix = this.matrix) => {
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        const m11 = matrix[0] * cos + matrix[2] * sin;
+        const m12 = matrix[1] * cos + matrix[3] * sin;
+        const m21 = -matrix[0] * sin + matrix[2] * cos;
+        const m22 = -matrix[1] * sin + matrix[3] * cos;
+        matrix[0] = m11;
+        matrix[1] = m12;
+        matrix[2] = m21;
+        matrix[3] = m22;
+        this.ctx.rotate(radians);
+    }
+
+    public getXYOfShip = 
+    (matrix = this.matrix) => {
+        const newX = matrix[0] + matrix[2] + matrix[4];
+        const newY = matrix[1] + matrix[3] + matrix[5];
+        return { x: newX, y: newY };
+    }
+
+    public calcForce = () => {
         const oldForce = this.force;
         if (this.force < 10) {
             this.force += 2;
@@ -92,10 +138,10 @@ export class Ship implements GameObj {
         return oldForce;
     }
 
-    calcForceDecrease = () => {
+    public calcForceDecrease = () => {
         const oldForce = this.force;
         if (this.force > 0) {
-            this.force -= 0.5;
+            this.force -= 0.75;
         }
 
         if (this.force < 0) {
@@ -105,40 +151,44 @@ export class Ship implements GameObj {
         return oldForce;
     }
 
-    draw = () => {
+    public draw = () => {
         this.drawPolygon2();
     }
 
-    rotateRight = () => { 
-        this.ctx.rotate(this.rowRight);
+    public rotateRight = () => {
+        this.rotate(this.rowRight);
     }
-
-    rotateLeft = () => {
-        this.ctx.rotate(this.rowLeft);
+ 
+    public rotateLeft = () => {
+        this.rotate(this.rowLeft);
     }
 
     public calculateShipsNextPosition = () => {
+        // console.log(`x: ${x}, y: ${y}`);
+        console.log(this.matrix);
         if (this.shipControls.left) {
             this.rotateLeft();
         } else if (this.shipControls.right) {
             this.rotateRight();
         }
 
-        if (this.shipControls.forwardForce) {
-            // calculate (x, y) center point 
-            /*
-                Calculate curve and how forward force 
-                can push ship forwards and backwards
-            */
+        const nextProjectCoordinates = this.calcNextTranslate(this.force, 0, [ ...this.matrix ]);
+        const projectedNextY = nextProjectCoordinates.y;
+        const projectedNextX = nextProjectCoordinates.x;
 
-            // Maybe just translate on a constant... 
-            this.ctx.translate(this.calcForce(), 0); // translate it
-            this.ctx.restore(); // restore back to last saved... 
+        if (this.shipControls.forwardForce) {
+            if (this.shipIsInsideBorders(projectedNextX, projectedNextY)) {
+                this.translate(this.calcForce(), 0); // translate it
+            }
+
         } else if (this.force > 0) {
-            this.ctx.translate(this.calcForceDecrease(), 0);
-            this.ctx.restore();
+            if (this.shipIsInsideBorders(projectedNextX, projectedNextY)) {
+                this.translate(this.calcForceDecrease(), 0);
+            }
         }
     }
+
+    public shipIsInsideBorders = (x, y) => y > 0 && y < 800 && x > 0 && x < 800;
 
     // Building polygon, a triangle is a polygon...
     public getRegularPolygonPoints = 
@@ -180,6 +230,7 @@ export class Ship implements GameObj {
         ctx.save();
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.shipColor;
+        ctx.fillStyle = this.shipColor;
         ctx.beginPath();
         ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
         ctx.moveTo(this.radius, 0);
@@ -202,14 +253,41 @@ export class Ship implements GameObj {
             this.radius, 0
         );
 
+        // ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+
         // Center guide for control point
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = this.shipColor;
+        // ctx.lineWidth = 1;
+        // ctx.strokeStyle = this.shipColor;
+        ctx.moveTo(Math.cos(-this.angle) * this.radius, Math.sin(-this.angle) * this.radius, 0);
+        // ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(Math.cos(this.angle) * this.radius, Math.sin(this.angle) * this.radius);
         ctx.moveTo(-this.radius, 0);
         ctx.lineTo(0, 0);
-        ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
-        ctx.closePath();
+        // ctx.closePath();
         ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(
+            Math.cos(this.angle) * this.radius * this.curve2,
+            Math.sin(this.angle) * this.radius * this.curve2,
+            this.radius / 40, 0, 2 * Math.PI
+        );
+        ctx.fill();
+        ctx.beginPath();
+
+        ctx.arc(
+            Math.cos(-this.angle) * this.radius * this.curve2,
+            Math.sin(-this.angle) * this.radius * this.curve2,
+            this.radius / 40, 0, 2 * Math.PI
+        );
+        ctx.fill();
+        ctx.beginPath();
+
+        ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.restore();
       }
 
@@ -223,5 +301,4 @@ export class Ship implements GameObj {
           polygonPoints[i].translate(pointAround); // translate back to it's original position
         }
       }
-
 }
