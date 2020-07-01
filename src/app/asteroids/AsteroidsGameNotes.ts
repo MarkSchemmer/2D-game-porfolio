@@ -26,17 +26,17 @@
     Shelved: 
     - 8. Activly change width and height of game baord update all entities that's needed
         -> Not going to implement this, going to stick to a 800 x 800 box... 
+    - 12. Need to give my ship an entire face lift... Draw a new ship and also give a nice engine light. 
 
-    Todo:  
-    - 11. Need to create white stream of light to trial behind ship to show some sort of ship path.
-    
+    Todo Today:  
     - 12. Create ability for ship to fire, when spacebar is hit, ship will fire... and flow a cross 
           screen and then disappear 
           - Ship can fire -> done
           - Need to know when ship bullets cross border and should be removed... 
           - Need to slow down rate of fire... So track frames so ship can only fire every 100 frames per say
-
-    - 12. Need to give my ship an entire face lift... Draw a new ship and also give a nice engine light. 
+    - 14. Complete readme.md page so information is public and can be reviewded by other people and recruiters
+    Todo on stack: 
+    - 11. Need to create white stream of light to trial behind ship to show some sort of ship path.
 
     *********************** Architecture notes ********************************
     Notes for Game Object: 
@@ -59,50 +59,5 @@
     ***************************************************************************
 
     **** Old coding snippets removed and could be used again possible *********
-
-                if (this.whichAngleIsMore.direction === "none") {
-            this.whichAngleIsMore.direction = "right";
-            this.whichAngleIsMore.count++;
-        } else if (this.whichAngleIsMore.direction === "right") {
-            this.whichAngleIsMore.count++;
-        } else if (this.whichAngleIsMore.direction === "left" && this.whichAngleIsMore.count > 0) {
-            this.whichAngleIsMore.count--;
-            if (this.whichAngleIsMore.count === 0) {
-                this.whichAngleIsMore.direction = "none";
-            }
-        } else {
-            this.whichAngleIsMore.direction = "right";
-            this.whichAngleIsMore.count++;
-        } 
-
-        console.log(this.whichAngleIsMore);
-
-            // For moment not going to implement this function
-        // Just going to prevent ship from leaving board
-        public DidShipCrossCanvasBorder = () => {
-            // const x = this.shipCenterPoint.x, y = this.shipCenterPoint.y;
-            // console.log("x: ", x);
-            // console.log("y: ", y);p
-            // console.log(`x: ${x}, y: ${y}`);
-            // if (y < 0 || y > 800) {
-            //     // Need to translate ship to bottom of board
-            //     // this.rotate(-Math.PI / 2);
-            //     // this.ctx.save();
-            //     // console.log("I have crossed Cieling border: ");
-            //     // this.draw();
-            //     // const xx = x > 700 ? Math.abs((1200 - x) - x) : 0;
-            //     // console.log(-800);
-            //     this.translate(
-            //        -800, 0
-            //     );
-            //     return;
-            // }
-
-            // if (x < 0 || x > 800) {
-            //     this.translate(-800, -100);
-            //     return;
-            // }
-        }
-
     ***************************************************************************
 */

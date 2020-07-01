@@ -1,4 +1,3 @@
-import { calculateXSin, calculateYCos } from "../physicis/physicis-library";
 import { GameObj } from "./IGlobalGameObjectProps";
 
 interface IPoint {
@@ -97,15 +96,12 @@ export class Ship implements GameObj {
     public force = 0;
     public angleToTrack = -Math.PI / 2;
     public matrix = [ 1, 0, 0, 1, 0, 0 ];
-
     public shells: Shell[] = [];
 
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
-
     // Need to know how to find which direction is north
     // To do this we can add curves to denote what is the bottom side
-
     constructor(width, height, ctx) {
         this.ctx = ctx;
         this.shipCenterPoint = new Point(width, height / 2);
