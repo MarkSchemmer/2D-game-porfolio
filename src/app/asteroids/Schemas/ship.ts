@@ -41,6 +41,39 @@ class ShipControles {
     public left = false;
     public right = false;
     public forwardForce = false;
+    public fire = false;
+}
+
+class Shell {
+    public speed = 5;
+    public x;
+    public y;
+    public ctx;
+    public lineLength = 10;
+    public angle = 0;
+    public shellColor = "#ffffff";
+
+    constructor(x, y, ctx, angle) {
+        this.x = 0; // x;
+        this.y = 0;
+        this.ctx = ctx;
+        this.angle = angle;
+        this.drawShell();
+    }
+
+    drawShell = () => {
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = this.shellColor;
+        this.ctx.lineTo(this.x, this.y);
+        this.ctx.lineTo(this.x + this.lineLength, this.y);
+        this.ctx.closePath();
+        this.ctx.stroke();
+    }
+
+    calcNextShellPath = () => {
+        this.x += 15;
+    }
 }
 
 export class Ship implements GameObj {
@@ -52,26 +85,20 @@ export class Ship implements GameObj {
     public ctx = null;
     public angle = 0.5 * Math.PI / 2;
     public sides = 3;
-
     public canvas = document.getElementById("aster");
-
     public shipControls: ShipControles = new ShipControles();
-
     // Need to track ship points...
     // Track center and both bottom points
     public shipCenterPoint: Point;
     public shipPoints: Point[];
-
     public rowRight = 0.5 * Math.PI / 10;
     public rowLeft = -this.rowRight;
-
     public rotation = 0;
-
     public force = 0;
-
     public angleToTrack = -Math.PI / 2;
+    public matrix = [ 1, 0, 0, 1, 0, 0 ];
 
-    public matrix = [1, 0, 0, 1, 0, 0];
+    public shells: Shell[] = [];
 
     // Will need value to know how to point the rotation of the ship
     // Primitive value will just be a triangle
@@ -135,7 +162,7 @@ export class Ship implements GameObj {
         const force = oldForce < 10 && forwardForce 
         ? (this.force += 2, this.force) : forwardForce 
         ? this.force : oldForce > 0 
-        ? (this.force -= 0.75, this.force) : this.force < 0 
+        ? (this.force -= 0.3, this.force) : this.force < 0 
         ? (this.force = 0, this.force) : this.force;
         const nextProjectCoordinates = this.calcNextTranslate(force, 0, [ ...this.matrix ]);
         const projectedNextY = nextProjectCoordinates.y;
@@ -147,17 +174,26 @@ export class Ship implements GameObj {
         }
     }
 
-    public calcForceDecrease = () => {
-        const oldForce = this.force;
-        if (this.force > 0) {
-            this.force -= 0.75;
+    public calcShellsAndFire = () => {
+        if (this.shipControls.fire) {
+            const x = this.shipCenterPoint.x;
+            const y = this.shipCenterPoint.y;
+            const newShell = new Shell(x, y, this.ctx, this.angle);
+            this.shells.push(newShell);
+            console.log(this.shells);
         }
+    }
 
-        if (this.force < 0) {
-            this.force = 0;
-        }
+    public calcNextPositionOfShells = () => {
+        this.shells.forEach(s => {
+            s.calcNextShellPath();
+        });
+    }
 
-        return oldForce;
+    public drawAllShells = () => {
+        this.shells.forEach(s => {
+            s.drawShell();
+        });
     }
 
     public draw = () => {
@@ -174,7 +210,7 @@ export class Ship implements GameObj {
 
     public calculateShipsNextPosition = () => {
         // console.log(`x: ${x}, y: ${y}`);
-        console.log(this.matrix);
+        // console.log(this.matrix);
         if (this.shipControls.left) {
             this.rotateLeft();
         } else if (this.shipControls.right) {
@@ -182,6 +218,7 @@ export class Ship implements GameObj {
         }
 
         this.calcForce(); // calculating next movement and moving.
+        this.calcShellsAndFire(); // calculating shells next position in path
     }
 
     public shipIsInsideBorders = (x, y) => y > 0 && y < 800 && x > 0 && x < 800;
@@ -283,6 +320,8 @@ export class Ship implements GameObj {
         ctx.beginPath();
 
         ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
+
+        ctx.closePath();
         ctx.fill();
         ctx.restore();
       }

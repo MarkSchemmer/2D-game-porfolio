@@ -54,13 +54,14 @@ export class AsteroidsMainComponent implements OnInit {
 
   nextCalculations = () => {
     this.ship.calculateShipsNextPosition();
-
+    this.ship.calcNextPositionOfShells();
     // Calculate board text showing if game is running or not
     this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
   reDrawObjects = () => {
     this.ship.draw();
+    this.ship.drawAllShells();
   }
 
   public loop = () => {
@@ -135,6 +136,10 @@ export class AsteroidsMainComponent implements OnInit {
         this.ship.shipControls.forwardForce = false;
         break;
       }
+      case Directions.Fire: {
+        this.ship.shipControls.fire = false;
+        break;
+      }
       default: {
         // log and forget
       }
@@ -155,6 +160,10 @@ export class AsteroidsMainComponent implements OnInit {
       }
       case Directions.ForwardThrusters: {
         this.ship.shipControls.forwardForce = true;
+        break;
+      }
+      case Directions.Fire: {
+        this.ship.shipControls.fire = true;
         break;
       }
       default: {

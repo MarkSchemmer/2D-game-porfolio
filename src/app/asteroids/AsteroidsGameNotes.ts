@@ -29,6 +29,13 @@
 
     Todo:  
     - 11. Need to create white stream of light to trial behind ship to show some sort of ship path.
+    
+    - 12. Create ability for ship to fire, when spacebar is hit, ship will fire... and flow a cross 
+          screen and then disappear 
+          - Ship can fire -> done
+          - Need to know when ship bullets cross border and should be removed... 
+          - Need to slow down rate of fire... So track frames so ship can only fire every 100 frames per say
+
     - 12. Need to give my ship an entire face lift... Draw a new ship and also give a nice engine light. 
 
     *********************** Architecture notes ********************************
