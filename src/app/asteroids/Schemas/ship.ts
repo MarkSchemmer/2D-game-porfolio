@@ -126,6 +126,10 @@ export class Ship implements GameObj {
         this.drawPolygon();
     }
 
+    public getShipAngleInRadians = () => {
+        return angleToRadians(this.shipAngle);
+    }
+
     public rotateRight = () => {
         this.incrementAngle();
     }

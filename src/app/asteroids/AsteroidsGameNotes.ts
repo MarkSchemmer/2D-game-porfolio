@@ -37,12 +37,12 @@
                 * Then translate forward...
                 * Keep track of angle and rotate... 
     - 16. Need to slow down rate of fire... So track frames so ship can only fire every 100 frames per say
+    - 17. Need to refactor entire code base...
 
     Shelved: 
     - 12. Need to give my ship an entire face lift... Draw a new ship and also give a nice engine light. 
 
     Todos:
-    - 17. Need to refactor entire code base...
     - 18. Improve the engine flame that is bursted
           when forward force is proppelling forward
 
