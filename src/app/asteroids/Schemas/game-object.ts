@@ -1,5 +1,5 @@
 import { Ship } from "./ship";
 
-export const gameObject = (w, h, ctx) => ({
-    ship: new Ship(w, h, ctx)
+export const gameObject = (w, h, ctx, x, y) => ({
+    ship: new Ship(w, h, ctx, x, y)
 });

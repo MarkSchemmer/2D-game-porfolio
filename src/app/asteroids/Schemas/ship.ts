@@ -1,78 +1,12 @@
+import { angleToRadians } from "../Util-Asteroids";
 import { GameObj } from "./IGlobalGameObjectProps";
+import { Shell } from "./Shell";
 
-interface IPoint {
-    x: number;
-    y: number;
-    set: (x: number, y: number) => void;
-    translate: (p: IPoint) => void;
-    rotate: (radians: number) => void;
-}
-
-export class Point implements IPoint {
-    
-    public x: number;
-    public y: number;
-
-    constructor(x = 0, y = 0) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public set = (x: number, y: number): void => {
-        this.x = x;
-        this.y = y;
-    }
-
-    public translate = (p: Point): void => {
-        this.x += p.x;
-        this.y += p.y;
-    }
-
-    public rotate = (angle: number): void => {
-        this.set(
-          this.x * Math.cos(angle) - this.y * Math.sin(angle),
-          this.x * Math.sin(angle) + this.y * Math.cos(angle)
-        );
-    }
-}
-
-class ShipControles {
+export class ShipControles {
     public left = false;
     public right = false;
     public forwardForce = false;
     public fire = false;
-}
-
-class Shell {
-    public speed = 5;
-    public x;
-    public y;
-    public ctx;
-    public lineLength = 10;
-    public angle = 0;
-    public shellColor = "#ffffff";
-
-    constructor(x, y, ctx, angle) {
-        this.x = 0; // x;
-        this.y = 0;
-        this.ctx = ctx;
-        this.angle = angle;
-        this.drawShell();
-    }
-
-    drawShell = () => {
-        this.ctx.save();
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = this.shellColor;
-        this.ctx.lineTo(this.x, this.y);
-        this.ctx.lineTo(this.x + this.lineLength, this.y);
-        this.ctx.closePath();
-        this.ctx.stroke();
-    }
-
-    calcNextShellPath = () => {
-        this.x += 15;
-    }
 }
 
 export class Ship implements GameObj {
@@ -86,98 +20,92 @@ export class Ship implements GameObj {
     public sides = 3;
     public canvas = document.getElementById("aster");
     public shipControls: ShipControles = new ShipControles();
-    // Need to track ship points...
-    // Track center and both bottom points
-    public shipCenterPoint: Point;
-    public shipPoints: Point[];
-    public rowRight = 0.5 * Math.PI / 10;
-    public rowLeft = -this.rowRight;
-    public rotation = 0;
-    public force = 0;
     public angleToTrack = -Math.PI / 2;
-    public matrix = [ 1, 0, 0, 1, 0, 0 ];
     public shells: Shell[] = [];
 
-    // Will need value to know how to point the rotation of the ship
-    // Primitive value will just be a triangle
-    // Need to know how to find which direction is north
-    // To do this we can add curves to denote what is the bottom side
-    constructor(width, height, ctx) {
+    public shipAngle = 270;
+    public x;
+    public y;
+    public vx = 0;
+    public vy = 0;
+    public dv = 0.2;
+    public maxVel = 10;
+    public dt = 1;
+    public frict = 0.99;
+    public shipFireRate = -20;
+
+    constructor(width, height, ctx, x, y) {
         this.ctx = ctx;
-        this.shipCenterPoint = new Point(width, height / 2);
-        this.shipPoints = this.getRegularPolygonPoints();
-        this.translate();
-        this.rotate(-Math.PI / 2);
-        this.draw();
+        this.x = x;
+        this.y = y;
     }
 
-    public translate = 
-    (x = this.shipCenterPoint.x, y = this.shipCenterPoint.y, ctx = this.ctx, matrix = this.matrix) => {
-        matrix[4] += matrix[0] * x + matrix[2] * y;
-        matrix[5] += matrix[1] * x + matrix[3] * y;
-        ctx.translate(x, y);
-        const newCoordinates = this.getXYOfShip();
-        this.shipCenterPoint.set(
-            newCoordinates.x,
-            newCoordinates.y
-        );
-    }
-
-    public calcNextTranslate = 
-    (x, y, matrix) => {
-        matrix[4] += matrix[0] * x + matrix[2] * y;
-        matrix[5] += matrix[1] * x + matrix[3] * y;
-        const newCoordinates = this.getXYOfShip(matrix);
-        return newCoordinates;
-    }
-
-    public rotate = (radians, matrix = this.matrix) => {
-        const cos = Math.cos(radians);
-        const sin = Math.sin(radians);
-        const m11 = matrix[0] * cos + matrix[2] * sin;
-        const m12 = matrix[1] * cos + matrix[3] * sin;
-        const m21 = -matrix[0] * sin + matrix[2] * cos;
-        const m22 = -matrix[1] * sin + matrix[3] * cos;
-        matrix[0] = m11;
-        matrix[1] = m12;
-        matrix[2] = m21;
-        matrix[3] = m22;
-        this.ctx.rotate(radians);
-    }
-
-    public getXYOfShip = 
-    (matrix = this.matrix) => {
-        const newX = matrix[0] + matrix[2] + matrix[4];
-        const newY = matrix[1] + matrix[3] + matrix[5];
-        return { x: newX, y: newY };
-    }
-
-    public calcForce = () => {
-        const oldForce = this.force;
-        const forwardForce = this.shipControls.forwardForce;
-        const force = oldForce < 10 && forwardForce 
-        ? (this.force += 2, this.force) : forwardForce 
-        ? this.force : oldForce > 0 
-        ? (this.force -= 0.3, this.force) : this.force < 0 
-        ? (this.force = 0, this.force) : this.force;
-        const nextProjectCoordinates = this.calcNextTranslate(force, 0, [ ...this.matrix ]);
-        const projectedNextY = nextProjectCoordinates.y;
-        const projectedNextX = nextProjectCoordinates.x;
-        const isShipInsideBorders = this.shipIsInsideBorders(projectedNextX, projectedNextY);
-
-        if ((forwardForce || oldForce > 0) && isShipInsideBorders) {
-            this.translate(force, 0);
+    public incrementAngle = () => {
+        this.shipAngle += 5;
+        if (this.shipAngle > 360) {
+            this.shipAngle = 0;
         }
+    }
+    
+    public decrementAngle = () => {
+        this.shipAngle -= 5;
+        if (this.shipAngle > 360) {
+            this.shipAngle = 0;
+        }
+
+        if (this.shipAngle < -360) {
+            this.shipAngle = 0;
+        }
+    }
+
+    public xyVelocity = () => {
+        this.vx += this.dv * Math.cos(angleToRadians(this.shipAngle)); // friction;
+        this.vy += this.dv * Math.sin(angleToRadians(this.shipAngle)); // friction;
+
+        if (this.vx > this.maxVel) {
+            this.vx = this.maxVel;
+        }
+
+        if (this.vy > this.maxVel) {
+            this.vy = this.maxVel;
+        }
+    }
+
+    public getXY = () => {
+        return {
+            x: this.x,
+            y: this.y
+        };
+    }
+
+    public setXY = (x, y) => {
+        this.x = x;
+        this.y = y;
+    }
+
+    public xyAndFriction = () => {        
+        this.x += this.vx * this.dt;
+        this.y += this.vy * this.dt;
+        
+        this.vx *= this.frict;
+        this.vy *= this.frict;      
     }
 
     public calcShellsAndFire = () => {
-        if (this.shipControls.fire) {
-            const x = this.shipCenterPoint.x;
-            const y = this.shipCenterPoint.y;
-            const newShell = new Shell(x, y, this.ctx, this.angle);
+        this.shipFireRate += 20;
+        if (this.shipControls.fire && this.shipFireRate > 60) {
+            const x = this.x;
+            const y = this.y;
+            const newShell = new Shell(x, y, this.ctx, this.shipAngle);
             this.shells.push(newShell);
-            console.log(this.shells);
+            this.shipFireRate = -20;
         }
+    }
+
+    public filterOutShellsOfBorder = () => {
+        this.shells = this.shells.filter(shell => {
+            return shell.ly > 0 && shell.ly < 800 && shell.lx > 0 && shell.lx < 800;
+        });
     }
 
     public calcNextPositionOfShells = () => {
@@ -190,78 +118,42 @@ export class Ship implements GameObj {
         this.shells.forEach(s => {
             s.drawShell();
         });
+
+        this.filterOutShellsOfBorder();
     }
 
     public draw = () => {
-        this.drawPolygon2();
+        this.drawPolygon();
     }
 
     public rotateRight = () => {
-        this.rotate(this.rowRight);
+        this.incrementAngle();
     }
  
     public rotateLeft = () => {
-        this.rotate(this.rowLeft);
+        this.decrementAngle();
     }
 
     public calculateShipsNextPosition = () => {
-        // console.log(`x: ${x}, y: ${y}`);
-        // console.log(this.matrix);
         if (this.shipControls.left) {
             this.rotateLeft();
         } else if (this.shipControls.right) {
             this.rotateRight();
         }
 
-        this.calcForce(); // calculating next movement and moving.
+        if (this.shipControls.forwardForce) {
+            this.xyVelocity();
+        }
+
         this.calcShellsAndFire(); // calculating shells next position in path
     }
 
-    public shipIsInsideBorders = (x, y) => y > 0 && y < 800 && x > 0 && x < 800;
-
-    // Building polygon, a triangle is a polygon...
-    public getRegularPolygonPoints = 
-    (center = this.shipCenterPoint, numSides = this.sides, sideLength = this.radius): Point[] => {
-        const points = [];
-        const alpha = 2 * Math.PI / numSides;  
-        for (let i = 0; i < numSides; i++) {
-          points.push(new Point( 
-            center.x + sideLength * Math.cos(alpha * i),
-            center.y + sideLength * Math.sin(alpha * i))
-          );
-        }  
-        return points;
-      }
-
-    public drawPolygon(ctx = this.ctx, points = this.shipPoints) {
-        ctx.beginPath();
-        const x0 = points[0].x, y0 = points[0].y;
-        ctx.moveTo(x0, y0); 
-        // for (let i = 1; i < points.length; i++) {
-        //   ctx.lineTo(points[i].x, points[i].y);
-        // }
-        const set1 = points[1], set2 = points[2];
-        const x1 = set1.x, y1 = set1.y, x2 = set2.x, y2 = set2.y;
-        // The base point, will need to create an angle in an arc
-        ctx.lineTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        // ctx.arc(points[0].x, points[0].y); 
-        //  close the shape
-        ctx.lineWidth = 1;
-        // ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "#ffffff";
-        // ctx.fill();
-        ctx.closePath();
-        ctx.stroke();
-      }
-
-      public drawPolygon2(ctx = this.ctx, points = this.shipPoints) {
-        ctx.save();
+      public drawPolygon(ctx = this.ctx) {
         ctx.lineWidth = 1;
         ctx.strokeStyle = this.shipColor;
         ctx.fillStyle = this.shipColor;
         ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
+        // ctx.arc(0, 0, this.radius, 0, 2 * Math.PI); Need to test later
         ctx.moveTo(this.radius, 0);
 
         ctx.quadraticCurveTo(
@@ -282,21 +174,19 @@ export class Ship implements GameObj {
             this.radius, 0
         );
 
-        // ctx.fill();
+        // ctx.fill(); -> Need to test later
         ctx.stroke();
 
         ctx.beginPath();
 
         // Center guide for control point
-        // ctx.lineWidth = 1;
-        // ctx.strokeStyle = this.shipColor;
         ctx.moveTo(Math.cos(-this.angle) * this.radius, Math.sin(-this.angle) * this.radius, 0);
         // ctx.arc(this.radius * this.curve - this.radius, 0, this.radius / 50, 0, 2 * Math.PI);
         ctx.lineTo(0, 0);
         ctx.lineTo(Math.cos(this.angle) * this.radius, Math.sin(this.angle) * this.radius);
         ctx.moveTo(-this.radius, 0);
         ctx.lineTo(0, 0);
-        // ctx.closePath();
+        // ctx.closePath(); -> Need to test what happens when you close path
         ctx.stroke();
         ctx.beginPath();
         ctx.arc(
@@ -319,17 +209,17 @@ export class Ship implements GameObj {
 
         ctx.closePath();
         ctx.fill();
-        ctx.restore();
       }
 
-    public rotatePolygon = 
-    (polygonPoints = this.shipPoints, angle = this.angle, pointAround = this.shipCenterPoint): void => {
-        const pointAroundInv = new Point(-pointAround.x, -pointAround.y);
-        
-        for (let i = 0; i < polygonPoints.length; i++) {
-          polygonPoints[i].translate(pointAroundInv); //  translate to origin
-          polygonPoints[i].rotate(angle); //  rotate
-          polygonPoints[i].translate(pointAround); // translate back to it's original position
-        }
-      }
+       public ogienZdupy = (context = this.ctx) => {
+        context.fillStyle = "red";
+        context.beginPath();
+        context.moveTo(-8, 0);
+        context.lineTo(-25, -8);
+        context.lineTo(-25, 8);
+        context.lineTo(-8, 0);
+        context.strokeStyle = "red";
+        context.stroke();
+        context.fill();
+    }
 }

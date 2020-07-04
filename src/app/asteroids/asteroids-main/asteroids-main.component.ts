@@ -20,14 +20,16 @@ export class AsteroidsMainComponent implements OnInit {
   // board context
   public ctx = null;
   public gameObject = null;
-  public pause = false;
   public eng;
   public frames = 50;
-
   public boardDimensions = 800;
-
-  // Function will bind the game context, and then draw text in 
-  // Upper right hand corner each game frame
+  public xc = this.boardDimensions / 2;
+  public yc = this.boardDimensions / 2;
+  public x = this.xc;
+  public y = this.yc;
+  public vx = 0;
+  public vy = 0;
+  public frict = 0.99;
   public writeGameActiveText: string;
 
   constructor() { }
@@ -36,6 +38,7 @@ export class AsteroidsMainComponent implements OnInit {
     this.initializeBoardAndContext();
     this.initializeGameObject();
     this.prepGameBeforeStart();
+    this.loop();
   }
 
   public start = () => {
@@ -59,18 +62,30 @@ export class AsteroidsMainComponent implements OnInit {
     this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
-  reDrawObjects = () => {
+  // DrawEverything
+  public loop = () => {
+    this.nextCalculations();
+    this.handleXYFrictions();
+    this.outOfBorders();
+    this.space();
+    this.ctx.save();
+    this.ctx.translate(this.x, this.y);
+    this.ctx.rotate(this.ship.getShipAngleInRadians());
+
+    if (this.ship.shipControls.forwardForce) {
+      this.ship.ogienZdupy();
+    }
+
     this.ship.draw();
+    this.ctx.restore();
     this.ship.drawAllShells();
   }
 
-  public loop = () => {
-    // must calculate next positons for all objects
-    this.nextCalculations();
-    // // clear screen
-    this.clearCanvas(this.board);
-    // re-draw and update all objects
-    this.reDrawObjects();
+  public handleXYFrictions = () => {
+    this.ship.xyAndFriction();
+    const newXY = this.ship.getXY();
+    this.x = newXY.x;
+    this.y = newXY.y;
   }
 
   public initializeBoardAndContext = (): void => {
@@ -92,7 +107,7 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public initializeGameObject = (): void => {
-    this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx);
+    this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx, this.x, this.y);
     this.ship = this.gameObject.ship;
 
     // Function to draw whether the game is paused or active
@@ -100,13 +115,16 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public prepGameBeforeStart = (): void => {
-    // Draw ship
-    // this.ship.drawTriangle();
     this.writeGameActiveText = giveTextForDiv(this.eng);
   }
 
   public clearBoard = () => {
     this.ctx.clearRect(0, 0, this.ctx.canvas.height, this.ctx.canvas.width);
+  }
+
+  public space = () => {
+    this.ctx.fillStyle = "black";
+    this.ctx.fillRect(0, 0, this.boardDimensions, this.boardDimensions);
   }
 
   public clearCanvas(canvas) {
@@ -119,6 +137,29 @@ export class AsteroidsMainComponent implements OnInit {
       ctx.stroke();
       ctx.restore();
   }
+
+  public outOfBorders = () => {
+            
+    if (this.x > this.boardDimensions) {
+        this.x = this.x - this.boardDimensions;
+    }
+
+    if (this.x < 0) {
+        this.x = this.boardDimensions;
+    }
+    
+    if (this.y > this.boardDimensions) {
+        this.y = this.y - this.boardDimensions;
+    }
+    
+    if (this.y < 0) {
+        this.y = this.boardDimensions;
+    }
+
+    this.ship.setXY(
+      this.x, this.y
+    );
+}
 
   public handleKeyUp = e => {
     // Uncomment when you want to see what key code is being pressed
