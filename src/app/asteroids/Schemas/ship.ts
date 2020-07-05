@@ -219,8 +219,9 @@ export class Ship implements GameObj {
         context.fillStyle = "red";
         context.beginPath();
         context.moveTo(-8, 0);
-        context.lineTo(-25, -8);
-        context.lineTo(-25, 8);
+        context.lineTo(-12, -10);
+        context.lineTo(-25, 0);
+        context.lineTo(-12, 10);
         context.lineTo(-8, 0);
         context.strokeStyle = "red";
         context.stroke();
