@@ -16,6 +16,10 @@ export class Shell {
     public lw = 2;
     public lh = 2;
 
+    public shellDamage = 25;
+
+    public hasHitAsteroid = false;
+
     constructor(x, y, ctx, angle) {
         this.lx = x;
         this.ly = y;

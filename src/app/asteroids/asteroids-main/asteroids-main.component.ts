@@ -1,9 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { isValue } from "utils/Utils";
+import { Asteroid } from "../Schemas/asteroid";
 import { Directions } from "../Schemas/Game-Direction-Types";
 import { gameObject } from "../Schemas/game-object";
 import { giveTextForDiv } from "../Schemas/GameNotesAndOtherInstructions";
 import { Ship } from "../Schemas/ship";
+import { asteroidsCollisons } from "../Util-Asteroids";
 
 @Component({
   selector: "app-asteroids-main",
@@ -32,6 +34,8 @@ export class AsteroidsMainComponent implements OnInit {
   public frict = 0.99;
   public writeGameActiveText: string;
 
+  public asteroids: Asteroid[] = [];
+
   constructor() { }
 
   ngOnInit(): void {
@@ -58,6 +62,8 @@ export class AsteroidsMainComponent implements OnInit {
   nextCalculations = () => {
     this.ship.calculateShipsNextPosition();
     this.ship.calcNextPositionOfShells();
+    this.ship.filterOutAllLasersThatHaveHitAsteroid();
+    this.filterOutAllDestroyedAsteroids();
     // Calculate board text showing if game is running or not
     this.writeGameActiveText = giveTextForDiv(this.eng);
   }
@@ -79,10 +85,17 @@ export class AsteroidsMainComponent implements OnInit {
     this.ship.draw();
     this.ctx.restore();
     this.ship.drawAllShells();
+
+    // Will be deleted later for dummy asteroid
+    this.drawAsteroids();
+
+    // Test is shell hitting asteroid
+    this.hasShellHitAnyAsteroid(this.ship.shells);
   }
 
   public handleXYFrictions = () => {
     this.ship.xyAndFriction();
+    this.asteroidHandleXYFriction();
     const newXY = this.ship.getXY();
     this.x = newXY.x;
     this.y = newXY.y;
@@ -91,8 +104,7 @@ export class AsteroidsMainComponent implements OnInit {
   public initializeBoardAndContext = (): void => {
     this.board = document.getElementById("aster");
     this.ctx = this.board.getContext("2d");
-
-    const mainContainer = document.getElementById("main");
+    
     this.boardWidth = this.boardDimensions;
     this.boardHeight = this.boardDimensions;
 
@@ -109,6 +121,7 @@ export class AsteroidsMainComponent implements OnInit {
   public initializeGameObject = (): void => {
     this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx, this.x, this.y);
     this.ship = this.gameObject.ship;
+    this.asteroids = [ ...Array(5).keys() ].map(() => new Asteroid(this.ctx));
 
     // Function to draw whether the game is paused or active
     this.writeGameActiveText = giveTextForDiv(this.eng);
@@ -139,26 +152,49 @@ export class AsteroidsMainComponent implements OnInit {
   }
 
   public outOfBorders = () => {
-            
-    if (this.x > this.boardDimensions) {
-        this.x = this.x - this.boardDimensions;
-    }
+    this.shipOutOfBorders();
+    this.asteroidsHandleOutOfBorders();
+  }
 
-    if (this.x < 0) {
-        this.x = this.boardDimensions;
-    }
-    
-    if (this.y > this.boardDimensions) {
-        this.y = this.y - this.boardDimensions;
-    }
-    
-    if (this.y < 0) {
-        this.y = this.boardDimensions;
-    }
+public asteroidsHandleOutOfBorders = () => this.asteroids.forEach(aster => aster.handleAsteroidBorder());
 
-    this.ship.setXY(
-      this.x, this.y
-    );
+public asteroidHandleXYFriction = () => { 
+  this.asteroids.forEach(aster => aster.asteroidXYFriction());
+
+  // Account for when Asteroids collide
+  asteroidsCollisons(this.asteroids);
+}
+
+public drawAsteroids = () => this.asteroids.forEach(aster => aster.draw());
+
+public hasShellHitAnyAsteroid = shells => this.asteroids.forEach(aster => aster.hasShellHitAsteroid(shells));
+
+public filterOutAllDestroyedAsteroids = () => {
+  this.asteroids = this.asteroids.filter(aster => {
+    return aster.asteroidHealth > 0;
+  });
+}
+
+public shipOutOfBorders = () => {
+  if (this.x > this.boardDimensions) {
+    this.x = this.x - this.boardDimensions;
+  }
+
+  if (this.x < 0) {
+    this.x = this.boardDimensions;
+  }
+
+  if (this.y > this.boardDimensions) {
+    this.y = this.y - this.boardDimensions;
+  }
+
+  if (this.y < 0) {
+    this.y = this.boardDimensions;
+  }
+
+  this.ship.setXY(
+    this.x, this.y
+  );
 }
 
   public handleKeyUp = e => {

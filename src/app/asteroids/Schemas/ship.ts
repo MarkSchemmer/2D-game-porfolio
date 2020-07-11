@@ -15,12 +15,11 @@ export class Ship implements GameObj {
     public curve2  = 0.75;
     public radius = 10;
     public shipColor = "#ffffff";
+    public shipBlasterColor = "red";
     public ctx = null;
     public angle = 0.5 * Math.PI / 2;
     public sides = 3;
-    public canvas = document.getElementById("aster");
     public shipControls: ShipControles = new ShipControles();
-    public angleToTrack = -Math.PI / 2;
     public shells: Shell[] = [];
 
     public shipAngle = 270;
@@ -38,6 +37,10 @@ export class Ship implements GameObj {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
+    }
+
+    public filterOutAllLasersThatHaveHitAsteroid = () => {
+        this.shells = this.shells.filter(shell => shell.hasHitAsteroid === false);
     }
 
     public incrementAngle = () => {
@@ -216,14 +219,14 @@ export class Ship implements GameObj {
       }
 
        public ogienZdupy = (context = this.ctx) => {
-        context.fillStyle = "red";
+        context.fillStyle = this.shipBlasterColor;
         context.beginPath();
         context.moveTo(-8, 0);
         context.lineTo(-12, -10);
         context.lineTo(-25, 0);
         context.lineTo(-12, 10);
         context.lineTo(-8, 0);
-        context.strokeStyle = "red";
+        context.strokeStyle = this.shipBlasterColor;
         context.stroke();
         context.fill();
     }
