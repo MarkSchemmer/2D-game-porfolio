@@ -1,0 +1,30 @@
+
+Notes on the development of asteroids per level and where they should load...
+
+
+Asteroids loading positions:
+
+	- Two should load on the (Note: (x,y)) -> (0, range(10, 400)), (425, range(450, 750)
+	  Did the same for the y axis and seems okay for the moment... 
+
+	- Need to add more spaces to add random asteroids... 
+
+
+Rounds for game -> 12, time of starting round 1 minute, number of asteroids for 1st round -> 30
+
+	- Add about 20 seconds after each round
+
+	- Add another 30 ( or set of asteroids) asteroids after each round 
+
+	- Release next round of asteroids after each 2 seconds each round of asteroids should about ~5
+
+	- On round 4 introduce power ups for ship and add Space craft which, which moves towards and shoots at 
+	  space ship and avoids space ship shells and avoids asteroids... 
+
+
+How to display timer and what should it say:
+
+	- Between instructions and game board show level and then below
+	- Show Time left in round: Time ticking down which has it's independent timer for round and 
+
+	  

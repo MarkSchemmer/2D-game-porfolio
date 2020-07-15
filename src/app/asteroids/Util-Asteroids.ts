@@ -43,11 +43,26 @@ export const asteroidsCollisons = (asteroids: Asteroid[]) => {
 
             const distance = distanceFormula(asterX, asterY, innerAsterX, innerAsterY);
 
-            if (distance <= aster.radius * 2 || distance <= innerAsteroids.radius * 2) {
+            if (distance < aster.radius * 2 || distance < innerAsteroids.radius * 2) {
                 aster.changeAsteroidDirection();
                 innerAsteroids.changeAsteroidDirection();
             }
         });
 
     });
+};
+
+export const asteroidRandomGenerator = ctx => {
+    return [
+        new Asteroid(ctx, 0, genNumbBetweenRange(0, 100)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(175, 300)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(350, 400)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(400, 550)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(600, 750)),
+        new Asteroid(ctx, genNumbBetweenRange(0, 100), 0),
+        new Asteroid(ctx, genNumbBetweenRange(175, 300), 0),
+        new Asteroid(ctx, genNumbBetweenRange(350, 400), 0),
+        new Asteroid(ctx, genNumbBetweenRange(400, 550), 0),
+        new Asteroid(ctx, genNumbBetweenRange(600, 750), 0)
+    ];
 };

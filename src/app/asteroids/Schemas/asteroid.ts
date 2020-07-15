@@ -20,12 +20,14 @@ export class Asteroid {
     public boardDimensions = 800;
     public asteroidHealth = 100;
 
-    constructor(ctx) {
+    constructor(ctx, x, y) {
         this.ctx = ctx;
         this.dtx = genRandomDirectionForAsteroid();
         this.dty = genRandomDirectionForAsteroid();
         this.sides = genNumbBetweenRange(7, 10);
         this.radius = genNumbBetweenRange(20, 30);
+        this.ax = x;
+        this.ay = y;
     }
 
     public draw = () => {
@@ -51,7 +53,7 @@ export class Asteroid {
     }
 
     public asteroidXYFriction = () => {
-        this.ax += this.dtx * 1; // Just for extra speed
+        this.ax += this.dtx; // Just for extra speed
         this.ay += this.dty;
     }
 

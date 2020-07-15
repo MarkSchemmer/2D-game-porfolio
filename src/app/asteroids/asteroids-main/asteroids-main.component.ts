@@ -5,7 +5,7 @@ import { Directions } from "../Schemas/Game-Direction-Types";
 import { gameObject } from "../Schemas/game-object";
 import { giveTextForDiv } from "../Schemas/GameNotesAndOtherInstructions";
 import { Ship } from "../Schemas/ship";
-import { asteroidsCollisons } from "../Util-Asteroids";
+import { asteroidRandomGenerator, asteroidsCollisons } from "../Util-Asteroids";
 
 @Component({
   selector: "app-asteroids-main",
@@ -121,7 +121,9 @@ export class AsteroidsMainComponent implements OnInit {
   public initializeGameObject = (): void => {
     this.gameObject = gameObject(this.boardWidth / 2, this.boardHeight - 75, this.ctx, this.x, this.y);
     this.ship = this.gameObject.ship;
-    this.asteroids = [ ...Array(5).keys() ].map(() => new Asteroid(this.ctx));
+    this.asteroids = asteroidRandomGenerator(this.ctx);
+    
+    // [ ...Array(5).keys() ].map(() => new Asteroid(this.ctx));
 
     // Function to draw whether the game is paused or active
     this.writeGameActiveText = giveTextForDiv(this.eng);
@@ -158,11 +160,11 @@ export class AsteroidsMainComponent implements OnInit {
 
 public asteroidsHandleOutOfBorders = () => this.asteroids.forEach(aster => aster.handleAsteroidBorder());
 
-public asteroidHandleXYFriction = () => { 
-  this.asteroids.forEach(aster => aster.asteroidXYFriction());
-
+public asteroidHandleXYFriction = () => {
   // Account for when Asteroids collide
   asteroidsCollisons(this.asteroids);
+
+  this.asteroids.forEach(aster => aster.asteroidXYFriction());
 }
 
 public drawAsteroids = () => this.asteroids.forEach(aster => aster.draw());
