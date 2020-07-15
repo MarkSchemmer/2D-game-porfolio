@@ -1,7 +1,13 @@
 
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    font-size: 1.2em;
+}
+
 #main {
     float: right;
-    margin-right: 50px;
+    margin-right: 150px;
 }
 
 canvas {
@@ -9,4 +15,12 @@ canvas {
     background-color: black;
     overflow-x: hidden;
     overflow-y: hidden;
+}
+
+#instruct-menu {
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 15px;
 }
