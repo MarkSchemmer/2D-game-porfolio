@@ -6,7 +6,7 @@ export const genNumbInRange = max => {
     return Math.floor(Math.random() * Math.floor(max));
 };
 
-export const genNumbBetweenRange = (max, min) => {
+export const genNumbBetweenRange = (min, max) => {
     return Math.floor(Math.random() * (max - min)) + min;
 };
 
@@ -33,19 +33,51 @@ export const distanceFormula = (x1, y1, x2, y2) => {
     );
 };
 
+export const distanceFormulaWithoutAbs = (x1, y1, x2, y2) => {
+    return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+};
+
+export const calcAngle = (a1: Asteroid, a2: Asteroid) => {
+    const dx = a2.ax - a1.ax;
+    const dy = a2.ay - a1.ay;
+    const angle = Math.atan2(dx, dy) * 180 / Math.PI;
+    return angle < 0 ? angle + 360 : angle;
+};
+
+export const calcNewVelocitys = (a1: Asteroid, a2: Asteroid) => {
+    const x1 = (a1.vx * (a1.mass - a2.mass) + (2 * a2.mass * a2.vx)) / (a1.mass + a2.mass);
+    const y1 = (a1.vy * (a1.mass - a2.mass) + (2 * a2.mass * a2.vy)) / (a1.mass + a2.mass);
+    const x2 = (a2.vx * (a2.mass - a1.mass) + (2 * a1.mass * a1.vx)) / (a1.mass + a2.mass);
+    const y2 = (a2.vy * (a2.mass - a1.mass) + (2 * a1.mass * a1.vy)) / (a1.mass + a2.mass);
+    return {
+        newVx1: x1,
+        newVy1: y1,
+        newVx2: x2,
+        newVy2: y2
+    };
+};
+
+// Need to add function so it doesn't check same asteroid twice
+// Need to add id to asteroid so unique id is generated for every asteroid
+// Filter out asteroid
+
 export const asteroidsCollisons = (asteroids: Asteroid[]) => {
     asteroids.forEach((aster, idx) => {
         const asterX = aster.ax;
         const asterY = aster.ay;
-        asteroids.slice(idx).forEach(innerAsteroids => {
-            const innerAsterX = innerAsteroids.ax;
-            const innerAsterY = innerAsteroids.ay;
+        asteroids.slice(idx + 1).forEach(innerAsteroid => {
+            const innerAsterX = innerAsteroid.ax;
+            const innerAsterY = innerAsteroid.ay;
 
-            const distance = distanceFormula(asterX, asterY, innerAsterX, innerAsterY);
+            const distance = distanceFormulaWithoutAbs(asterX, asterY, innerAsterX, innerAsterY);
 
-            if (distance < aster.radius * 2 || distance < innerAsteroids.radius * 2) {
-                aster.changeAsteroidDirection();
-                innerAsteroids.changeAsteroidDirection();
+            const rad1 = aster.radius;
+            const rad2 = innerAsteroid.radius;
+
+            if (distance < (rad1 + rad2)) {
+                const { newVx1, newVy1, newVx2, newVy2 } = calcNewVelocitys(aster, innerAsteroid);
+                aster.changeAsteroidDirection(newVx1, newVy1);
+                innerAsteroid.changeAsteroidDirection(newVx2, newVy2);
             }
         });
 
@@ -56,13 +88,12 @@ export const asteroidRandomGenerator = ctx => {
     return [
         new Asteroid(ctx, 0, genNumbBetweenRange(0, 100)),
         new Asteroid(ctx, 0, genNumbBetweenRange(175, 300)),
-        new Asteroid(ctx, 0, genNumbBetweenRange(350, 400)),
-        new Asteroid(ctx, 0, genNumbBetweenRange(400, 550)),
-        new Asteroid(ctx, 0, genNumbBetweenRange(600, 750)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(375, 450)),
+        new Asteroid(ctx, 0, genNumbBetweenRange(500, 650)),
         new Asteroid(ctx, genNumbBetweenRange(0, 100), 0),
         new Asteroid(ctx, genNumbBetweenRange(175, 300), 0),
         new Asteroid(ctx, genNumbBetweenRange(350, 400), 0),
-        new Asteroid(ctx, genNumbBetweenRange(400, 550), 0),
+        new Asteroid(ctx, genNumbBetweenRange(450, 550), 0),
         new Asteroid(ctx, genNumbBetweenRange(600, 750), 0)
     ];
 };

@@ -8,13 +8,16 @@ import { Shell } from "./Shell";
 export class Asteroid {
     public ctx;
     public radius;
-    public dtx;
-    public dty;
+    public mass;
+    
+    // Delt with v for delta for change...
+    public vx;
+    public vy;
+
     public sides; 
     public ax = 0;
     public ay = genNumbBetweenRange(0, 800);
-    public vx = 0;
-    public vy = 0;
+
     public frict = 0.99;
     public asteroidColor = "white";
     public boardDimensions = 800;
@@ -22,10 +25,11 @@ export class Asteroid {
 
     constructor(ctx, x, y) {
         this.ctx = ctx;
-        this.dtx = genRandomDirectionForAsteroid();
-        this.dty = genRandomDirectionForAsteroid();
+        this.vx = genRandomDirectionForAsteroid();
+        this.vy = genRandomDirectionForAsteroid();
         this.sides = genNumbBetweenRange(7, 10);
         this.radius = genNumbBetweenRange(20, 30);
+        this.mass = this.radius;
         this.ax = x;
         this.ay = y;
     }
@@ -36,7 +40,7 @@ export class Asteroid {
         this.ctx.stroke();
     }
 
-    public changeAsteroidDirection = () => {
+    public changeAsteroidDirection = (vx, vy) => {
 
         /*
             Need to remove collision method to Util-Asteroids.ts file
@@ -48,13 +52,16 @@ export class Asteroid {
             For the moment this basic implementation will do... 
         */
 
-        this.dtx = this.dtx * -1;
-        this.dty = this.dty * -1;
+        this.vx = vx;
+        this.vy = vy;
+
+        this.ax = this.ax + this.vx;
+        this.ay = this.ay + this.vy;
     }
 
     public asteroidXYFriction = () => {
-        this.ax += this.dtx; // Just for extra speed
-        this.ay += this.dty;
+        this.ax += this.vx;
+        this.ay += this.vy;
     }
 
     public handleAsteroidBorder = () => {

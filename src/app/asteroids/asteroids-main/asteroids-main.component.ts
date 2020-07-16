@@ -161,10 +161,9 @@ export class AsteroidsMainComponent implements OnInit {
 public asteroidsHandleOutOfBorders = () => this.asteroids.forEach(aster => aster.handleAsteroidBorder());
 
 public asteroidHandleXYFriction = () => {
-  // Account for when Asteroids collide
-  asteroidsCollisons(this.asteroids);
-
   this.asteroids.forEach(aster => aster.asteroidXYFriction());
+    // Account for when Asteroids collide
+  asteroidsCollisons(this.asteroids);
 }
 
 public drawAsteroids = () => this.asteroids.forEach(aster => aster.draw());
