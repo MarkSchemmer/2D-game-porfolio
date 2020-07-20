@@ -28,7 +28,7 @@ export class Ship implements GameObj {
     public vx = 0;
     public vy = 0;
     public dv = 0.2;
-    public maxVel = 10;
+    public maxVel = 8;
     public dt = 1;
     public frict = 0.99;
     public shipFireRate = -20;
@@ -65,12 +65,12 @@ export class Ship implements GameObj {
         this.vx += this.dv * Math.cos(angleToRadians(this.shipAngle)); // friction;
         this.vy += this.dv * Math.sin(angleToRadians(this.shipAngle)); // friction;
 
-        if (this.vx > this.maxVel) {
-            this.vx = this.maxVel;
+        if (Math.abs(this.vx) > this.maxVel) {
+            this.vx = this.vx < 0 ? -this.maxVel : this.maxVel;
         }
 
-        if (this.vy > this.maxVel) {
-            this.vy = this.maxVel;
+        if (Math.abs(this.vy) > this.maxVel) {
+            this.vy = this.vy < 0 ? -this.maxVel : this.maxVel;
         }
     }
 
@@ -99,7 +99,7 @@ export class Ship implements GameObj {
         if (this.shipControls.fire && this.shipFireRate > 60) {
             const x = this.x;
             const y = this.y;
-            const newShell = new Shell(x, y, this.ctx, this.shipAngle);
+            const newShell = new Shell(x, y, this.ctx, this.shipAngle, this.vx, this.vy);
             this.shells.push(newShell);
             this.shipFireRate = -20;
         }
