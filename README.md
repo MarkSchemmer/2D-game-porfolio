@@ -1,13 +1,24 @@
 # AcmeProductNgrx Porfolio project
 
+Technologies: 
+
+- Angular
+- JavaScript/TypeScript
+- Jest
+
+<br />
+
+<hr>
+
 - This is a porfolio project contianing multiple small 2d games
 
-- Games
+Games: 
+
     - TicTacToe
     - Solitaire
     - Conways game of life
     - Classic Pong vs ai
-    - Asteroids -> in development
+    - Asteroids -> (in development)
 
 # TicTacToe vs Bot
 
@@ -28,5 +39,10 @@
 # Classic Pong 
 
 ![Pong](./gifs/classic-pong.gif)
+
+
+# Asteroids Classic
+
+![Asteroids](./gifs/astroids.gif)
 
     
