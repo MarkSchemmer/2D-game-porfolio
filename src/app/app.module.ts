@@ -17,13 +17,15 @@ import { StaticFooterComponent } from "./static-footer/static-footer.component";
 import { StaticHeaderComponent } from "./static-header/static-header.component";
 import { TicTacToeModule } from "./tic-tac-toe-page/tic-tac-toe.module";
 import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
+import { SnakeComponent } from './snake/snake-board/snake.component';
+import { SnakeModule } from "./snake/snake.module";
 
 @NgModule({
   declarations: [
     AppComponent,
     StaticHeaderComponent,
     StaticFooterComponent,
-    WelcomePageComponent
+    WelcomePageComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,8 @@ import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
     BrowserAnimationsModule,
     ConwaysGameOfLifeModule,
     PongModule,
-    AsteroidsModule
+    AsteroidsModule,
+    SnakeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

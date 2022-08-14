@@ -1,0 +1,13 @@
+.container {
+    // margin: auto;
+    max-width: 1560px;
+    margin: auto;
+}
+
+#snake-board {
+    border: 1px solid black;
+    margin-left: calc(50% - 400px);
+    //width: 800px;
+    //height: 800px;
+    margin-top: 50px;
+}
