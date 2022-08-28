@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Coordinate, KeyStroke } from 'src/app/common/utils';
+import { Snake } from './snake';
 
 @Component({
   selector: 'app-snake',
@@ -12,10 +13,11 @@ export class SnakeComponent implements OnInit {
   public snake: Snake;
   private readonly RESOLUTION = 12;
   private readonly BOARD_DIMENSIONS = 800;
-  private readonly gameSpeed = 150;
+  private readonly gameSpeed = 100;
   public runner: Boolean = false;
   public gameLooper = null;
   public userInputForIteration: KeyStroke = null;
+  public snakeDelta: number = 0.5;
 
 
 
@@ -46,25 +48,26 @@ export class SnakeComponent implements OnInit {
     // game loop guard. 
     if(this.runner === false || this.gameLooper === null) return;
     // Take UserInput.
-    let userInput = this.userInputForIteration; 
+    let userInput = this.userInputForIteration;
+
     // calculate
       // taking user game input.
     this.handleUserInput(userInput);
     // moving game objects
     // clean
     // re-draw
-    this.draw();
+    this.draw(userInput);
     // Reset user input to null so no uneeded commands are used on accident.
     this.userInputForIteration = null;
 
     this.startGame();
   }
 
-  draw = () => {
+  draw = (input: KeyStroke = null) => {
     // clean board
     this.cleanBoard();
     // draw snake
-    this.snake.drawSnake();
+    this.snake.drawSnake(input);
   }
 
   handleUserInput = (userInput: KeyStroke) => {
@@ -90,11 +93,8 @@ export class SnakeComponent implements OnInit {
   handleKeyboardStrokes = (key) => {
     // use for starting and stoping game. 
     // Snake Controls
-
-    console.log(key);
     
     const value: string = key.key.toLowerCase();
-
     console.log(value);
 
     switch(value) {
@@ -118,9 +118,11 @@ export class SnakeComponent implements OnInit {
         break;
       }
       case KeyStroke.ArrowLeft.toLowerCase(): {
+        this.userInputForIteration = KeyStroke.ArrowLeft;
         break;
       }
       case KeyStroke.ArrowRight.toLowerCase(): {
+        this.userInputForIteration = KeyStroke.ArrowRight;
         break;
       }
       default: {
@@ -136,67 +138,18 @@ export class SnakeComponent implements OnInit {
     this.ctx = this.snakeBoard.getContext("2d");
     this.snakeBoard.width = this.BOARD_DIMENSIONS;
     this.snakeBoard.height = this.BOARD_DIMENSIONS;
-    this.snake = new Snake(this.ctx, this.RESOLUTION, this.BOARD_DIMENSIONS);
+    this.snake = new Snake(this.ctx, this.RESOLUTION, this.BOARD_DIMENSIONS, this.snakeDelta);
 
     // attach event listener for keydown.
     // window.addEventListener("keydown", this.handleKeyboardStrokes);
     // window.addEventListener("keyup", this.handleKeyboardStrokes);
 
     document.onkeydown = this.handleKeyboardStrokes;
-    document.onkeyup = this.handleKeyboardStrokes;
+    // document.onkeyup = this.handleKeyboardStrokes;
   }
 }
 
-class Snake {
-  private ctx;
-  private readonly black = "#000";
-  private readonly snakeBodyDimensions = 50
-  private readonly res;
-  private readonly boardDimensions
 
-  private snakeBody: Coordinate;
-
-  constructor(ctx, RESOLUTION, boardDimensions){
-    this.ctx = ctx;
-    this.res = RESOLUTION;
-    this.boardDimensions = boardDimensions;
-    this.snakeBody = new Coordinate(400, 400);
-    this.drawSnakeStartingPos();
-  }
-
-  moveSnake = () => {
-
-    if (this.snakeBody.x > this.boardDimensions) {
-      this.snakeBody.x = 0;
-    } else if(this.snakeBody.x < 0) {
-      this.snakeBody.x = this.boardDimensions;
-    }
-
-    if (this.snakeBody.y > this.boardDimensions) {
-      this.snakeBody.y = 0;
-    } else if (this.snakeBody.y < 0) {
-      this.snakeBody.y = this.boardDimensions;
-    }
-
-    /// this.snakeBody.x = this.snakeBody.x + 0.5;
-    this.snakeBody.y = this.snakeBody.y + 0.5;
-  }
-
-  drawSnakeStartingPos = () => {
-    const {x, y} = this.snakeBody;
-    this.ctx.beginPath();
-    this.ctx.rect(x, y, 1 * this.res, 1 * this.res);
-    this.ctx.fillStyle = this.black;
-    this.ctx.fill();
-    this.ctx.closePath();
-  }
-
-  drawSnake = () => {
-    // Move snake then draw snake.
-    this.moveSnake();
-    this.drawSnakeStartingPos();
-  }
-}
 
 /* *Notes for game TODOS.*
 
