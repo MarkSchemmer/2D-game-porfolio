@@ -38,7 +38,7 @@ export class Snake {
         new SnakeBodyParts(north, new Coordinate(400, 424), this.delta, this.boardDimensions),
         new SnakeBodyParts(north, new Coordinate(400, 436), this.delta, this.boardDimensions),
         new SnakeBodyParts(north, new Coordinate(400, 448), this.delta, this.boardDimensions)
-      ].reverse();
+      ];
       this.drawSnakeStartingPos(this.snakeBody);
     }
   
@@ -233,15 +233,15 @@ export class Snake {
     }
 
     handleCoorDinateBorderOnMap = () => {
-        if (this.coor.x > this.boardDimensions) {
+        if (this.coor.x >= this.boardDimensions) {
             this.coor.x = 0;
-        } else if(this.coor.x < 0) {
+        } else if(this.coor.x <= 0) {
             this.coor.x = this.boardDimensions;
         }
     
-        if (this.coor.y > this.boardDimensions) {
+        if (this.coor.y >= this.boardDimensions) {
             this.coor.y = 0;
-        } else if (this.coor.y < 0) {
+        } else if (this.coor.y <= 0) {
             this.coor.y = this.boardDimensions;
         }
     }

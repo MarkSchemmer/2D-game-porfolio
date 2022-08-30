@@ -55,12 +55,9 @@ export class SnakeComponent implements OnInit {
   cleanBoard = () => {
     this.ctx.clearRect(0, 0, 800, 800);
   }
-  gameLoop = async () => {
+  gameLoop = () => {
     // game loop guard. 
     if(this.runner === false || this.gameLooper === null) return;
-    
-    this.startGame();
-
     let now = Date.now();
     let elapsed = now - this.then;
 
@@ -78,6 +75,8 @@ export class SnakeComponent implements OnInit {
       // Reset user input to null so no uneeded commands are used on accident.
       this.userInputForIteration = null;
     }
+
+    this.startGame();
   }
 
   draw = (input: KeyStroke = null) => {
