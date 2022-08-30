@@ -1,20 +1,12 @@
-// import { Directions } from "src/app/asteroids/Schemas/Game-Direction-Types";
 import { Coordinate, Directions, KeyStroke } from "src/app/common/utils";
-import { deepClone2 } from "src/app/conways-game-of-life/Util/ConwaysUtils";
 
 export class Snake {
     private ctx;
-    private readonly black = "#000";
-    private readonly snakeBodyDimensions = 50
-    private readonly res;
     private readonly boardDimensions
     private snakeBody: SnakeBodyParts[] = [];
     public delta: number = 12;
-
     public snakeBodyCount = 5;
-
     public snakeBodySize = 12;
-
     public keyStrokeIterations: Directions[] = [];
 
     public DirectionController: Directions[] = [
@@ -27,7 +19,6 @@ export class Snake {
 
     constructor(ctx, RESOLUTION, boardDimensions, snakeDelta) {
       this.ctx = ctx;
-      this.res = RESOLUTION;
       this.boardDimensions = boardDimensions;
       this.delta = snakeDelta;
       let north = Directions.NORTH;
@@ -120,26 +111,18 @@ export class Snake {
     }
   
     drawSnake = (input: KeyStroke) => {
-      // If input is left, then we rotate head 90 degrees left
-      // If input is right then we rotate head 90 degrees right
-      // Move snake then draw snake.
       let hasEaten = this.HasEaten(input);
       this.snakeBody = this.moveSnake(input, hasEaten);
       this.drawSnakeStartingPos(this.snakeBody);
     }
   }
 
-
   /*
-  
           Movement of snake..
-
             +x -> moving right
             -x -> moving left
             +y -> moving down
             -y -> moving up
-  
-  
   */ 
 
   class SnakeBodyParts {
@@ -165,7 +148,6 @@ export class Snake {
         this.boardDimensions = boardDimensions;
         this.currentDirectionIndex = currDirectrionIdx;
     }
-
 
     Rotate90DegreeRight = () => {
         this.currentDirectionIndex = this.currentDirectionIndex + 1;
