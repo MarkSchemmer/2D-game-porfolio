@@ -13,13 +13,17 @@ export class SnakeComponent implements OnInit {
   public snake: Snake;
   private readonly RESOLUTION = 12;
   private readonly BOARD_DIMENSIONS = 800;
-  private readonly gameSpeed = 100;
+  private readonly gameSpeed = 1000;
   public runner: Boolean = false;
   public gameLooper = null;
   public userInputForIteration: KeyStroke = null;
-  public snakeDelta: number = 0.5;
+  public snakeDelta: number = 12;
 
+  public fpsInterval;
+  public then;
+  public startTime;
 
+  public fps = 10;
 
   constructor() {
 
@@ -29,38 +33,51 @@ export class SnakeComponent implements OnInit {
     this.initialGameSetup();
   }
 
-  startGame = () => {
+   startAnimating = () => {
+    this.fpsInterval = 1000 / this.fps;
+    this.then = Date.now();
+    this.startTime = this.then;
     this.runner = true;
-    this.gameLooper = setInterval(this.gameLoop, this.gameSpeed)
+    this.startGame();
+  }
+
+  startGame = () => {
+    // this.runner = true;
+    this.gameLooper = requestAnimationFrame(this.gameLoop);
   }
 
   stopGame = () => {
-    this.runner = false;
-    clearInterval(this.gameLooper);
+    cancelAnimationFrame(this.gameLooper);
     this.gameLooper = null;
+    this.runner = false;
   }
 
   cleanBoard = () => {
     this.ctx.clearRect(0, 0, 800, 800);
   }
-
-  gameLoop = () => {
+  gameLoop = async () => {
     // game loop guard. 
     if(this.runner === false || this.gameLooper === null) return;
-    // Take UserInput.
-    let userInput = this.userInputForIteration;
-
-    // calculate
-      // taking user game input.
-    this.handleUserInput(userInput);
-    // moving game objects
-    // clean
-    // re-draw
-    this.draw(userInput);
-    // Reset user input to null so no uneeded commands are used on accident.
-    this.userInputForIteration = null;
-
+    
     this.startGame();
+
+    let now = Date.now();
+    let elapsed = now - this.then;
+
+    if (elapsed > this.fpsInterval) {
+      this.then = now - (elapsed % this.fpsInterval);
+      // Take UserInput.
+      let userInput = this.userInputForIteration;
+      // calculate
+        // taking user game input.
+      this.handleUserInput(userInput);
+      // moving game objects
+      // clean
+      // re-draw
+      this.draw(userInput);
+      // Reset user input to null so no uneeded commands are used on accident.
+      this.userInputForIteration = null;
+    }
   }
 
   draw = (input: KeyStroke = null) => {
@@ -74,7 +91,6 @@ export class SnakeComponent implements OnInit {
     switch(userInput) {
       case KeyStroke.S: {
         if (this.gameLooper === null) {
-          console.log("game started.");
           this.startGame();
         }
         break;
@@ -85,7 +101,7 @@ export class SnakeComponent implements OnInit {
         break;
       }
       default: {
-        console.log("No valid user input for this iteration. ");
+        // console.log("No valid user input for this iteration. ");
       }
     }
   }
@@ -95,26 +111,27 @@ export class SnakeComponent implements OnInit {
     // Snake Controls
     
     const value: string = key.key.toLowerCase();
-    console.log(value);
+    // console.log(value);
 
     switch(value) {
       case KeyStroke.P.toLowerCase(): {
         this.userInputForIteration = KeyStroke.P;
         if (this.gameLooper != null) {
           this.stopGame(); 
-          console.log(this.runner);
+          // console.log(this.runner);
         }
         break;
       }
       case KeyStroke.S.toLowerCase(): {
         this.userInputForIteration = KeyStroke.S;
         if (this.gameLooper === null || this.runner === false) {
-          this.startGame();
-          console.log(this.runner);
+          this.startAnimating();
+          // console.log(this.runner);
         }
         break;
       }
       case KeyStroke.R.toLowerCase(): {
+        this.userInputForIteration = KeyStroke.R;
         break;
       }
       case KeyStroke.ArrowLeft.toLowerCase(): {

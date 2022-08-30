@@ -1,5 +1,6 @@
 // import { Directions } from "src/app/asteroids/Schemas/Game-Direction-Types";
 import { Coordinate, Directions, KeyStroke } from "src/app/common/utils";
+import { deepClone2 } from "src/app/conways-game-of-life/Util/ConwaysUtils";
 
 export class Snake {
     private ctx;
@@ -8,10 +9,23 @@ export class Snake {
     private readonly res;
     private readonly boardDimensions
     private snakeBody: SnakeBodyParts[] = [];
-    public delta: number = 0.5;
+    public delta: number = 12;
+
+    public snakeBodyCount = 5;
+
+    public snakeBodySize = 12;
+
+    public keyStrokeIterations: Directions[] = [];
+
+    public DirectionController: Directions[] = [
+        Directions.NORTH,
+        Directions.EAST,
+        Directions.SOUTH,
+        Directions.WEST
+    ];
 
 
-    constructor(ctx, RESOLUTION, boardDimensions, snakeDelta){
+    constructor(ctx, RESOLUTION, boardDimensions, snakeDelta) {
       this.ctx = ctx;
       this.res = RESOLUTION;
       this.boardDimensions = boardDimensions;
@@ -24,11 +38,11 @@ export class Snake {
         new SnakeBodyParts(north, new Coordinate(400, 424), this.delta, this.boardDimensions),
         new SnakeBodyParts(north, new Coordinate(400, 436), this.delta, this.boardDimensions),
         new SnakeBodyParts(north, new Coordinate(400, 448), this.delta, this.boardDimensions)
-      ]
-      this.drawSnakeStartingPos();
+      ].reverse();
+      this.drawSnakeStartingPos(this.snakeBody);
     }
   
-    moveSnake = (input: KeyStroke = null) => {
+    moveSnake = (input: KeyStroke = null, hasEaten) => {
 
         // Need to map snake body...
 
@@ -42,59 +56,76 @@ export class Snake {
         
         */
 
-        let prev: Coordinate = null;
+        let head = this.snakeBody[0];
+        let x = head.coor.x;
+        let y = head.coor.y;
+        let dir = head.directionPath;
+        let idx = head.currentDirectionIndex;
 
+        let newHead = new SnakeBodyParts(
+            dir, new Coordinate(x, y), this.delta, this.boardDimensions, idx
+        );
+
+        if (input === KeyStroke.ArrowLeft)
+        {
+            newHead.Rotate90DegreeLeft();
+        } 
+        else if (input === KeyStroke.ArrowRight) 
+        {
+            newHead.Rotate90DegreeRight();
+        }
+
+        newHead.MoveBodyPartOnDirection();
+
+          /*
+                Movement of snake..
+                        +x -> moving right
+                        -x -> moving left
+                        +y -> moving down
+                        -y -> moving up
+        */ 
+
+        this.snakeBody = [newHead, ...this.snakeBody]; 
+
+        if (hasEaten === false || hasEaten === null) {
+            this.snakeBody.pop();
+        }
         
 
-        this.snakeBody = this.snakeBody.map((currentBodyPart: SnakeBodyParts, index: number) => {
-            // Need to store current for next iteration
-            // let prev: SnakeBodyParts = {...currentBodyPart}
-            // test if we're on head
-            // console.log(prev);
-            if (index === 0) {
-                prev = currentBodyPart.coor;
-                if (input === KeyStroke.ArrowLeft) {
-                   currentBodyPart.directionPath = currentBodyPart.Rotate90DegreeLeft();     
-                } else if (input === KeyStroke.ArrowRight) {
-                 currentBodyPart.directionPath = currentBodyPart.Rotate90DegreeRight();
-               }
+        console.log(this.snakeBody.length);
 
-               // Move body part with new path.
-               // Then return this new direction.
-               let temp = currentBodyPart.coor;
-               // currentBodyPart.coor = prev;
-               prev = temp;
-               currentBodyPart.MoveBodyPartOnDirection();
-               return currentBodyPart;
-            } else {
-                let temp = currentBodyPart.coor;
-                currentBodyPart.coor = prev;
-                prev = temp;
-                return currentBodyPart;
-            }
-        });
-
-        this.snakeBody.forEach(body => console.log(body.coor));
-        alert("read console. ");
+        return this.snakeBody;
     }
   
-    drawSnakeStartingPos = () => {
-      this.ctx.beginPath();
-      this.snakeBody.forEach((bodyPart: SnakeBodyParts) => {
+    drawSnakeStartingPos = (snake) => {
+      const colors = ["#ff0000", "#ffb900", "#0202f6", "#02fb03", "#ffd6f3"];
+      (snake).forEach((bodyPart: SnakeBodyParts, idx: number) => {
+        // console.log(bodyPart.coor);
+        this.ctx.beginPath();
         const {x, y} = bodyPart.coor;
-        this.ctx.rect(x, y, 1 * this.res, 1 * this.res);
-        this.ctx.fillStyle = this.black;
+        this.ctx.rect(x, y, 12, 12);
+        this.ctx.fillStyle = colors[idx];
         this.ctx.fill();
+        this.ctx.closePath();
       });
-      this.ctx.closePath();
+    }
+
+    HasEaten = (input: KeyStroke) => {
+        if (input === KeyStroke.R) {
+            this.snakeBodyCount = this.snakeBodyCount + 1;
+            return true;
+        }
+
+        return false;
     }
   
     drawSnake = (input: KeyStroke) => {
       // If input is left, then we rotate head 90 degrees left
       // If input is right then we rotate head 90 degrees right
       // Move snake then draw snake.
-      this.moveSnake(input);
-      this.drawSnakeStartingPos();
+      let hasEaten = this.HasEaten(input);
+      this.snakeBody = this.moveSnake(input, hasEaten);
+      this.drawSnakeStartingPos(this.snakeBody);
     }
   }
 
@@ -118,6 +149,7 @@ export class Snake {
     public delta: number = 0.5 // defaulted to this value...
     public currentDirectionIndex = 0;
     private boardDimensions: number;
+    public prevCoorinate: Coordinate;
 
     public DirectionController: Directions[] = [
         Directions.NORTH,
@@ -126,11 +158,12 @@ export class Snake {
         Directions.WEST
     ];
 
-    constructor(dir: Directions, coor: Coordinate, delta: number, boardDimensions) {
+    constructor(dir: Directions, coor: Coordinate, delta: number, boardDimensions, currDirectrionIdx: number = 0) {
         this.directionPath = dir;
         this.coor = coor;
         this.delta = delta;
         this.boardDimensions = boardDimensions;
+        this.currentDirectionIndex = currDirectrionIdx;
     }
 
 
@@ -146,6 +179,26 @@ export class Snake {
         // alert("We are going: " +this.directionPath.toString());
     }
 
+    Rotate90DegreeRightPure = (idx: number) => {
+        let index = idx + 1;
+
+        if (index > 3) {
+            index = 0;
+        } 
+        
+        return this.DirectionController[index];
+    }
+
+    Rotate90DegreeLeftPure = (idx: number) => {
+        let index = idx - 1;
+
+        if (index < 0) {
+            index = 3;
+        }
+        
+        return this.DirectionController[index];
+    }
+
     Rotate90DegreeLeft = () => {
         this.currentDirectionIndex = this.currentDirectionIndex - 1;
         if (this.currentDirectionIndex < 0) {
@@ -155,7 +208,6 @@ export class Snake {
         
         this.directionPath = this.DirectionController[this.currentDirectionIndex];
         return this.directionPath;
-        // alert("We are going: " + this.directionPath.toString());
     }
 
     MoveNorth = () => {
@@ -171,11 +223,12 @@ export class Snake {
     }
 
     MoveWest = () => {
-        this.coor.x = this.coor.x - this.delta
+        this.coor.x = this.coor.x - this.delta;
     }
 
     MoveBodyPartOnDirection = () => {
         this.handleCoorDinateBorderOnMap();
+        // this.storePreviousCoordinates();
         this.handleDirectionMovement();
     }
 
