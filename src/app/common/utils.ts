@@ -26,3 +26,7 @@ export enum Directions {
     SOUTH = "S",
     WEST = "W"
 };
+
+export let getRandomInt = (max) =>  {
+    return Math.floor(Math.random() * max);
+}

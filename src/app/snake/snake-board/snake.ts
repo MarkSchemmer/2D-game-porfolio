@@ -1,4 +1,4 @@
-import { Coordinate, Directions, KeyStroke } from "src/app/common/utils";
+import { Coordinate, Directions, getRandomInt, KeyStroke } from "src/app/common/utils";
 
 export class Snake {
     private ctx;
@@ -8,6 +8,8 @@ export class Snake {
     public snakeBodyCount = 5;
     public snakeBodySize = 12;
     public keyStrokeIterations: Directions[] = [];
+    public foodAlive: Coordinate = null;
+    public restartGame;
 
     public DirectionController: Directions[] = [
         Directions.NORTH,
@@ -17,11 +19,12 @@ export class Snake {
     ];
 
 
-    constructor(ctx, RESOLUTION, boardDimensions, snakeDelta) {
+    constructor(ctx, RESOLUTION, boardDimensions, snakeDelta, fn) {
       this.ctx = ctx;
       this.boardDimensions = boardDimensions;
       this.delta = snakeDelta;
       let north = Directions.NORTH;
+      this.restartGame = fn;
       
       this.snakeBody = [
         new SnakeBodyParts(Directions.NORTH, new Coordinate(400, 400), this.delta, this.boardDimensions),
@@ -87,8 +90,21 @@ export class Snake {
 
         return this.snakeBody;
     }
+
+    drawFood = () => {
+        if (this.foodAlive != null) {
+            let green = "#00FF00";
+            this.ctx.beginPath();
+            const {x, y} = this.foodAlive;
+            this.ctx.rect(x, y, 12, 12);
+            this.ctx.fillStyle = green;
+            this.ctx.fill();
+            this.ctx.closePath();
+        }
+    }
   
     drawSnakeStartingPos = (snake) => {
+        
       const colors = ["#ff0000", "#ffb900", "#0202f6", "#02fb03", "#ffd6f3"];
       (snake).forEach((bodyPart: SnakeBodyParts, idx: number) => {
         // console.log(bodyPart.coor);
@@ -101,19 +117,74 @@ export class Snake {
       });
     }
 
+    hasOverLapped = (minA, maxA, minB, maxB) => {
+        return minB <= maxA && minA <= maxB;
+    }
+
     HasEaten = (input: KeyStroke) => {
-        if (input === KeyStroke.R) {
-            this.snakeBodyCount = this.snakeBodyCount + 1;
+
+        let head = this.snakeBody[0];
+
+        let hLeft = head.coor.x;
+        let hRight = hLeft + 12;
+
+        let fLeft = this.foodAlive.x;
+        let fRight = fLeft + 12;
+
+        let hBottom = head.coor.y;
+        let hTop = hBottom + 12;
+
+        let fBottom = this.foodAlive.y;
+        let fTop = fBottom + 12;
+
+        let hasOverLapped = this.hasOverLapped(hLeft, hRight, fLeft, fRight) &&
+                            this.hasOverLapped(hBottom, hTop, fBottom, fTop);
+
+        if (hasOverLapped)
+        {
+            this.foodAlive = null;
             return true;
         }
 
         return false;
     }
+
+    snakeEatenItself = () => {
+       let [h, ...rest] = this.snakeBody;
+
+        let hasOverlapped = rest.some((pt) => h.coor.x === pt.coor.x && h.coor.y === pt.coor.y);
+
+        if(hasOverlapped){
+            alert("Snake has eaten itself. ");
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    GenerateFood = () => {
+        if (this.foodAlive === null) {
+            let x = getRandomInt(750);
+            let y = getRandomInt(750);
+            this.foodAlive = new Coordinate(x,y);
+        } else {
+            return this.foodAlive;
+        }
+    }
   
     drawSnake = (input: KeyStroke) => {
-      let hasEaten = this.HasEaten(input);
-      this.snakeBody = this.moveSnake(input, hasEaten);
-      this.drawSnakeStartingPos(this.snakeBody);
+      let endGame = this.snakeEatenItself();
+      if (endGame) {
+        this.restartGame();
+      } else {
+        this.GenerateFood();
+        let hasEaten = this.HasEaten(input);
+        this.snakeBody = this.moveSnake(input, hasEaten);
+        this.drawFood();
+        this.drawSnakeStartingPos(this.snakeBody);
+      }
     }
   }
 
@@ -158,7 +229,6 @@ export class Snake {
         
         this.directionPath = this.DirectionController[this.currentDirectionIndex];
         return this.directionPath;
-        // alert("We are going: " +this.directionPath.toString());
     }
 
     Rotate90DegreeRightPure = (idx: number) => {

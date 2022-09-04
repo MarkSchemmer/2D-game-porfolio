@@ -41,6 +41,12 @@ export class SnakeComponent implements OnInit {
     this.startGame();
   }
 
+  EndAndRestartGame = () => {
+    this.stopGame();
+    this.cleanBoard();
+    this.initialGameSetup();
+  }
+
   startGame = () => {
     // this.runner = true;
     this.gameLooper = requestAnimationFrame(this.gameLoop);
@@ -62,6 +68,7 @@ export class SnakeComponent implements OnInit {
     let elapsed = now - this.then;
 
     if (elapsed > this.fpsInterval) {
+
       this.then = now - (elapsed % this.fpsInterval);
       // Take UserInput.
       let userInput = this.userInputForIteration;
@@ -154,7 +161,7 @@ export class SnakeComponent implements OnInit {
     this.ctx = this.snakeBoard.getContext("2d");
     this.snakeBoard.width = this.BOARD_DIMENSIONS;
     this.snakeBoard.height = this.BOARD_DIMENSIONS;
-    this.snake = new Snake(this.ctx, this.RESOLUTION, this.BOARD_DIMENSIONS, this.snakeDelta);
+    this.snake = new Snake(this.ctx, this.RESOLUTION, this.BOARD_DIMENSIONS, this.snakeDelta, this.EndAndRestartGame);
 
     // attach event listener for keydown.
     // window.addEventListener("keydown", this.handleKeyboardStrokes);
