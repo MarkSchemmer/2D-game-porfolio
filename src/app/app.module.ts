@@ -19,6 +19,7 @@ import { TicTacToeModule } from "./tic-tac-toe-page/tic-tac-toe.module";
 import { WelcomePageComponent } from "./welcome-page/welcome-page.component";
 import { SnakeComponent } from './snake/snake-board/snake.component';
 import { SnakeModule } from "./snake/snake.module";
+import { ChessModule } from "./chess/chess.module";
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { SnakeModule } from "./snake/snake.module";
     ConwaysGameOfLifeModule,
     PongModule,
     AsteroidsModule,
-    SnakeModule
+    SnakeModule,
+    ChessModule
   ],
   providers: [],
   bootstrap: [AppComponent]
