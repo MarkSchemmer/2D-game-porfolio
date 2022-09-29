@@ -61,6 +61,7 @@ export class SnakeComponent implements OnInit {
   cleanBoard = () => {
     this.ctx.clearRect(0, 0, 800, 800);
   }
+  
   gameLoop = () => {
     // game loop guard. 
     if(this.runner === false || this.gameLooper === null) return;
