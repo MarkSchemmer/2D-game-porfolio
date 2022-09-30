@@ -1,4 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { genChessBoard, IChessCell, Mouse } from "../chess-utils/utils";
+import { ChessGrid } from "../chessGrid/chessGrid";
+declare var $: any;
 
 @Component({
   selector: "app-chess",
@@ -8,26 +11,23 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 export class ChessBoardComponent implements OnInit, OnDestroy {
 
   public boardDimensions: number = 800;
+  public squareDimensions: number = this.boardDimensions / 8;
   public canvas = null;
   public ctx = null;
+  public resolution: number = 100;
+  public chessBoard: ChessGrid = null;
+
+  public mouseData: Mouse = null;
   
-  constructor() { }
+  constructor() {}
   
   ngOnInit() {
     this.initialGame();
   }
   
-  ngOnDestroy() { }
-
-
-  startGame = () => {
-
-  }
-
-  stopGame = () => {
-
-  }
-
+  ngOnDestroy() {}
+  startGame = () => {}
+  stopGame = () => {}
   initialGame = () => {
     // Get the board, and it's context.
     this.canvas = document.getElementById("chess-board");
@@ -36,5 +36,102 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     this.canvas.height = this.boardDimensions;
     // document.onkeydown = this.handleKeyboardStrokes;
     // // document.onkeyup = this.handleKeyboardStrokes;
+    document.onclick = this.handleBoardClick
+
+    // Initialize board and draw. 
+    this.chessBoard = new ChessGrid(genChessBoard(), this.resolution, 8, 8, this.ctx);
+    this.chessBoard.draw();
+    this.mouseData = new Mouse(this.canvas, $("canvas"), this.resolution, this.chessBoard);
+  }
+
+  handleBoardClick = e => { 
+      e.preventDefault();
+      const x = e.pageX - this.canvas.offsetLeft;
+      const y = e.pageY - this.canvas.offsetTop;
+      const indexOfX = Math.floor(x / this.resolution);
+      const indexOfY = Math.floor(y / this.resolution); 
+      try 
+      {
+
+        if (this.chessBoard.grid[indexOfX][indexOfY]) {
+          console.log(`${indexOfX}-${indexOfY}`);
+          // Hightlight the square
+          // let chessCell: IChessCell = this.chessBoard.grid[indexOfX][indexOfY];
+          // chessCell.isAlive = true;
+          // this.chessBoard.draw();
+          this.chessBoard.clickSquare(indexOfX, indexOfY, e);
+        }
+      } 
+      catch(ex) 
+      {
+        console.log(ex);
+      }
+  }
+
+  handleMouseDown = e => {
+
   }
 }
+
+// Todos
+/*
+    1. Draw board with colors
+    2. Have ability to click square and highlight
+    3. Have images and draw pieces
+
+    Idea for handling mouse movements on board to track mouse. 
+
+      var canvas = document.getElementById("canvas");
+      var ctx = canvas.getContext("2d");
+
+      var canvasOffset = $("#canvas").offset();
+      var offsetX = canvasOffset.left;
+      var offsetY = canvasOffset.top;
+
+      function handleMouseDown(e) {
+          mouseX = parseInt(e.clientX - offsetX);
+          mouseY = parseInt(e.clientY - offsetY);
+          $("#downlog").html("Down: " + mouseX + " / " + mouseY);
+
+          // Put your mousedown stuff here
+
+      }
+
+      function handleMouseUp(e) {
+          mouseX = parseInt(e.clientX - offsetX);
+          mouseY = parseInt(e.clientY - offsetY);
+          $("#uplog").html("Up: " + mouseX + " / " + mouseY);
+
+          // Put your mouseup stuff here
+      }
+
+      function handleMouseOut(e) {
+          mouseX = parseInt(e.clientX - offsetX);
+          mouseY = parseInt(e.clientY - offsetY);
+          $("#outlog").html("Out: " + mouseX + " / " + mouseY);
+
+          // Put your mouseOut stuff here
+      }
+
+      function handleMouseMove(e) {
+          mouseX = parseInt(e.clientX - offsetX);
+          mouseY = parseInt(e.clientY - offsetY);
+          $("#movelog").html("Move: " + mouseX + " / " + mouseY);
+
+          // Put your mousemove stuff here
+
+      }
+
+      $("#canvas").mousedown(function (e) {
+          handleMouseDown(e);
+      });
+      $("#canvas").mousemove(function (e) {
+          handleMouseMove(e);
+      });
+      $("#canvas").mouseup(function (e) {
+          handleMouseUp(e);
+      });
+      $("#canvas").mouseout(function (e) {
+          handleMouseOut(e);
+      });
+*/

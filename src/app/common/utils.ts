@@ -1,5 +1,3 @@
-import { THIS_EXPR } from "@angular/compiler/src/output/output_ast";
-
 // Common interface for keystroke directions
 export enum KeyStroke {
     ArrowUp = "ArrowUp",
@@ -30,3 +28,4 @@ export enum Directions {
 export let getRandomInt = (max) =>  {
     return Math.floor(Math.random() * max);
 }
+
