@@ -70,7 +70,6 @@ export class ChessGrid {
      }
 
      public clickSquare = (x, y, e) => {
-        console.log(e.key);
         // If focused square is null, then nothing is selected. 
         if (this.currentFocusedSquare === null) 
         {

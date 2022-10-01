@@ -39,7 +39,7 @@ export class Mouse {
     updateMouseCoordinates = e => {
         this.x = Math.floor((e.pageX - this.canvas.offsetLeft) / this.res);
         this.y = Math.floor((e.pageY - this.canvas.offsetTop) / this.res);
-        console.log(` Jquery ${this.x} - ${this.y}`);
+        // console.log(` Jquery ${this.x} - ${this.y}`);
 
         try 
         {

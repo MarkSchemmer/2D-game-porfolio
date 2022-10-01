@@ -18,7 +18,9 @@ Games:
     - Solitaire
     - Conways game of life
     - Classic Pong vs ai
-    - Asteroids -> (in development)
+    - Asteroids -> semi-complete
+    - Snake the gtame (classic)
+
 
 # TicTacToe vs Bot
 
@@ -44,5 +46,10 @@ Games:
 # Asteroids Classic
 
 ![Asteroids](./gifs/astroids.gif)
+
+
+# Snake The game!
+
+![SnakeGame](./gifs/snake-game.gif)
 
     

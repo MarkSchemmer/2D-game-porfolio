@@ -42,17 +42,27 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     this.chessBoard = new ChessGrid(genChessBoard(), this.resolution, 8, 8, this.ctx);
     this.chessBoard.draw();
     this.mouseData = new Mouse(this.canvas, $("canvas"), this.resolution, this.chessBoard);
+
+    // Disables right click.
+    this.canvas.addEventListener("contextmenu", evt => {
+      // console.log(evt);
+      evt.preventDefault();
+      this.handleBoardClick(evt);
+    }, false);
   }
 
-  handleBoardClick = e => { 
-      e.preventDefault();
+  handleBoardClick = e => {
+      // property name: 'type'
+      // contextmenu -> right click.
+      // click -> left click
+      // e.preventDefault();
+      // console.log(e);
       const x = e.pageX - this.canvas.offsetLeft;
       const y = e.pageY - this.canvas.offsetTop;
       const indexOfX = Math.floor(x / this.resolution);
       const indexOfY = Math.floor(y / this.resolution); 
       try 
       {
-
         if (this.chessBoard.grid[indexOfX][indexOfY]) {
           console.log(`${indexOfX}-${indexOfY}`);
           // Hightlight the square
@@ -75,9 +85,29 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
 // Todos
 /*
+
+
+    You can click one square to focus piece then click that said square again
+    un-focus it or you can click outside of the board and then clear the focus
+
+    You can click multiple squares right-click and turn multiple squares red
+
+    Please note that a click outside the board won't un-focus red squares
+    But 1 red click will un-focus all red sqaures
+
+
+
+
+
+
     1. Draw board with colors
-    2. Have ability to click square and highlight
+    2. Have ability to click square and highlight - DONE
     3. Have images and draw pieces
+    4. Create pieces and then way for generating board
+
+    5. Create scan for possible moves
+    6. Allow movement with mouse clicks
+    7. 
 
     Idea for handling mouse movements on board to track mouse. 
 
