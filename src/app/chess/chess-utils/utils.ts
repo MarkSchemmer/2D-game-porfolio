@@ -3,7 +3,8 @@ import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
 declare var $: any;
 
-
+let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+let numbers = range(1, 8);
 
 export class Mouse {
     x: number = null;
@@ -73,6 +74,8 @@ export interface IChessCell {
     isAlive: boolean;
     redSquareActivated: boolean;
     coordinate: Coordinate;
+    letterText: string;
+    numberText: string;
 }
 
 export class ChessCell implements IChessCell {
@@ -87,22 +90,37 @@ export class ChessCell implements IChessCell {
     public redSquareActivated: boolean = false;
     // Coordinate of square in chessboard.
     public coordinate: Coordinate = null;
-
     public cellsColor: string = null;
+    public letterText: string = null;
+    public numberText: string = null;
 
     constructor(x, y) 
     {
       this.coordinate = new Coordinate(x, y);
-
       this.cellsColor = getCellColor(x, y) === chessCellColor.WHITE ? this.whiteColor : this.blackColor;
-      
     }
 }
 
 export let genChessBoard = () => {
-    return range(1, 8).map(
-        x => range(1, 8).map(y => new ChessCell(x, y))
-    );
+    let board =  range(1, 8).map((x, xIndex) => {
+        let chessCell: ChessCell = null;
+        let indexes = range(1, 8).map((y, yIndex) => {
+            chessCell = new ChessCell(x, y);
+            if (x === 1) { chessCell.letterText = (yIndex + 1).toString()}
+            return chessCell;
+        });
+
+        indexes.reverse();
+        return indexes;
+    });
+
+    // board.forEach((line, idx) => {
+    //     line[0].numberText = idx.toString();
+    // });
+
+    board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
+
+    return board;
 }
 
 enum chessCellColor {
@@ -111,23 +129,13 @@ enum chessCellColor {
 }
 
 export let getCellColor = (x, y): chessCellColor => {
-
     /*
-    
         x = ((j % 2 == 1 && input1[1] % 2 == 1) || (input1[1] % 2 == 0 && j % 2 == 0)) ? "black" : "white";
-
         var input2 = cell2.ToCharArray();
         int k;
         xaxis.TryGetValue(input2[0], out k);
-
         y = ((k % 2 == 1 && input2[1] % 2 == 1) || (input2[1] % 2 == 0 && k % 2 == 0)) ? "black" : "white";
-
         return x == y ? true : false;
-    
-    
-    
-    
     */
-
     return x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.BLACK : chessCellColor.WHITE;
 }

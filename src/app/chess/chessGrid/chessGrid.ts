@@ -12,7 +12,7 @@ import { IChessCell } from "../chess-utils/utils";
 
   Chess white base white square: #eeeed2
 
-
+  The way for prouducing 
 
 */
 
@@ -72,7 +72,8 @@ export class ChessGrid {
            
            this.ctx.fillStyle = cell.cellsColor;
            this.ctx.fill();
-           
+
+
            
            if (cell.isAlive) 
            { 
@@ -84,6 +85,25 @@ export class ChessGrid {
            {
               this.ctx.fillStyle = this.redSquare;
               this.ctx.fill();
+           }
+
+           if (cell.letterText != null) 
+           {
+              // alert(cell.letterText + " " + row * this.resolution);
+              this.ctx.fillStyle = this.black;
+              this.ctx.font = "20px Arial";
+              this.ctx.fillText(cell.letterText, cell.xRange + 8, cell.yRange + 20);
+              // this.ctx.save();
+           }
+
+           if (cell.numberText != null) 
+           {
+              console.log(cell.numberText);
+              // alert(cell.letterText + " " + row * this.resolution);
+              this.ctx.fillStyle = this.black;
+              this.ctx.font = "20px Arial";
+              this.ctx.fillText(cell.numberText, cell.xRange + 80, 795);
+              // this.ctx.save();
            }
          }
        }

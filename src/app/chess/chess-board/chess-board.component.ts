@@ -80,7 +80,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
         }
         else 
         {
-          console.log("here in the else block. ");
+          // console.log("here in the else block. ");
           if (this.chessBoard.isYellowSquareActive()) {
             this.chessBoard.resetAllYellowSquares();
           }
