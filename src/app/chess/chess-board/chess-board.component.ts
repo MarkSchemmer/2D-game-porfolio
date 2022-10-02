@@ -37,6 +37,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     // document.onkeydown = this.handleKeyboardStrokes;
     // // document.onkeyup = this.handleKeyboardStrokes;
     document.onclick = this.handleBoardClick
+    // document.ondblclick = evt => { evt.preventDefault(); }
 
     // Initialize board and draw. 
     this.chessBoard = new ChessGrid(genChessBoard(), this.resolution, 8, 8, this.ctx);
@@ -49,31 +50,48 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       evt.preventDefault();
       this.handleBoardClick(evt);
     }, false);
+
+    // this.canvas.addEventListener("dblclick", evt => { evt.preventDefault(); });
   }
 
   handleBoardClick = e => {
+      e.preventDefault();
+      let isLeftClick = e.type === "click"; // if type then right click if click then left click. 
       // property name: 'type'
       // contextmenu -> right click.
       // click -> left click
       // e.preventDefault();
       // console.log(e);
+      
       const x = e.pageX - this.canvas.offsetLeft;
       const y = e.pageY - this.canvas.offsetTop;
       const indexOfX = Math.floor(x / this.resolution);
       const indexOfY = Math.floor(y / this.resolution); 
       try 
       {
-        if (this.chessBoard.grid[indexOfX][indexOfY]) {
-          console.log(`${indexOfX}-${indexOfY}`);
-          // Hightlight the square
-          // let chessCell: IChessCell = this.chessBoard.grid[indexOfX][indexOfY];
-          // chessCell.isAlive = true;
-          // this.chessBoard.draw();
-          this.chessBoard.clickSquare(indexOfX, indexOfY, e);
+        if (this.chessBoard.grid[indexOfX][indexOfY]) 
+        {
+            console.log(`${indexOfX}-${indexOfY}`);
+            // Hightlight the square
+            // let chessCell: IChessCell = this.chessBoard.grid[indexOfX][indexOfY];
+            // chessCell.isAlive = true;
+            // this.chessBoard.draw();
+            this.chessBoard.clickSquare(indexOfX, indexOfY, e, isLeftClick);
+        }
+        else 
+        {
+          console.log("here in the else block. ");
+          if (this.chessBoard.isYellowSquareActive()) {
+            this.chessBoard.resetAllYellowSquares();
+          }
         }
       } 
       catch(ex) 
       {
+        // A click was outside of the chess grid
+        // uncheck focused yellow sqaures. 
+        this.chessBoard.resetAllYellowSquares();
+        this.chessBoard.draw();
         console.log(ex);
       }
   }
@@ -94,6 +112,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
     Please note that a click outside the board won't un-focus red squares
     But 1 red click will un-focus all red sqaures
+
+    Also 1 left click will unfocus on all red squares. 
 
 
 

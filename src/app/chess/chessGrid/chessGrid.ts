@@ -1,13 +1,30 @@
 import { Coordinate } from "src/app/common/utils";
+import { IChessCell } from "../chess-utils/utils";
+
+/*
+
+  I'm needing to write horizontal -> either a - h
+
+  On the vertical 1 - 8
+
+
+  Chess green base black square: #769656
+
+  Chess white base white square: #eeeed2
+
+
+
+*/
 
 export class ChessGrid {
     // dimension of each square
      public thickness = 1;
      public black = "#000";
      // Highlighted yellow square
-     public yellowSquare = "#fff35f";
+     public yellowSquare = "#fff576bd";
      // Highlighted red square
-     public redSquare = "";
+     // rgb(236 126 106); convert into hex -> 
+     public redSquare = "#ec7e6ac7";
 
      public resolution;
      public COLS;
@@ -51,16 +68,38 @@ export class ChessGrid {
            this.ctx.beginPath();
            this.ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
            this.ctx.stroke();
+           
+           
+           this.ctx.fillStyle = cell.cellsColor;
+           this.ctx.fill();
+           
+           
            if (cell.isAlive) 
            { 
               this.ctx.fillStyle = this.yellowSquare;
               this.ctx.fill(); 
            }
+
+           if (cell.redSquareActivated) 
+           {
+              this.ctx.fillStyle = this.redSquare;
+              this.ctx.fill();
+           }
          }
        }
      }
 
-     resetAllSquares = (prevX, prevY, x, y) => {
+     resetAllSquares = () => {
+      for (let col = 0; col < this.grid.length; col++) {
+        for (let row = 0; row < this.grid[col].length; row++) {
+          const cell: IChessCell = this.grid[col][row];
+          cell.isAlive = false;
+          cell.redSquareActivated = false;
+        }
+      }
+     }
+
+     resetAllYellowSquares = () => {
       for (let col = 0; col < this.grid.length; col++) {
         for (let row = 0; row < this.grid[col].length; row++) {
           const cell: IChessCell = this.grid[col][row];
@@ -69,46 +108,69 @@ export class ChessGrid {
       }
      }
 
-     public clickSquare = (x, y, e) => {
-        // If focused square is null, then nothing is selected. 
-        if (this.currentFocusedSquare === null) 
+     resetAllRedSquares = (prevX, prevY, x, y) => {
+      for (let col = 0; col < this.grid.length; col++) {
+        for (let row = 0; row < this.grid[col].length; row++) {
+          const cell: IChessCell = this.grid[col][row];
+          cell.isAlive = false;
+        }
+      }
+     }
+
+     areRedSquaresActive = (): boolean => {
+       return this.grid.some(cells => cells.some(cell => cell.redSquareActivated === true));
+     }
+     isYellowSquareActive = (): boolean => {
+      return this.grid.some(cells => cells.some(cell => cell.isAlive === true));
+    }
+
+
+     public clickSquare = (x, y, e, isLeftClick) => {
+        if (isLeftClick) 
         {
-          this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-          this.currentFocusedSquare = new Coordinate(x, y);
-        } else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) {
-          // clicking the same square, meaning we need to toggle it again. 
-          this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-        } else {
-          // selecting a new square, we need to access the old square and then turn it false.
-          // Then we need to select the new sqaure.
+            if (this.areRedSquaresActive()) 
+            {
+              this.resetAllSquares();
+            }
+            else 
+            {
+                  // If focused square is null, then nothing is selected. 
+                  if (this.currentFocusedSquare === null) 
+                  {
+                    this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
+                    this.currentFocusedSquare = new Coordinate(x, y);
+                  } else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) {
+                    // clicking the same square, meaning we need to toggle it again. 
+                    this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
+                  } else {
+                    // selecting a new square, we need to access the old square and then turn it false.
+                    // Then we need to select the new sqaure.
 
-          // turn old square of
-          let oldX = this.currentFocusedSquare.x;
-          let oldY = this.currentFocusedSquare.y;
-          this.grid[oldX][oldY].isAlive = false;
+                    // turn old square of
+                    let oldX = this.currentFocusedSquare.x;
+                    let oldY = this.currentFocusedSquare.y;
+                    this.grid[oldX][oldY].isAlive = false;
 
-          // Update new focused square
-          this.currentFocusedSquare.x = x;
-          this.currentFocusedSquare.y = y;
-          this.grid[x][y].isAlive = true;
-          // console.log(`${x}-${y}`);
+                    // Update new focused square
+                    this.currentFocusedSquare.x = x;
+                    this.currentFocusedSquare.y = y;
+                    this.grid[x][y].isAlive = true;
+                    // console.log(`${x}-${y}`);
+                  }
+            }
+        }
+        else 
+        {
+          if (this.isYellowSquareActive()) 
+          {
+            this.resetAllYellowSquares();
+          }
+          // console.log("right click");
+          this.grid[x][y].redSquareActivated = !this.grid[x][y].redSquareActivated;
         }
         
         // this.resetAllSquares(this.prevX, this.prevY, x, y);
         this.draw();
      }
-
    }
 
-   interface IChessCell {
-        xRange: number
-        yRange: number
-        isAlive: boolean
-   }
-
-   class ChessCell implements IChessCell {
-        public xRange: number;
-        public yRange: number;
-        public isAlive: boolean = false;
-        constructor() { }
-   }
