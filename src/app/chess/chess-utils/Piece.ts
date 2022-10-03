@@ -34,7 +34,9 @@ export class Pond extends Piece {
     public draw = (ctx, xRange, yRange) => {
         let image = new Image();
         image.src = this.image;
-        image.onload = () => ctx.drawImage(image, xRange, yRange, 50, 50);
+        image.onload = () => { 
+            ctx.drawImage(image, xRange, yRange, 50, 50);
+        }
     }
 }
 

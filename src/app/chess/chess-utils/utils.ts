@@ -2,11 +2,8 @@ import { Coordinate } from "src/app/common/utils";
 import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
 import { Piece, PieceColor, Pond } from "./Piece";
-// import * as pond from "../chess-images/white-pond.png";
-declare var $: any;
 
-let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
-let numbers = range(1, 8);
+export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
 export class Mouse {
     x: number = null;
@@ -43,7 +40,6 @@ export class Mouse {
     updateMouseCoordinates = e => {
         this.x = Math.floor((e.pageX - this.canvas.offsetLeft) / this.res);
         this.y = Math.floor((e.pageY - this.canvas.offsetTop) / this.res);
-        // console.log(` Jquery ${this.x} - ${this.y}`);
 
         try 
         {
@@ -109,14 +105,10 @@ export let genChessBoard = () => {
         return indexes;
     });
 
-    // board.forEach((line, idx) => {
-    //     line[0].numberText = idx.toString();
-    // });
-
+    // board.reverse();
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
 
-    // "https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png"
-
+    // board[0].forEach(cell => cell.isAlive = true);
     board[0][0].piece = new Pond(`assets/chess-images/white-pond.png`, PieceColor.WHITE);
 
     return board;
@@ -143,13 +135,5 @@ export class ChessCoordinate extends Coordinate {
 }
 
 export let getCellColor = (x, y): chessCellColor => {
-    /*
-        x = ((j % 2 == 1 && input1[1] % 2 == 1) || (input1[1] % 2 == 0 && j % 2 == 0)) ? "black" : "white";
-        var input2 = cell2.ToCharArray();
-        int k;
-        xaxis.TryGetValue(input2[0], out k);
-        y = ((k % 2 == 1 && input2[1] % 2 == 1) || (input2[1] % 2 == 0 && k % 2 == 0)) ? "black" : "white";
-        return x == y ? true : false;
-    */
     return x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.BLACK : chessCellColor.WHITE;
 }
