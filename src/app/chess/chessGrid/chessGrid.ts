@@ -90,6 +90,11 @@ export class ChessGrid {
               this.ctx.font = "20px Arial";
               this.ctx.fillText(cell.numberText, cell.xRange + 80, 795);
            }
+
+           if (cell.piece != null) 
+           {
+              cell.piece.draw(this.ctx, cell.xRange + 25, cell.yRange + 25);
+           }
          }
        }
      }

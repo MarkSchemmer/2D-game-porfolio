@@ -1,7 +1,8 @@
 import { Coordinate } from "src/app/common/utils";
 import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
-import { Piece } from "./Piece";
+import { Piece, PieceColor, Pond } from "./Piece";
+// import * as pond from "../chess-images/white-pond.png";
 declare var $: any;
 
 let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -113,6 +114,10 @@ export let genChessBoard = () => {
     // });
 
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
+
+    // "https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png"
+
+    board[0][0].piece = new Pond(`assets/chess-images/white-pond.png`, PieceColor.WHITE);
 
     return board;
 }
