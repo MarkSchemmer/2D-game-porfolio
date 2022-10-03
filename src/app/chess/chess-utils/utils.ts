@@ -89,14 +89,14 @@ export class ChessCell implements IChessCell {
     public isAlive: boolean = false;
     public redSquareActivated: boolean = false;
     // Coordinate of square in chessboard.
-    public coordinate: Coordinate = null;
+    public coordinate: ChessCoordinate = null;
     public cellsColor: string = null;
     public letterText: string = null;
     public numberText: string = null;
 
     constructor(x, y) 
     {
-      this.coordinate = new Coordinate(x, y);
+      this.coordinate = new ChessCoordinate(x, y);
       this.cellsColor = getCellColor(x, y) === chessCellColor.WHITE ? this.whiteColor : this.blackColor;
     }
 }
@@ -126,6 +126,21 @@ export let genChessBoard = () => {
 enum chessCellColor {
     WHITE = "WHITE",
     BLACK = "BLACK"
+}
+
+export class ChessCoordinate extends Coordinate {
+    public letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+
+    public chessX: string;
+
+    constructor(x, y) {
+        super(x, y);
+        this.chessX = this.letters[this.x - 1];
+    }
+
+    public LogCoordinate = () => {
+        console.log(`${this.chessX} - ${this.y}`);
+    }
 }
 
 export let getCellColor = (x, y): chessCellColor => {

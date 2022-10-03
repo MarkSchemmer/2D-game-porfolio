@@ -1,5 +1,5 @@
 import { Coordinate } from "src/app/common/utils";
-import { IChessCell } from "../chess-utils/utils";
+import { ChessCoordinate, IChessCell } from "../chess-utils/utils";
 
 /*
 
@@ -25,21 +25,13 @@ export class ChessGrid {
      // Highlighted red square
      // rgb(236 126 106); convert into hex -> 
      public redSquare = "#ec7e6ac7";
-
      public resolution;
      public COLS;
      public ROWS;
-
      public grid;
      public ctx;
-
      public sqaureIsFocused = false;
-
      public currentFocusedSquare: Coordinate = null;
-
-
-     prevX;
-     prevY;
    
      constructor(grid, resolution, c, r, ctx) {
        this.resolution = resolution;
@@ -69,11 +61,8 @@ export class ChessGrid {
            this.ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
            this.ctx.stroke();
            
-           
            this.ctx.fillStyle = cell.cellsColor;
            this.ctx.fill();
-
-
            
            if (cell.isAlive) 
            { 
@@ -89,21 +78,17 @@ export class ChessGrid {
 
            if (cell.letterText != null) 
            {
-              // alert(cell.letterText + " " + row * this.resolution);
               this.ctx.fillStyle = this.black;
               this.ctx.font = "20px Arial";
               this.ctx.fillText(cell.letterText, cell.xRange + 8, cell.yRange + 20);
-              // this.ctx.save();
            }
 
            if (cell.numberText != null) 
            {
-              console.log(cell.numberText);
-              // alert(cell.letterText + " " + row * this.resolution);
+              //console.log(cell.numberText);
               this.ctx.fillStyle = this.black;
               this.ctx.font = "20px Arial";
               this.ctx.fillText(cell.numberText, cell.xRange + 80, 795);
-              // this.ctx.save();
            }
          }
        }
@@ -146,6 +131,7 @@ export class ChessGrid {
 
 
      public clickSquare = (x, y, e, isLeftClick) => {
+        // this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
         if (isLeftClick) 
         {
             if (this.areRedSquaresActive()) 
@@ -158,7 +144,7 @@ export class ChessGrid {
                   if (this.currentFocusedSquare === null) 
                   {
                     this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-                    this.currentFocusedSquare = new Coordinate(x, y);
+                    this.currentFocusedSquare = new ChessCoordinate(x, y);
                   } else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) {
                     // clicking the same square, meaning we need to toggle it again. 
                     this.grid[x][y].isAlive = !this.grid[x][y].isAlive;

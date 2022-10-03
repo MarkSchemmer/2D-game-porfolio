@@ -8,7 +8,7 @@ export enum KeyStroke {
     R = "R"
 }
 
-export class Coordinate { 
+export class Coordinate {
     public x: number; 
     public y: number;
 

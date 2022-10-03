@@ -71,7 +71,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       {
         if (this.chessBoard.grid[indexOfX][indexOfY]) 
         {
-            console.log(`${indexOfX}-${indexOfY}`);
+            // console.log(`${indexOfX}-${indexOfY}`);
             // Hightlight the square
             // let chessCell: IChessCell = this.chessBoard.grid[indexOfX][indexOfY];
             // chessCell.isAlive = true;
