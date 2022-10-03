@@ -1,6 +1,7 @@
 import { Coordinate } from "src/app/common/utils";
 import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
+import { Piece } from "./Piece";
 declare var $: any;
 
 let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -58,15 +59,6 @@ export class Mouse {
     }
 }
 
-/*
-    Pond: 
-        url('https://images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png')
-*/
-
-export class Piece {
-
-}
-
 export interface IChessCell {
     cellsColor: string;
     xRange: number;
@@ -76,6 +68,7 @@ export interface IChessCell {
     coordinate: Coordinate;
     letterText: string;
     numberText: string;
+    piece: Piece;
 }
 
 export class ChessCell implements IChessCell {
@@ -93,6 +86,7 @@ export class ChessCell implements IChessCell {
     public cellsColor: string = null;
     public letterText: string = null;
     public numberText: string = null;
+    public piece: Piece = null;
 
     constructor(x, y) 
     {
