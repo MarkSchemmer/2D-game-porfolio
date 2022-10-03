@@ -25,7 +25,7 @@ export class Piece implements IPiece {
     }
 }
 
-export class Pond extends Piece {
+class Pond extends Piece {
     public weight: number = 1;
     constructor(image, pieceColor) {
         super(image, pieceColor);
@@ -37,6 +37,12 @@ export class Pond extends Piece {
         image.onload = () => { 
             ctx.drawImage(image, xRange, yRange, 50, 50);
         }
+    }
+}
+
+export class WhitePond extends Pond implements IPiece {
+    constructor() {
+        super(`assets/chess-images/white-pond.png`, PieceColor.WHITE);
     }
 }
 
@@ -79,3 +85,9 @@ export class Queen extends Piece {
 export const blackPonds = range(1, 8).map(() => new Pond("../chess-images/black-pond.png", PieceColor.BLACK));
 // Make 8 white ponds.
 export const whitePonds = range(1, 8).map(() => new Pond("../chess-images/white-pond.png", PieceColor.WHITE));
+
+export class ChessPieceFactory {
+    WhitePond = () => {
+        return new WhitePond();
+    }
+}

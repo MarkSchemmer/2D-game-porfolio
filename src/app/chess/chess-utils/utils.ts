@@ -1,9 +1,10 @@
 import { Coordinate } from "src/app/common/utils";
 import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
-import { Piece, PieceColor, Pond } from "./Piece";
+import { ChessPieceFactory, IPiece, Piece, PieceColor } from "./Piece";
 
 export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+export let numbers = range(1, 8);
 
 export class Mouse {
     x: number = null;
@@ -62,7 +63,7 @@ export interface IChessCell {
     yRange: number;
     isAlive: boolean;
     redSquareActivated: boolean;
-    coordinate: Coordinate;
+    coordinate: ChessCoordinate;
     letterText: string;
     numberText: string;
     piece: Piece;
@@ -83,7 +84,7 @@ export class ChessCell implements IChessCell {
     public cellsColor: string = null;
     public letterText: string = null;
     public numberText: string = null;
-    public piece: Piece = null;
+    public piece: any = null;
 
     constructor(x, y) 
     {
@@ -91,6 +92,8 @@ export class ChessCell implements IChessCell {
       this.cellsColor = getCellColor(x, y) === chessCellColor.WHITE ? this.whiteColor : this.blackColor;
     }
 }
+
+
 
 export let genChessBoard = () => {
     let board =  range(1, 8).map((x, xIndex) => {
@@ -108,8 +111,23 @@ export let genChessBoard = () => {
     // board.reverse();
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
 
-    // board[0].forEach(cell => cell.isAlive = true);
-    board[0][0].piece = new Pond(`assets/chess-images/white-pond.png`, PieceColor.WHITE);
+    let chessPieceFactory = new ChessPieceFactory();
+
+    // console.log(board[0][0]);
+
+    // Place white ponds.
+    let whitePondLocations = letters.map(letter => letter + 2);
+    whitePondLocations.forEach(location => {
+        let chessCell = getCell(location, board);
+        // console.log(chessPieceFactory.WhitePond());
+        console.log(chessCell);
+        if (chessCell != null) {
+            let x = chessCell.coordinate.x;
+            let y = chessCell.coordinate.y;
+            chessCell.piece = chessPieceFactory.WhitePond();
+        }
+        
+    });
 
     return board;
 }
@@ -137,3 +155,28 @@ export class ChessCoordinate extends Coordinate {
 export let getCellColor = (x, y): chessCellColor => {
     return x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.BLACK : chessCellColor.WHITE;
 }
+
+
+export let getCell = (chessCoordinate: string, grid) => {
+
+    let chessX = chessCoordinate.split("")[0];
+    let y = parseInt(chessCoordinate.split("")[1]);
+
+    console.log(chessX);
+    console.log(y);
+
+    // return grid.find(cells => {
+    //     return cells.find((cell: IChessCell) =>  cell.coordinate.chessX === chessX && cell.coordinate.y === y)
+    // });
+    for (let col = 0; col < grid.length; col++) {
+        for (let row = 0; row < grid[col].length; row++) {
+          const cell: IChessCell = grid[col][row];
+            if (cell.coordinate.chessX === chessX && cell.coordinate.y === y) {
+                // console.log(cell);
+                return cell;
+            }
+        }
+    }
+
+    return null;
+ }
