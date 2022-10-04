@@ -54,45 +54,45 @@ export class WhitePond extends Pond implements IPiece {
     }
 }
 
-// export class Rook extends Piece {
-//     public weight: number = 5;
-//     constructor(image, pieceColor) {
-//         super(image, pieceColor);
-//     }
-// }
+export class Rook extends Piece {
+    public weight: number = 5;
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
+    }
+}
 
-// export class Bishop extends Piece {
-//     public weight: number = 3;
-//     constructor(image, pieceColor) {
-//         super(image, pieceColor);
-//     }
-// }
+export class Bishop extends Piece {
+    public weight: number = 3;
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
+    }
+}
 
-// export class Knight extends Piece {
-//     public weight: number = 3;
-//     constructor(image, pieceColor) {
-//         super(image, pieceColor);
-//     }
-// }
+export class Knight extends Piece {
+    public weight: number = 3;
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
+    }
+}
 
-// export class King extends Piece {
-//     public weight: number = Infinity;
-//     constructor(image, pieceColor) {
-//         super(image, pieceColor);
-//     }
-// }
+export class King extends Piece {
+    public weight: number = Infinity;
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
+    }
+}
 
-// export class Queen extends Piece {
-//     public weight: number = 10;
-//     constructor(image, pieceColor) {
-//         super(image, pieceColor);
-//     }
-// }
+export class Queen extends Piece {
+    public weight: number = 10;
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
+    }
+}
 
-// // Make 8 black ponds.
-// export const blackPonds = range(1, 8).map(() => new Pond("../chess-images/black-pond.png", PieceColor.BLACK));
-// // Make 8 white ponds.
-// export const whitePonds = range(1, 8).map(() => new Pond("../chess-images/white-pond.png", PieceColor.WHITE));
+// Make 8 black ponds.
+export const blackPonds = range(1, 8).map(() => new Pond("../chess-images/black-pond.png", PieceColor.BLACK));
+// Make 8 white ponds.
+export const whitePonds = range(1, 8).map(() => new Pond("../chess-images/white-pond.png", PieceColor.WHITE));
 
 export class ChessPieceFactory {
     WhitePond = () => {
