@@ -91,7 +91,6 @@ export let genChessBoard = () => {
         if (chessCell != null) {
             chessCell.piece = chessPieceFactory.WhitePond();
         }
-        
     });
 
     return board;
