@@ -26,34 +26,6 @@ export class Mouse {
         this.jCanvas = jCanvas
         this.res = res;
         this.chessBoard = chessBoard;
-
-        this.jCanvas.mousedown(e => {
-            this.updateMouseCoordinates(e);
-        });
-
-        this.jCanvas.mousemove(e => {
-            this.updateMouseCoordinates(e);
-        });
-    }
-
-
-
-    updateMouseCoordinates = e => {
-        this.x = Math.floor((e.pageX - this.canvas.offsetLeft) / this.res);
-        this.y = Math.floor((e.pageY - this.canvas.offsetTop) / this.res);
-
-        try 
-        {
-            if (this.chessBoard.grid[this.x][this.y]) {
-                let chessCell: IChessCell = this.chessBoard.grid[this.x][this.y];
-                // chessCell.isAlive = true;
-                // this.chessBoard.draw();
-            }
-        }
-        catch(ex) 
-        {
-            // log and forget.
-        }
     }
 }
 
@@ -108,22 +80,15 @@ export let genChessBoard = () => {
         return indexes;
     });
 
-    // board.reverse();
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
 
     let chessPieceFactory = new ChessPieceFactory();
-
-    // console.log(board[0][0]);
 
     // Place white ponds.
     let whitePondLocations = letters.map(letter => letter + 2);
     whitePondLocations.forEach(location => {
         let chessCell = getCell(location, board);
-        // console.log(chessPieceFactory.WhitePond());
-        console.log(chessCell);
         if (chessCell != null) {
-            let x = chessCell.coordinate.x;
-            let y = chessCell.coordinate.y;
             chessCell.piece = chessPieceFactory.WhitePond();
         }
         
@@ -158,21 +123,12 @@ export let getCellColor = (x, y): chessCellColor => {
 
 
 export let getCell = (chessCoordinate: string, grid) => {
-
     let chessX = chessCoordinate.split("")[0];
     let y = parseInt(chessCoordinate.split("")[1]);
-
-    console.log(chessX);
-    console.log(y);
-
-    // return grid.find(cells => {
-    //     return cells.find((cell: IChessCell) =>  cell.coordinate.chessX === chessX && cell.coordinate.y === y)
-    // });
     for (let col = 0; col < grid.length; col++) {
         for (let row = 0; row < grid[col].length; row++) {
           const cell: IChessCell = grid[col][row];
             if (cell.coordinate.chessX === chessX && cell.coordinate.y === y) {
-                // console.log(cell);
                 return cell;
             }
         }
