@@ -18,21 +18,7 @@ export class Piece implements IPiece {
     public image: string;
     public pieceColor: PieceColor;
     public imageObj = new Image();
-    public draw = (ctx, xRange, yRange) => { }
-
-    constructor(image, pieceColor) {
-        this.image = image;
-        this.pieceColor = pieceColor;
-    }
-}
-
-class Pond extends Piece {
-    public weight: number = 1;
     public hasRun: boolean = false;
-    public imageObj = new Image();
-    constructor(image, pieceColor) {
-        super(image, pieceColor);
-    }
 
     public draw = (ctx, xRange, yRange) => {
         if (this.hasRun === false) {
@@ -45,6 +31,19 @@ class Pond extends Piece {
             this.imageObj.src = this.image;
             ctx.drawImage(this.imageObj, xRange - 5, yRange - 5, 60, 60);
         }
+    }
+
+    constructor(image, pieceColor) {
+        this.image = image;
+        this.pieceColor = pieceColor;
+    }
+}
+
+class Pond extends Piece {
+    public weight: number = 1;
+    public imageObj = new Image();
+    constructor(image, pieceColor) {
+        super(image, pieceColor);
     }
 }
 
