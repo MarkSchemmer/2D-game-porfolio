@@ -1,10 +1,60 @@
 import { Coordinate } from "src/app/common/utils";
 import { range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
-import { ChessPieceFactory, IPiece, Piece, PieceColor } from "./Piece";
+import { ChessPieceFactory, IPiece, Piece, PieceColor, PieceName, WhitePond } from "./Piece";
 
 export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export let numbers = range(1, 8);
+export const chessPieceFactory = new ChessPieceFactory();
+
+class PieceDirectionSetup {
+
+    pieceColor: PieceColor;
+    pieceName: PieceName;
+    pieceLocations: string[]
+
+    constructor(pieceColor: PieceColor, pieceName: PieceName, pieceLocations: string[]){
+        this.pieceColor = pieceColor;
+        this.pieceName = pieceName;
+        this.pieceLocations = pieceLocations;
+    }
+}
+
+let pieceName: PieceName[] = [
+    PieceName.POND,
+    PieceName.BISHOP,
+    PieceName.KNIGHT,
+    PieceName.ROOK,
+    PieceName.QUEEN,
+    PieceName.KING
+];
+
+let genWhitePiecesSetup = () => {
+    let whitePondLocations = letters.map(letter => (letter + 2).toString())
+    let whitePonds = new PieceDirectionSetup(PieceColor.WHITE, PieceName.POND, whitePondLocations);
+
+    let whiteRookLocations = ["a", "h"].map(letter => (letter + 1).toString());
+    let whiteRooks = new PieceDirectionSetup(PieceColor.WHITE, PieceName.ROOK, whiteRookLocations);
+
+    let whiteBishopLocations = ["b", "g"].map(letter => (letter + 1).toString());
+    let whiteBishops = new PieceDirectionSetup(PieceColor.WHITE, PieceName.BISHOP, whiteBishopLocations);
+
+    let whiteKnightLocations = ["c", "f"].map(letter => (letter + 1).toString());
+    let whiteKnights = new PieceDirectionSetup(PieceColor.WHITE, PieceName.KNIGHT, whiteKnightLocations);
+
+    return [
+        whitePonds,
+        whiteRooks,
+        whiteBishops,
+        whiteKnights,
+        new PieceDirectionSetup(PieceColor.WHITE, PieceName.QUEEN, ["e1"]),
+        new PieceDirectionSetup(PieceColor.WHITE, PieceName.KING, ["d1"]),
+    ];
+}
+
+let listDirections : PieceDirectionSetup[] = [
+    ...genWhitePiecesSetup()
+];
 
 export class Mouse {
     x: number = null;
@@ -75,26 +125,38 @@ export let genChessBoard = () => {
             if (x === 1) { chessCell.letterText = (yIndex + 1).toString()}
             return chessCell;
         });
-
         indexes.reverse();
         return indexes;
     });
 
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
 
-    let chessPieceFactory = new ChessPieceFactory();
+    let pieceSetter = setChessPieces(board, chessPieceFactory);
 
-    // Place white ponds.
-    let whitePondLocations = letters.map(letter => letter + 2);
-    whitePondLocations.forEach(location => {
-        let chessCell = getCell(location, board);
-        if (chessCell != null) {
-            chessCell.piece = chessPieceFactory.WhitePond();
-        }
-    });
+    // Place white pieces
+    listDirections.forEach(directions => {
+        pieceSetter(directions);
+    })
+    
+
+
 
     return board;
 }
+
+
+
+let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSetup) => {
+    directions.pieceLocations.forEach(location => {
+        let chessCell = getCell(location, board);
+        if (chessCell != null) {
+            console.log("I'm here. ");
+            chessCell.piece = chessPieceFactory.PieceGenerator(directions.pieceName, directions.pieceColor);
+        }
+    });
+}
+
+
 
 enum chessCellColor {
     WHITE = "WHITE",
