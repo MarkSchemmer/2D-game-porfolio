@@ -194,7 +194,8 @@ export class ChessCoordinate extends Coordinate {
 }
 
 export let getCellColor = (x, y): chessCellColor => {
-    // Need to revert this later on to: x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.BLACK : chessCellColor.WHITE;
+    // Need to revert this later on to: 
+    // x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.BLACK : chessCellColor.WHITE;
     return x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.WHITE : chessCellColor.BLACK;
 }
 

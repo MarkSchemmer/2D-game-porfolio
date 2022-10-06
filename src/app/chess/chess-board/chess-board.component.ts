@@ -120,14 +120,20 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 
 
 
-    1. Draw board with colors
+    1. Draw board with colors - DONE
     2. Have ability to click square and highlight - DONE
-    3. Have images and draw pieces
-    4. Create pieces and then way for generating board
+    3. Have images and draw pieces - DONE
+    4. Create pieces and then way for generating board - DONE
 
     5. Create scan for possible moves
     6. Allow movement with mouse clicks
-    7. 
+    7. Only activate yellow if piece is on square
+    8. show preivous moves, and save move state
+    9. Learn chess notation, and write 
+    10. Detect if check
+    11. Detect if checkmate
+    12. Implement drag and drop
+    13. Implement arrow directions for learning.
 
     Idea for handling mouse movements on board to track mouse. 
 
