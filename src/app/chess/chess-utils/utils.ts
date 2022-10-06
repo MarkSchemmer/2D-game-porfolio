@@ -36,10 +36,10 @@ let genWhitePiecesSetup = () => {
     let whiteRookLocations = ["a", "h"].map(letter => (letter + 1).toString());
     let whiteRooks = new PieceDirectionSetup(PieceColor.WHITE, PieceName.ROOK, whiteRookLocations);
 
-    let whiteBishopLocations = ["b", "g"].map(letter => (letter + 1).toString());
+    let whiteBishopLocations = ["c", "f"].map(letter => (letter + 1).toString());
     let whiteBishops = new PieceDirectionSetup(PieceColor.WHITE, PieceName.BISHOP, whiteBishopLocations);
 
-    let whiteKnightLocations = ["c", "f"].map(letter => (letter + 1).toString());
+    let whiteKnightLocations = ["b", "g"].map(letter => (letter + 1).toString());
     let whiteKnights = new PieceDirectionSetup(PieceColor.WHITE, PieceName.KNIGHT, whiteKnightLocations);
 
     return [
@@ -47,13 +47,37 @@ let genWhitePiecesSetup = () => {
         whiteRooks,
         whiteBishops,
         whiteKnights,
-        new PieceDirectionSetup(PieceColor.WHITE, PieceName.QUEEN, ["e1"]),
-        new PieceDirectionSetup(PieceColor.WHITE, PieceName.KING, ["d1"]),
+        new PieceDirectionSetup(PieceColor.WHITE, PieceName.QUEEN, ["d1"]),
+        new PieceDirectionSetup(PieceColor.WHITE, PieceName.KING, ["e1"]),
+    ];
+}
+
+let genBlackPiecesSetup = () => {
+    let blackPondLocations = letters.map(letter => (letter + 7).toString())
+    let blackPonds = new PieceDirectionSetup(PieceColor.BLACK, PieceName.POND, blackPondLocations);
+
+    let blackRookLocations = ["a", "h"].map(letter => (letter + 8).toString());
+    let blackRooks = new PieceDirectionSetup(PieceColor.BLACK, PieceName.ROOK, blackRookLocations);
+
+    let blackBishopLocations = ["c", "f"].map(letter => (letter + 8).toString());
+    let blackBishops = new PieceDirectionSetup(PieceColor.BLACK, PieceName.BISHOP, blackBishopLocations);
+
+    let blackKnightLocations = ["b", "g"].map(letter => (letter + 8).toString());
+    let blackKnights = new PieceDirectionSetup(PieceColor.BLACK, PieceName.KNIGHT, blackKnightLocations);
+
+    return [
+        blackPonds,
+        blackRooks,
+        blackBishops,
+        blackKnights,
+        new PieceDirectionSetup(PieceColor.BLACK, PieceName.QUEEN, ["d8"]),
+        new PieceDirectionSetup(PieceColor.BLACK, PieceName.KING, ["e8"]),
     ];
 }
 
 let listDirections : PieceDirectionSetup[] = [
-    ...genWhitePiecesSetup()
+    ...genWhitePiecesSetup(),
+    ...genBlackPiecesSetup()
 ];
 
 export class Mouse {
@@ -115,8 +139,6 @@ export class ChessCell implements IChessCell {
     }
 }
 
-
-
 export let genChessBoard = () => {
     let board =  range(1, 8).map((x, xIndex) => {
         let chessCell: ChessCell = null;
@@ -137,23 +159,19 @@ export let genChessBoard = () => {
     listDirections.forEach(directions => {
         pieceSetter(directions);
     });
-    
+
+    // board.reverse();
     return board;
 }
-
-
 
 let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSetup) => {
     directions.pieceLocations.forEach(location => {
         let chessCell = getCell(location, board);
         if (chessCell != null) {
-            console.log("I'm here. ");
             chessCell.piece = chessPieceFactory.PieceGenerator(directions.pieceName, directions.pieceColor);
         }
     });
 }
-
-
 
 enum chessCellColor {
     WHITE = "WHITE",
@@ -180,10 +198,10 @@ export let getCellColor = (x, y): chessCellColor => {
     return x % 2 === 1 && y % 2 === 1 || x % 2 === 0 && y % 2 === 0 ? chessCellColor.WHITE : chessCellColor.BLACK;
 }
 
-
 export let getCell = (chessCoordinate: string, grid) => {
     let chessX = chessCoordinate.split("")[0];
     let y = parseInt(chessCoordinate.split("")[1]);
+    
     for (let col = 0; col < grid.length; col++) {
         for (let row = 0; row < grid[col].length; row++) {
           const cell: IChessCell = grid[col][row];
