@@ -130,10 +130,10 @@ export class ChessGrid {
      areRedSquaresActive = (): boolean => {
        return this.grid.some(cells => cells.some(cell => cell.redSquareActivated === true));
      }
+
      isYellowSquareActive = (): boolean => {
       return this.grid.some(cells => cells.some(cell => cell.isAlive === true));
     }
-
 
      public clickSquare = (x, y, e, isLeftClick) => {
         // this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
@@ -145,15 +145,25 @@ export class ChessGrid {
             }
             else 
             {
+                  let cell = this.grid[x][y];
                   // If focused square is null, then nothing is selected. 
-                  if (this.currentFocusedSquare === null) 
+                  if (this.currentFocusedSquare === null && cell.piece !== null) 
                   {
                     this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
                     this.currentFocusedSquare = new ChessCoordinate(x, y);
                   } else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) {
                     // clicking the same square, meaning we need to toggle it again. 
                     this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-                  } else {
+                  }
+                  else if (cell.piece === null) {
+                    if (this.currentFocusedSquare !== null) {
+                        // turn old square of
+                        let oldX = this.currentFocusedSquare.x;
+                        let oldY = this.currentFocusedSquare.y;
+                        this.grid[oldX][oldY].isAlive = false;
+                    }
+                  } 
+                  else {
                     // selecting a new square, we need to access the old square and then turn it false.
                     // Then we need to select the new sqaure.
 
