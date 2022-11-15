@@ -144,7 +144,7 @@ export let genChessBoard = () => {
         let chessCell: ChessCell = null;
         let indexes = range(1, 8).map((y, yIndex) => {
             chessCell = new ChessCell(x, y);
-            if (x === 1) { chessCell.letterText = (yIndex + 1).toString()}
+            if (x === 1) { chessCell.letterText = (yIndex + 1).toString(); }
             return chessCell;
         });
         indexes.reverse();
@@ -164,6 +164,8 @@ export let genChessBoard = () => {
     return board;
 }
 
+
+
 let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSetup) => {
     directions.pieceLocations.forEach(location => {
         let chessCell = getCell(location, board);
@@ -180,12 +182,13 @@ enum chessCellColor {
 
 export class ChessCoordinate extends Coordinate {
     public letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
-
     public chessX: string;
+    public chessCoordinate: string;
 
     constructor(x, y) {
         super(x, y);
         this.chessX = this.letters[this.x - 1];
+        this.chessCoordinate = `${this.chessX}-${y}`;
     }
 
     public LogCoordinate = () => {

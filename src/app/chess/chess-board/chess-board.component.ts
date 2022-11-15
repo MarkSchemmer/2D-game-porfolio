@@ -199,4 +199,9 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       $("#canvas").mouseout(function (e) {
           handleMouseOut(e);
       });
+
+
+      Notes: 
+
+        I attempted completely refactoring my 
 */

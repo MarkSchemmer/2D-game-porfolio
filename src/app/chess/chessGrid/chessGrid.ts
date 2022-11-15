@@ -1,5 +1,5 @@
 import { Coordinate } from "src/app/common/utils";
-import { ChessCoordinate, IChessCell } from "../chess-utils/utils";
+import { ChessCell, ChessCoordinate, IChessCell } from "../chess-utils/utils";
 
 /*
 
@@ -32,6 +32,9 @@ export class ChessGrid {
      public ctx;
      public sqaureIsFocused = false;
      public currentFocusedSquare: Coordinate = null;
+
+     // Can add a hash map for simplification.
+     public pieceMap: { [key: string] : ChessCell };
    
      constructor(grid, resolution, c, r, ctx) {
        this.resolution = resolution;
@@ -40,6 +43,9 @@ export class ChessGrid {
        this.ROWS = r;
        this.grid = grid;
        this.ctx = ctx;
+
+       this.pieceMap = (this.grid.flat()).reduce((acc, cur, idx) => {acc[cur.coordinate.chessCoordinate] = cur; return acc;}, {});
+       console.log(this.pieceMap);
      }
    
      public calculateRange = grid => {
@@ -100,13 +106,10 @@ export class ChessGrid {
      }
 
      resetAllSquares = () => {
-      for (let col = 0; col < this.grid.length; col++) {
-        for (let row = 0; row < this.grid[col].length; row++) {
-          const cell: IChessCell = this.grid[col][row];
-          cell.isAlive = false;
-          cell.redSquareActivated = false;
-        }
-      }
+        Object.values(this.pieceMap).forEach((c: ChessCell) => {
+          c.isAlive = false;
+          c.redSquareActivated = false;
+        });
      }
 
      resetAllYellowSquares = () => {
@@ -122,7 +125,7 @@ export class ChessGrid {
       for (let col = 0; col < this.grid.length; col++) {
         for (let row = 0; row < this.grid[col].length; row++) {
           const cell: IChessCell = this.grid[col][row];
-          cell.isAlive = false;
+          cell.redSquareActivated = false;
         }
       }
      }
@@ -136,7 +139,7 @@ export class ChessGrid {
     }
 
      public clickSquare = (x, y, e, isLeftClick) => {
-        // this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
+        this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
         if (isLeftClick) 
         {
             if (this.areRedSquaresActive()) 
