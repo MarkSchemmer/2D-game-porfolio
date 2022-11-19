@@ -69,7 +69,8 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       const indexOfY = Math.floor(y / this.resolution); 
       try 
       {
-        if (this.chessBoard.grid[indexOfX][indexOfY]) 
+        let hasCell = this.chessBoard.grid[indexOfX] && this.chessBoard.grid[indexOfX][indexOfY];
+        if (hasCell) 
         {
             // console.log(`${indexOfX}-${indexOfY}`);
             // Hightlight the square
@@ -77,6 +78,7 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
             // chessCell.isAlive = true;
             // this.chessBoard.draw();
             this.chessBoard.clickSquare(indexOfX, indexOfY, e, isLeftClick);
+            this.chessBoard.draw();
         }
         else 
         {
@@ -90,9 +92,10 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
       {
         // A click was outside of the chess grid
         // uncheck focused yellow sqaures. 
-        this.chessBoard.resetAllYellowSquares();
-        this.chessBoard.draw();
-        console.log(ex);
+        // this.chessBoard.resetAllYellowSquares();
+        // this.chessBoard.draw();
+        // console.log(ex);
+        alert(ex);
       }
   }
 

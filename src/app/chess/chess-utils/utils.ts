@@ -1,11 +1,14 @@
 import { Coordinate } from "src/app/common/utils";
-import { range } from "utils/Utils"
+import { isValue, range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
 import { ChessPieceFactory, IPiece, Piece, PieceColor, PieceName, WhitePond } from "./Piece";
 
 export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export let numbers = range(1, 8);
 export const chessPieceFactory = new ChessPieceFactory();
+
+let a1Tog8 = letters.map(l => l+"-1");
+let a1Toa8 = numbers.map(n => "a-"+n);
 
 class PieceDirectionSetup {
 
@@ -103,6 +106,18 @@ export class Mouse {
     }
 }
 
+export class ChessMovement {
+    constructor() { }
+    Left: ChessCell;
+    Right: ChessCell;
+    Forward: ChessCell;
+    Backwards: ChessCell;
+    ForwardsDiagonalRight: ChessCell;
+    ForwardsDiagonalLeft: ChessCell;
+    BackwardsDiagonalLeft: ChessCell;
+    BackwardsDiagonalRight: ChessCell;
+}
+
 export interface IChessCell {
     cellsColor: string;
     xRange: number;
@@ -125,12 +140,23 @@ export class ChessCell implements IChessCell {
     // chagne isAlive to userFocusedSqaure
     public isAlive: boolean = false;
     public redSquareActivated: boolean = false;
+
+    public canMoveToOrAttack: boolean = false;
+
     // Coordinate of square in chessboard.
     public coordinate: ChessCoordinate = null;
     public cellsColor: string = null;
     public letterText: string = null;
     public numberText: string = null;
-    public piece: any = null;
+    public piece: Piece = null;
+    public row: number;
+    public col: number;
+    public chessMovementPatterns: ChessMovement = new ChessMovement();
+
+    setRowCol = (row, col) => {
+        this.row = row;
+        this.col = col;
+    }
 
     constructor(x, y) 
     {
@@ -140,10 +166,13 @@ export class ChessCell implements IChessCell {
 }
 
 export let genChessBoard = () => {
+    // xIndex row
+    // yIndex col
     let board =  range(1, 8).map((x, xIndex) => {
         let chessCell: ChessCell = null;
         let indexes = range(1, 8).map((y, yIndex) => {
             chessCell = new ChessCell(x, y);
+            chessCell.setRowCol(xIndex, yIndex);
             if (x === 1) { chessCell.letterText = (yIndex + 1).toString(); }
             return chessCell;
         });
@@ -160,9 +189,53 @@ export let genChessBoard = () => {
         pieceSetter(directions);
     });
 
-    // board.reverse();
     return board;
 }
+
+export let connectBoard = (pieceMap) => {
+    // console.log(pieceMap);
+    // console.log(a1Toa8);
+    a1Tog8.forEach((chessCoordiante, idx, arr) => {
+        try {
+            let currentCell: ChessCell = pieceMap[chessCoordiante];
+            // console.log(currentCell);
+            let previousCell: ChessCell = pieceMap[arr[idx - 1]];
+            let nextCell: ChessCell = pieceMap[arr[idx + 1]];
+    
+            currentCell.chessMovementPatterns.Left = previousCell;
+            currentCell.chessMovementPatterns.Right = nextCell;
+    
+            if (isValue(previousCell)) {
+                previousCell.chessMovementPatterns.Right = currentCell;
+            }
+    
+            if (isValue(nextCell)) {
+                nextCell.chessMovementPatterns.Left = currentCell;
+            }
+        } catch(e) { console.log(e); }
+
+    });
+
+    a1Toa8.forEach((chessCoordinate, idx, arr) => {
+        try {
+            let currentCell: ChessCell = pieceMap[chessCoordinate];
+            // console.log(currentCell);
+            let previousCell: ChessCell = pieceMap[arr[idx - 1]];
+            let nextCell: ChessCell = pieceMap[arr[idx + 1]];
+    
+            currentCell.chessMovementPatterns.Backwards = previousCell;
+            currentCell.chessMovementPatterns.Forward = nextCell;
+    
+            if (isValue(previousCell)) {
+                previousCell.chessMovementPatterns.Forward = currentCell;
+            }
+    
+            if (isValue(nextCell)) {
+                nextCell.chessMovementPatterns.Backwards  = currentCell;
+            }
+        } catch(e) { console.log(e); }
+    });
+} 
 
 
 
@@ -193,6 +266,7 @@ export class ChessCoordinate extends Coordinate {
 
     public LogCoordinate = () => {
         console.log(`${this.chessX} - ${this.y}`);
+        return this.chessCoordinate;
     }
 }
 

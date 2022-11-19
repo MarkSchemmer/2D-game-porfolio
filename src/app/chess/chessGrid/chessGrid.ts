@@ -1,5 +1,6 @@
 import { Coordinate } from "src/app/common/utils";
-import { ChessCell, ChessCoordinate, IChessCell } from "../chess-utils/utils";
+import { isValue } from "utils/Utils";
+import { ChessCell, ChessCoordinate, connectBoard, IChessCell } from "../chess-utils/utils";
 
 /*
 
@@ -22,6 +23,8 @@ export class ChessGrid {
      public black = "#000";
      // Highlighted yellow square
      public yellowSquare = "#fff576bd";
+
+     public couldMoveSquare = "#09f7e175";
      // Highlighted red square
      // rgb(236 126 106); convert into hex -> 
      public redSquare = "#ec7e6ac7";
@@ -32,37 +35,39 @@ export class ChessGrid {
      public ctx;
      public sqaureIsFocused = false;
      public currentFocusedSquare: Coordinate = null;
+     public focusedCell: ChessCell = null;
 
      // Can add a hash map for simplification.
      public pieceMap: { [key: string] : ChessCell };
    
      constructor(grid, resolution, c, r, ctx) {
        this.resolution = resolution;
-       this.calculateRange(grid);
        this.COLS = c;
        this.ROWS = r;
        this.grid = grid;
        this.ctx = ctx;
 
        this.pieceMap = (this.grid.flat()).reduce((acc, cur, idx) => {acc[cur.coordinate.chessCoordinate] = cur; return acc;}, {});
-       console.log(this.pieceMap);
+       // console.log(this.pieceMap);
+       this.calculateRange(this.grid);
+       connectBoard(this.pieceMap);
      }
-   
+
      public calculateRange = grid => {
-       for (let col = 0; col < grid.length; col++) {
-         for (let row = 0; row < grid[col].length; row++) {
-           const cell: IChessCell = grid[col][row];
-           cell.xRange = (col * this.resolution);
-           cell.yRange = (row * this.resolution);
-         }
-       }
-     }
+      for (let col = 0; col < grid.length; col++) {
+        for (let row = 0; row < grid[col].length; row++) {
+          const cell: IChessCell = grid[col][row];
+          cell.xRange = (col * this.resolution);
+          cell.yRange = (row * this.resolution);
+        }
+      }
+    }
    
      public draw = () => {
        for (let col = 0; col < this.grid.length; col++) {
          for (let row = 0; row < this.grid[col].length; row++) {
            this.ctx.clearRect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
-           const cell: IChessCell = this.grid[col][row];
+           const cell: ChessCell = this.grid[col][row];
            this.ctx.beginPath();
            this.ctx.rect(col * this.resolution, row * this.resolution, this.resolution, this.resolution);
            this.ctx.stroke();
@@ -79,6 +84,12 @@ export class ChessGrid {
            if (cell.redSquareActivated) 
            {
               this.ctx.fillStyle = this.redSquare;
+              this.ctx.fill();
+           }
+
+           if (cell.canMoveToOrAttack) 
+           {
+              this.ctx.fillStyle = this.couldMoveSquare;
               this.ctx.fill();
            }
 
@@ -105,96 +116,217 @@ export class ChessGrid {
        }
      }
 
-     resetAllSquares = () => {
+     public resetAllSquares = () => {
         Object.values(this.pieceMap).forEach((c: ChessCell) => {
           c.isAlive = false;
+          c.redSquareActivated = false;
+          c.canMoveToOrAttack = false;
+        });
+     }
+
+     public resetAllYellowSquares = () => {
+        Object.values(this.pieceMap).forEach((c: ChessCell) => {
+          c.isAlive = false;
+        });
+     }
+
+     public resetAllRedSquares = () => {
+        Object.values(this.pieceMap).forEach((c: ChessCell) => {
           c.redSquareActivated = false;
         });
      }
 
-     resetAllYellowSquares = () => {
-      for (let col = 0; col < this.grid.length; col++) {
-        for (let row = 0; row < this.grid[col].length; row++) {
-          const cell: IChessCell = this.grid[col][row];
-          cell.isAlive = false;
-        }
-      }
+     public areRedSquaresActive = (): boolean => {
+       return Object.values(this.pieceMap).some(cell => cell.redSquareActivated === true)
      }
 
-     resetAllRedSquares = (prevX, prevY, x, y) => {
-      for (let col = 0; col < this.grid.length; col++) {
-        for (let row = 0; row < this.grid[col].length; row++) {
-          const cell: IChessCell = this.grid[col][row];
-          cell.redSquareActivated = false;
-        }
-      }
-     }
-
-     areRedSquaresActive = (): boolean => {
-       return this.grid.some(cells => cells.some(cell => cell.redSquareActivated === true));
-     }
-
-     isYellowSquareActive = (): boolean => {
-      return this.grid.some(cells => cells.some(cell => cell.isAlive === true));
+    public isYellowSquareActive = (): boolean => {
+      return Object.values(this.pieceMap).some(cell => cell.isAlive === true)
     }
 
-     public clickSquare = (x, y, e, isLeftClick) => {
-        this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
-        if (isLeftClick) 
-        {
-            if (this.areRedSquaresActive()) 
-            {
-              this.resetAllSquares();
-            }
-            else 
-            {
-                  let cell = this.grid[x][y];
-                  // If focused square is null, then nothing is selected. 
-                  if (this.currentFocusedSquare === null && cell.piece !== null) 
-                  {
-                    this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-                    this.currentFocusedSquare = new ChessCoordinate(x, y);
-                  } else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) {
-                    // clicking the same square, meaning we need to toggle it again. 
-                    this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
-                  }
-                  else if (cell.piece === null) {
-                    if (this.currentFocusedSquare !== null) {
-                        // turn old square of
-                        let oldX = this.currentFocusedSquare.x;
-                        let oldY = this.currentFocusedSquare.y;
-                        this.grid[oldX][oldY].isAlive = false;
-                    }
-                  } 
-                  else {
-                    // selecting a new square, we need to access the old square and then turn it false.
-                    // Then we need to select the new sqaure.
+    public focusSquare = (cell: ChessCell) => {
+      // console.log(cell.coordinate.chessCoordinate);
+      // We need to toggle the cell.
+      cell.isAlive = !cell.isAlive;
+      // we need to make the sqaure active
+      cell.piece.FindMoves(cell);
+      // we need to also make sure that paths it can move or attack are also
+      // highlighted
+    }
 
-                    // turn old square of
-                    let oldX = this.currentFocusedSquare.x;
-                    let oldY = this.currentFocusedSquare.y;
-                    this.grid[oldX][oldY].isAlive = false;
+    public unFocusOldSquare = (cell: ChessCell) => {
+      cell.isAlive = false;
+      if (isValue(cell.piece))
+        cell.piece.UnSelectMoves(cell);
+    }
 
-                    // Update new focused square
-                    this.currentFocusedSquare.x = x;
-                    this.currentFocusedSquare.y = y;
-                    this.grid[x][y].isAlive = true;
-                    // console.log(`${x}-${y}`);
-                  }
-            }
+    public focusNewSquare = (cell: ChessCell) => {
+      // first unfocus old square
+      if (isValue(this.focusNewSquare) && isValue(cell.piece)) {
+        this.unFocusOldSquare(this.focusedCell);
+      }
+      
+      // Second focus new square
+      this.focusSquare(cell);
+    }
+
+    public clickSquare = (x, y, e, isLeftClick) => {
+
+      /*
+         Items we need to cover when handling a click. 
+      */
+      let cell: ChessCell = this.grid[x][y];
+      // console.log(cell);
+      let piece = cell.piece;
+      if (isLeftClick) 
+      {
+        if (isValue(piece)) 
+        { 
+            // We need to reset all redsquares just in case. 
+            this.resetAllRedSquares();
+            // if no square is selected select square and focus
+            if (this.focusedCell === null) { this.focusSquare(cell); }
+            // If the square was clicked as the previous square
+            else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.focusSquare(cell);}
+            // Focusing new square that was clicked, so basically focus new square and unfocus old square
+            else { this.focusNewSquare(cell); }
         }
+        // Clicked a square and we need to unofus all squares 
         else 
         {
-          if (this.isYellowSquareActive()) 
-          {
-            this.resetAllYellowSquares();
-          }
-          // console.log("right click");
-          this.grid[x][y].redSquareActivated = !this.grid[x][y].redSquareActivated;
+          this.resetAllSquares();
         }
-        
-        // this.resetAllSquares(this.prevX, this.prevY, x, y);
-        this.draw();
-     }
+      }
+      else 
+      {
+        cell.redSquareActivated = !cell.redSquareActivated;
+      }
+
+      // After all operations we update the previous cell
+      this.focusedCell = cell;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //  public clickSquare = (x, y, e, isLeftClick) => {
+    //     this.grid[x][y].coordinate.LogCoordinate(); // just log the coordinate. 
+    //     if (isLeftClick) 
+    //     {
+    //         if (this.areRedSquaresActive()) 
+    //         {
+    //           this.resetAllSquares();
+    //         }
+    //         else 
+    //         {
+    //               let cell: ChessCell = this.grid[x][y];
+
+    //               if (isValue(cell.piece)) {
+    //                 console.log(cell.piece);
+    //                 cell.piece.FindMoves(cell);
+    //               }
+
+    //               // If focused square is null, then nothing is selected. 
+    //               if (this.currentFocusedSquare === null && cell.piece !== null) 
+    //               {
+
+    //                 this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
+    //                 this.currentFocusedSquare = new ChessCoordinate(x, y);
+
+    //               } 
+    //               else if (this.currentFocusedSquare.x === x && this.currentFocusedSquare.y === y) 
+    //               {
+    //                 // clicking the same square, meaning we need to toggle it again. 
+    //                 this.grid[x][y].isAlive = !this.grid[x][y].isAlive;
+    //               }
+    //               else if (cell.piece === null) 
+    //               {
+    //                 if (this.currentFocusedSquare !== null) 
+    //                 {
+    //                     // turn old square of
+    //                     let oldX = this.currentFocusedSquare.x;
+    //                     let oldY = this.currentFocusedSquare.y;
+    //                     this.grid[oldX][oldY].isAlive = false;
+    //                 }
+    //               } 
+                  
+    //               else 
+    //               {
+    //                 // selecting a new square, we need to access the old square and then turn it false.
+    //                 // Then we need to select the new sqaure.
+    //                 // turn old square of
+    //                 let oldX = this.currentFocusedSquare.x;
+    //                 let oldY = this.currentFocusedSquare.y;
+    //                 this.grid[oldX][oldY].isAlive = false;
+
+    //                 // Update new focused square
+    //                 this.currentFocusedSquare.x = x;
+    //                 this.currentFocusedSquare.y = y;
+    //                 this.grid[x][y].isAlive = true;
+    //               }
+    //         }
+    //     }
+    //     else 
+    //     {
+    //       if (this.isYellowSquareActive()) 
+    //       {
+    //         this.resetAllYellowSquares();
+    //       }
+    //       // console.log("right click");
+    //       this.grid[x][y].redSquareActivated = !this.grid[x][y].redSquareActivated;
+    //     }
+
+    //     this.draw();
+    //  }
    }
 
