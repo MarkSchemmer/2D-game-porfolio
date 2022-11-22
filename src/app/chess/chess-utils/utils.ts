@@ -255,18 +255,95 @@ enum chessCellColor {
 
 export class ChessCoordinate extends Coordinate {
     public letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+
+    public letterToNumbMapper = this.letters
+    .reduce(
+        (acc, cur, idx) => {
+            acc[cur] = idx + 1 
+            return acc;
+        }
+        ,{});
+
     public chessX: string;
     public chessCoordinate: string;
+    public x: number;
+    public y: number;
 
     constructor(x, y) {
         super(x, y);
+        this.x = x;
+        this.y = y;
         this.chessX = this.letters[this.x - 1];
         this.chessCoordinate = `${this.chessX}-${y}`;
     }
 
+    // for x I can just use the this.chessX
+    // And for y, I can just use this.y.   
+
+    private changeX = (increment = true) => {
+        try {
+            let xChess = this.chessCoordinate.split("-")[0];
+            let xChessNumbToRight = this.letterToNumbMapper[xChess] + (increment ? 1 : -1);
+            return this.letters[xChessNumbToRight];
+
+        } catch(e) {
+            return null;
+        }
+    }
+
+    private changeY = (increment = true) => {
+        try {
+            let [xChess, yChess] = this.chessCoordinate.split("-");
+            let numbYChess = Number(yChess) + (increment ? 1 : -1);
+            if (numbYChess < 0 || numbYChess > 8) return null;
+            return numbYChess; 
+        } 
+        catch(e) { return null; }
+    }
+
+    private formatChessCoordinate = (x, y) => `${x}-${y}`; 
+
     public LogCoordinate = () => {
-        console.log(`${this.chessX} - ${this.y}`);
+        console.log(this.chessCoordinate);
         return this.chessCoordinate;
+    }
+
+    public getLeftCell = () => {
+        return this.formatChessCoordinate(this.changeX(false), this.y);
+    }
+
+    public getRightCell = () => {
+        return this.formatChessCoordinate(this.changeX(), this.y);
+    }
+
+    public getForwardCell = () => {
+        return this.formatChessCoordinate(this.chessX, this.changeY())
+    }
+
+    public getBackwardsCell = () => {
+        return this.formatChessCoordinate(this.chessX, this.changeY(false));
+    }
+
+    public getForwardsDiagonalRightCell = () => {
+        // Need to increment x and y
+        return this.formatChessCoordinate(this.changeX(), this.changeY());
+    }
+
+    public getForwardsDiagonalLeftCell = () => {
+        // Need to increment Y
+        // Need to decrement X
+        return this.formatChessCoordinate(this.changeX(false), this.changeY());
+    }
+
+    public getBackwardsDiagonalRightCell = () => {
+        // Need increment X
+        // Decrement Y
+        return this.formatChessCoordinate(this.changeX(), this.changeY(false));
+    }
+
+    public getBackwardsDiagonalLeftCell = () => {
+        // Decrement X and Y
+        return this.formatChessCoordinate(this.changeX(false), this.changeY(false));
     }
 }
 

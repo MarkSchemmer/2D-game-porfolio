@@ -41,16 +41,20 @@ export class ChessGrid {
      public pieceMap: { [key: string] : ChessCell };
    
      constructor(grid, resolution, c, r, ctx) {
-       this.resolution = resolution;
-       this.COLS = c;
-       this.ROWS = r;
-       this.grid = grid;
-       this.ctx = ctx;
+      this.resolution = resolution;
+      this.COLS = c;
+      this.ROWS = r;
+      this.grid = grid;
+      this.ctx = ctx;
 
-       this.pieceMap = (this.grid.flat()).reduce((acc, cur, idx) => {acc[cur.coordinate.chessCoordinate] = cur; return acc;}, {});
+      this.pieceMap = (this.grid.flat())
+       .reduce((acc, cur, idx) => {
+        acc[cur.coordinate.chessCoordinate] = cur; 
+        return acc;
+      }, {});
        // console.log(this.pieceMap);
-       this.calculateRange(this.grid);
-       connectBoard(this.pieceMap);
+      this.calculateRange(this.grid);
+      connectBoard(this.pieceMap);
      }
 
      public calculateRange = grid => {
@@ -81,15 +85,15 @@ export class ChessGrid {
               this.ctx.fill(); 
            }
 
-           if (cell.redSquareActivated) 
-           {
-              this.ctx.fillStyle = this.redSquare;
-              this.ctx.fill();
-           }
-
            if (cell.canMoveToOrAttack) 
            {
               this.ctx.fillStyle = this.couldMoveSquare;
+              this.ctx.fill();
+           }
+
+           if (cell.redSquareActivated) 
+           {
+              this.ctx.fillStyle = this.redSquare;
               this.ctx.fill();
            }
 

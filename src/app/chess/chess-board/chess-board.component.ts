@@ -108,6 +108,19 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
 /*
 
 
+    I'm needing to think on how I can connect my board?
+
+    Answer this tomorrow, we need to do this better than just
+    connecting squares, need to some sort of mathematical operation to 
+    navigate the board, we will come up with this later. 
+
+    We cna write about this, and then take some time and theorize about this 
+    in due time. 
+
+
+    I'm thinking about 
+
+
     You can click one square to focus piece then click that said square again
     un-focus it or you can click outside of the board and then clear the focus
 
