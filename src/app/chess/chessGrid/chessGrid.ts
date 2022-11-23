@@ -140,6 +140,12 @@ export class ChessGrid {
         });
      }
 
+     public unSelectedOldSelectedSquares = () => {
+      Object.values(this.pieceMap).forEach((c: ChessCell) => {
+        c.canMoveToOrAttack = false;
+      })
+     }
+
      public areRedSquaresActive = (): boolean => {
        return Object.values(this.pieceMap).some(cell => cell.redSquareActivated === true)
      }
@@ -153,15 +159,22 @@ export class ChessGrid {
       // We need to toggle the cell.
       cell.isAlive = !cell.isAlive;
       // we need to make the sqaure active
-      cell.piece.FindMoves(cell);
+      console.log("I'm here logging.");
+      console.log(cell.coordinate.chessCoordinate);
+      console.log(cell.piece);
+      if (isValue(cell.piece)) {
+        cell.piece.FindMoves(cell);
+      }
+      
       // we need to also make sure that paths it can move or attack are also
       // highlighted
     }
 
     public unFocusOldSquare = (cell: ChessCell) => {
       cell.isAlive = false;
-      if (isValue(cell.piece))
-        cell.piece.UnSelectMoves(cell);
+      if (isValue(cell.piece)){
+        this.unSelectedOldSelectedSquares();
+      }
     }
 
     public focusNewSquare = (cell: ChessCell) => {
@@ -180,7 +193,7 @@ export class ChessGrid {
          Items we need to cover when handling a click. 
       */
       let cell: ChessCell = this.grid[x][y];
-      // console.log(cell);
+      console.log(cell);
       let piece = cell.piece;
       if (isLeftClick) 
       {

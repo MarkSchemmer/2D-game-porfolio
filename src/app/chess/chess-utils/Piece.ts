@@ -72,6 +72,43 @@ export class Piece implements IPiece {
         }
     }
 
+    public getAllDiagonals = (cell: ChessCell) => {
+        // forward right
+
+        let diagForwardRight = cell.chessMovementPatterns.ForwardsDiagonalRight;
+        while (isValue(diagForwardRight)) {
+            diagForwardRight.canMoveToOrAttack = !diagForwardRight.canMoveToOrAttack;
+            diagForwardRight = diagForwardRight.chessMovementPatterns.ForwardsDiagonalRight;
+        }
+
+        // forward left
+
+        let diagForwardLeft = cell.chessMovementPatterns.ForwardsDiagonalLeft;
+
+        while (isValue(diagForwardLeft)) {
+            diagForwardLeft.canMoveToOrAttack = !diagForwardLeft.canMoveToOrAttack;
+            diagForwardLeft = diagForwardLeft.chessMovementPatterns.ForwardsDiagonalLeft;
+        }
+
+        // backwards right 
+
+        let diagBackwardsRight = cell.chessMovementPatterns.BackwardsDiagonalRight;
+
+        while (isValue(diagBackwardsRight)) {
+            diagBackwardsRight.canMoveToOrAttack = !diagBackwardsRight.canMoveToOrAttack;
+            diagBackwardsRight = diagBackwardsRight.chessMovementPatterns.BackwardsDiagonalRight;
+        }
+
+        // backwards left
+
+        let diagBackwardsLeft = cell.chessMovementPatterns.BackwardsDiagonalLeft;
+
+        while (isValue(diagBackwardsLeft)) {
+            diagBackwardsLeft.canMoveToOrAttack = !diagBackwardsLeft.canMoveToOrAttack;
+            diagBackwardsLeft = diagBackwardsLeft.chessMovementPatterns.BackwardsDiagonalLeft;
+        }
+    }
+
     public getAllHorizontals = (cell: ChessCell) => {
         let forwards = cell.chessMovementPatterns.Forward;
         let backwards = cell.chessMovementPatterns.Backwards;
@@ -118,14 +155,8 @@ export class Rook extends Piece {
     constructor(image, pieceColor) {
         super(image, pieceColor);
     }
-}
 
-export class WhiteRook extends Rook implements IPiece {
-    constructor() {
-        super(`assets/chess-images/white-rook.png`, PieceColor.WHITE);
-    }
-
-    private rookHelper = (cell: ChessCell) => {
+    public rookHelper = (cell: ChessCell) => {
         this.getAllVerticalCells(cell);
         this.getAllHorizontals(cell);
     }
@@ -134,11 +165,12 @@ export class WhiteRook extends Rook implements IPiece {
         // console.log("white rook here, let's find moves.");
         // console.log(cell.coordinate.chessCoordinate);
         this.rookHelper(cell);
+        console.log("finished.");
     }
 
     public UnSelectMoves = (cell: ChessCell) => {
             // We should look left and right...
-            console.log(cell);
+            // console.log(cell);
             let right = cell.chessMovementPatterns.Right;
             let left = cell.chessMovementPatterns.Left;
 
@@ -172,6 +204,12 @@ export class WhiteRook extends Rook implements IPiece {
     }
 }
 
+export class WhiteRook extends Rook implements IPiece {
+    constructor() {
+        super(`assets/chess-images/white-rook.png`, PieceColor.WHITE);
+    }
+}
+
 export class BlackRook extends Rook implements IPiece {
     constructor() {
         super(`assets/chess-images/black-rook.png`, PieceColor.BLACK);
@@ -184,6 +222,17 @@ export class Bishop extends Piece {
     public weight: number = 3;
     constructor(image, pieceColor) {
         super(image, pieceColor);
+    }
+
+    public bishopHelper = (cell: ChessCell) => {
+        this.getAllDiagonals(cell);
+    }
+
+    public FindMoves = (cell: ChessCell) => {
+        // console.log("white rook here, let's find moves.");
+        // console.log(cell.coordinate.chessCoordinate);
+        this.bishopHelper(cell);
+        console.log("finished.");
     }
 }
 

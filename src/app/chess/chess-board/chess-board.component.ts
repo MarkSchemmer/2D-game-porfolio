@@ -114,8 +114,13 @@ export class ChessBoardComponent implements OnInit, OnDestroy {
     connecting squares, need to some sort of mathematical operation to 
     navigate the board, we will come up with this later. 
 
-    We cna write about this, and then take some time and theorize about this 
-    in due time. 
+    We can write about this, and then take some time and theorize about this 
+    in due time.
+    
+    ChessCell can get it's neighbors using some sort of Math. 
+
+    I now just need to iterate through all cells and then connect them.
+    using ConnectBoard() method. 
 
 
     I'm thinking about 

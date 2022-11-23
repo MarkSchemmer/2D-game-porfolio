@@ -153,6 +153,50 @@ export class ChessCell implements IChessCell {
     public col: number;
     public chessMovementPatterns: ChessMovement = new ChessMovement();
 
+    public connectToNeighbors = (cell: ChessCell, pieceMap: { [key: string] : ChessCell }) => {
+        
+        // leftNeighbor
+        let leftCellCoordinate = cell.coordinate.getLeftCell();
+        let leftCell = isValue(leftCellCoordinate) ? pieceMap[leftCellCoordinate] : null;
+        
+        // Right Neighbor
+        let rightCellCoordinate = cell.coordinate.getRightCell();
+        let rightCell = isValue(rightCellCoordinate) ? pieceMap[rightCellCoordinate] : null;
+
+        // Forward Neighbor
+        let forwardCellCoordinate = cell.coordinate.getForwardCell();
+        let forwardCell = isValue(forwardCellCoordinate) ? pieceMap[forwardCellCoordinate] : null;
+
+        // Backwards Neighbor
+        let backwardsCellCoordinate = cell.coordinate.getBackwardsCell();
+        let backwardsCell = isValue(backwardsCellCoordinate) ? pieceMap[backwardsCellCoordinate] : null;
+
+        // Diagonal Forward Right Neighbor
+        let forwardDiagonalRightCoordinate = cell.coordinate.getForwardsDiagonalRightCell();
+        let diagonalForwardRightCell = isValue(forwardDiagonalRightCoordinate) ? pieceMap[forwardDiagonalRightCoordinate] : null;
+
+        // Diagonal Forward Left Neighbor
+        let forwardDiagonalLeftCoordinate = cell.coordinate.getForwardsDiagonalLeftCell();
+        let diagonalForwardLeftCell = isValue(forwardDiagonalLeftCoordinate) ? pieceMap[forwardDiagonalLeftCoordinate] : null;
+
+        // Diagonal Backwards Right Neighbor
+        let backwardsDiagonalRightCoordinate = cell.coordinate.getBackwardsDiagonalRightCell();
+        let backwardsDiagonalRightCell = isValue(backwardsDiagonalRightCoordinate) ? pieceMap[backwardsDiagonalRightCoordinate] : null;
+
+        // Diagonal Backwards Left Neighbor
+        let backwardsDiagonalLeftCoordinate = cell.coordinate.getBackwardsDiagonalLeftCell();
+        let backwardsDiagonalLeftCell = isValue(backwardsDiagonalLeftCoordinate) ? pieceMap[backwardsDiagonalLeftCoordinate] : null;
+
+        cell.chessMovementPatterns.Left = leftCell;
+        cell.chessMovementPatterns.Right = rightCell;
+        cell.chessMovementPatterns.Forward = forwardCell;
+        cell.chessMovementPatterns.Backwards = backwardsCell;
+        cell.chessMovementPatterns.ForwardsDiagonalRight = diagonalForwardRightCell;
+        cell.chessMovementPatterns.ForwardsDiagonalLeft = diagonalForwardLeftCell;
+        cell.chessMovementPatterns.BackwardsDiagonalRight = backwardsDiagonalRightCell;
+        cell.chessMovementPatterns.BackwardsDiagonalLeft = backwardsDiagonalLeftCell
+    }
+
     setRowCol = (row, col) => {
         this.row = row;
         this.col = col;
@@ -192,52 +236,11 @@ export let genChessBoard = () => {
     return board;
 }
 
-export let connectBoard = (pieceMap) => {
-    // console.log(pieceMap);
-    // console.log(a1Toa8);
-    a1Tog8.forEach((chessCoordiante, idx, arr) => {
-        try {
-            let currentCell: ChessCell = pieceMap[chessCoordiante];
-            // console.log(currentCell);
-            let previousCell: ChessCell = pieceMap[arr[idx - 1]];
-            let nextCell: ChessCell = pieceMap[arr[idx + 1]];
-    
-            currentCell.chessMovementPatterns.Left = previousCell;
-            currentCell.chessMovementPatterns.Right = nextCell;
-    
-            if (isValue(previousCell)) {
-                previousCell.chessMovementPatterns.Right = currentCell;
-            }
-    
-            if (isValue(nextCell)) {
-                nextCell.chessMovementPatterns.Left = currentCell;
-            }
-        } catch(e) { console.log(e); }
-
-    });
-
-    a1Toa8.forEach((chessCoordinate, idx, arr) => {
-        try {
-            let currentCell: ChessCell = pieceMap[chessCoordinate];
-            // console.log(currentCell);
-            let previousCell: ChessCell = pieceMap[arr[idx - 1]];
-            let nextCell: ChessCell = pieceMap[arr[idx + 1]];
-    
-            currentCell.chessMovementPatterns.Backwards = previousCell;
-            currentCell.chessMovementPatterns.Forward = nextCell;
-    
-            if (isValue(previousCell)) {
-                previousCell.chessMovementPatterns.Forward = currentCell;
-            }
-    
-            if (isValue(nextCell)) {
-                nextCell.chessMovementPatterns.Backwards  = currentCell;
-            }
-        } catch(e) { console.log(e); }
+export let connectBoard = (pieceMap: { [key: string] : ChessCell }) => {
+    Object.values(pieceMap).forEach((cell: ChessCell) => {
+        cell.connectToNeighbors(cell, pieceMap);
     });
 } 
-
-
 
 let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSetup) => {
     directions.pieceLocations.forEach(location => {
@@ -247,7 +250,7 @@ let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSe
         }
     });
 }
-
+ 
 enum chessCellColor {
     WHITE = "WHITE",
     BLACK = "BLACK"
@@ -283,10 +286,11 @@ export class ChessCoordinate extends Coordinate {
     private changeX = (increment = true) => {
         try {
             let xChess = this.chessCoordinate.split("-")[0];
-            let xChessNumbToRight = this.letterToNumbMapper[xChess] + (increment ? 1 : -1);
-            return this.letters[xChessNumbToRight];
-
+            let xChessNumbToRight = this.letterToNumbMapper[xChess] + (increment ? 0 : -2);
+            let res = this.letters[xChessNumbToRight];
+            return isValue(res) ? res : null;
         } catch(e) {
+            console.log(e);
             return null;
         }
     }
@@ -298,10 +302,15 @@ export class ChessCoordinate extends Coordinate {
             if (numbYChess < 0 || numbYChess > 8) return null;
             return numbYChess; 
         } 
-        catch(e) { return null; }
+        catch(e) {
+            console.log(e); 
+            return null; 
+        }
     }
 
-    private formatChessCoordinate = (x, y) => `${x}-${y}`; 
+    private formatChessCoordinate = (x, y) => {
+        return isValue(x) && isValue(y) ? `${x}-${y}` : null;
+    }; 
 
     public LogCoordinate = () => {
         console.log(this.chessCoordinate);
