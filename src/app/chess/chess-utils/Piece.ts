@@ -1,6 +1,5 @@
 // A piece needs to know how to move, 
 // Going to be base class for all
-import { NullTemplateVisitor } from "@angular/compiler";
 import { isValue, range } from "utils/Utils";
 import { ChessCell } from "./utils";
 
@@ -30,6 +29,7 @@ export class Piece implements IPiece {
     public pieceColor: PieceColor;
     public imageObj = new Image();
     public hasRun: boolean = false;
+    public unSelectOldMovesFn: () => void;
 
     public draw = (ctx, xRange, yRange) => {
         if (this.hasRun === false) {
@@ -74,15 +74,14 @@ export class Piece implements IPiece {
 
     public getAllDiagonals = (cell: ChessCell) => {
         // forward right
-
         let diagForwardRight = cell.chessMovementPatterns.ForwardsDiagonalRight;
+
         while (isValue(diagForwardRight)) {
             diagForwardRight.canMoveToOrAttack = !diagForwardRight.canMoveToOrAttack;
             diagForwardRight = diagForwardRight.chessMovementPatterns.ForwardsDiagonalRight;
         }
 
         // forward left
-
         let diagForwardLeft = cell.chessMovementPatterns.ForwardsDiagonalLeft;
 
         while (isValue(diagForwardLeft)) {
@@ -91,7 +90,6 @@ export class Piece implements IPiece {
         }
 
         // backwards right 
-
         let diagBackwardsRight = cell.chessMovementPatterns.BackwardsDiagonalRight;
 
         while (isValue(diagBackwardsRight)) {
@@ -100,7 +98,6 @@ export class Piece implements IPiece {
         }
 
         // backwards left
-
         let diagBackwardsLeft = cell.chessMovementPatterns.BackwardsDiagonalLeft;
 
         while (isValue(diagBackwardsLeft)) {
@@ -133,8 +130,67 @@ export class Piece implements IPiece {
 class Pond extends Piece {
     public weight: number = 1;
     public imageObj = new Image();
+    public hasMoved: boolean = false;
+
+    public poolOfSquaresThatCanMoveOrAttack = [];
+
     constructor(image, pieceColor) {
         super(image, pieceColor);
+    }
+
+    public pondHelper = (cell: ChessCell) => {
+
+        let next, nextNext;
+
+        if (cell.piece.pieceColor === PieceColor.WHITE) 
+        {
+            next = cell.chessMovementPatterns.Forward;
+            nextNext = next && next.chessMovementPatterns.Forward;
+        } 
+        else 
+        {
+            next = cell.chessMovementPatterns.Backwards;
+            nextNext = next && next.chessMovementPatterns.Backwards;
+        }
+
+        let left = next.chessMovementPatterns.Left;
+        let right = next.chessMovementPatterns.Right;
+
+        if (isValue(left)) {
+            left.canMoveToOrAttack = true;
+            this.poolOfSquaresThatCanMoveOrAttack.push(left);
+        }
+
+        if (isValue(right)) {
+            right.canMoveToOrAttack = true;
+            this.poolOfSquaresThatCanMoveOrAttack.push(right);
+        }
+
+        if (this.hasMoved === false) 
+        {
+            next.canMoveToOrAttack = true;
+            nextNext.canMoveToOrAttack = true;
+            this.poolOfSquaresThatCanMoveOrAttack = [ ...this.poolOfSquaresThatCanMoveOrAttack, next, nextNext ];
+
+        } else {
+            next.canMoveToOrAttack = true;
+            this.poolOfSquaresThatCanMoveOrAttack.push(next);
+        }
+
+    }
+
+    public FindMoves = (cell: ChessCell) => {
+        this.pondHelper(cell);
+    }
+
+    public UnSelectMoves = (c: ChessCell) => {
+
+        this.poolOfSquaresThatCanMoveOrAttack.forEach((cell: ChessCell) => {
+            cell.canMoveToOrAttack = false;
+        });
+
+        this.poolOfSquaresThatCanMoveOrAttack = [];
+
     }
 }
 
@@ -173,8 +229,6 @@ export class Rook extends Piece {
             // console.log(cell);
             let right = cell.chessMovementPatterns.Right;
             let left = cell.chessMovementPatterns.Left;
-
-
     
             // Look Right
             while(isValue(right)) {
@@ -187,7 +241,6 @@ export class Rook extends Piece {
                 left.canMoveToOrAttack = false;
                 left = left.chessMovementPatterns.Left;
             }
-
 
             let forwards = cell.chessMovementPatterns.Forward;
             let backwards = cell.chessMovementPatterns.Backwards;
@@ -290,6 +343,19 @@ export class Queen extends Piece {
     public weight: number = 10;
     constructor(image, pieceColor) {
         super(image, pieceColor);
+    }
+
+    public queenHelper = (cell: ChessCell) => {
+        this.getAllDiagonals(cell);
+        this.getAllHorizontals(cell);
+        this.getAllVerticalCells(cell);
+    }
+
+    public FindMoves = (cell: ChessCell) => {
+        // console.log("white rook here, let's find moves.");
+        // console.log(cell.coordinate.chessCoordinate);
+        this.queenHelper(cell);
+        console.log("finished.");
     }
 }
 

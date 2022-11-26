@@ -155,17 +155,14 @@ export class ChessGrid {
     }
 
     public focusSquare = (cell: ChessCell) => {
-      // console.log(cell.coordinate.chessCoordinate);
-      // We need to toggle the cell.
-      cell.isAlive = !cell.isAlive;
-      // we need to make the sqaure active
-      console.log("I'm here logging.");
-      console.log(cell.coordinate.chessCoordinate);
-      console.log(cell.piece);
-      if (isValue(cell.piece)) {
-        cell.piece.FindMoves(cell);
-      }
-      
+          // console.log(cell.coordinate.chessCoordinate);
+          // We need to toggle the cell.
+          cell.isAlive = !cell.isAlive;
+          // we need to make the sqaure active
+          if (isValue(cell.piece)) {
+            cell.piece.FindMoves(cell);
+          }
+
       // we need to also make sure that paths it can move or attack are also
       // highlighted
     }
@@ -179,7 +176,7 @@ export class ChessGrid {
 
     public focusNewSquare = (cell: ChessCell) => {
       // first unfocus old square
-      if (isValue(this.focusNewSquare) && isValue(cell.piece)) {
+      if (isValue(cell.piece)) {
         this.unFocusOldSquare(this.focusedCell);
       }
       
@@ -204,23 +201,23 @@ export class ChessGrid {
             // if no square is selected select square and focus
             if (this.focusedCell === null) { this.focusSquare(cell); }
             // If the square was clicked as the previous square
-            else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.focusSquare(cell);}
+            else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.unFocusOldSquare(cell); }
             // Focusing new square that was clicked, so basically focus new square and unfocus old square
             else { this.focusNewSquare(cell); }
+            // After all operations we update the previous cell
+            this.focusedCell = cell;
         }
         // Clicked a square and we need to unofus all squares 
         else 
         {
           this.resetAllSquares();
+          this.focusedCell = null;
         }
       }
       else 
       {
         cell.redSquareActivated = !cell.redSquareActivated;
       }
-
-      // After all operations we update the previous cell
-      this.focusedCell = cell;
     }
 
 
