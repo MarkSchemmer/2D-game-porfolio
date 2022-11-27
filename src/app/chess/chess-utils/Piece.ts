@@ -44,6 +44,8 @@ export class Piece implements IPiece {
         }
     }
 
+
+
     public FindMoves = (cell: ChessCell) => {
         // console.log("base moves here, basically log and forget.");
         // console.log(cell.coordinate.chessCoordinate);
@@ -303,8 +305,104 @@ export class BlackBishop extends Bishop implements IPiece {
 
 export class Knight extends Piece {
     public weight: number = 3;
+    public poolOfSquaresThatCanMoveOrAttack = [];
+
     constructor(image, pieceColor) {
         super(image, pieceColor);
+    }
+
+    public FindMoves = (cell: ChessCell) => {
+        this.getKnightMoves(cell);
+        console.log("found knight moves. ");
+    }
+
+    public UnSelectMoves = (cell: ChessCell) => {
+        this.poolOfSquaresThatCanMoveOrAttack.forEach((cell: ChessCell) => {
+            cell.canMoveToOrAttack = false;
+        });
+
+        this.poolOfSquaresThatCanMoveOrAttack = [];
+    }
+
+    public getKnightMoves = (cell: ChessCell) => {
+        // Need to get forward -> left and right
+        let fl = null, fr = null, f = null;
+        try 
+        {
+            f = cell.chessMovementPatterns.Forward.chessMovementPatterns.Forward;
+            fl = f.chessMovementPatterns.Left;
+            fr = f.chessMovementPatterns.Right;
+
+            if (isValue(fl)) {
+                fl.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(fl);
+            }
+
+            if (isValue(fr)) {
+                fr.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(fr);
+            }
+        } catch(e) {}
+
+        // Need to get backwards -> left and right
+
+        let bl = null, br = null, b = null;
+        try 
+        {
+            b = cell.chessMovementPatterns.Backwards.chessMovementPatterns.Backwards;
+            bl = b.chessMovementPatterns.Left;
+            br = b.chessMovementPatterns.Right;
+
+            if (isValue(br)) {
+                br.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(br);
+            }
+
+            if (isValue(bl)) {
+                bl.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(bl);
+            }
+        } catch(e) {}
+
+        // Need to get left -> forwards and backwards
+
+        let lf = null, lb = null, l = null;
+        try 
+        {
+            l = cell.chessMovementPatterns.Left.chessMovementPatterns.Left;
+            lf = l.chessMovementPatterns.Forward;
+            lb = l.chessMovementPatterns.Backwards;
+
+            if (isValue(lf)) {
+                lf.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(lf);
+            }
+
+            if (isValue(lb)) {
+                lb.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(lb);
+            }
+        } catch(e) {}
+
+        // Need to get right -> forwards and backwards
+
+        let rf = null, rb = null, r = null;
+        try 
+        {
+            r = cell.chessMovementPatterns.Right.chessMovementPatterns.Right;
+            rf = r.chessMovementPatterns.Forward;
+            rb = r.chessMovementPatterns.Backwards;
+
+            if (isValue(rf)) {
+                rf.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(rf);
+            }
+
+            if (isValue(rb)) {
+                rb.canMoveToOrAttack = true;
+                this.poolOfSquaresThatCanMoveOrAttack.push(rb);
+            }
+        } catch(e) {}
     }
 }
 

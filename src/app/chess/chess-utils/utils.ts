@@ -7,9 +7,6 @@ export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export let numbers = range(1, 8);
 export const chessPieceFactory = new ChessPieceFactory();
 
-let a1Tog8 = letters.map(l => l+"-1");
-let a1Toa8 = numbers.map(n => "a-"+n);
-
 class PieceDirectionSetup {
 
     pieceColor: PieceColor;
