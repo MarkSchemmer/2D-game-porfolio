@@ -143,7 +143,7 @@ export class ChessGrid {
      public unSelectedOldSelectedSquares = () => {
       Object.values(this.pieceMap).forEach((c: ChessCell) => {
         c.canMoveToOrAttack = false;
-      })
+      });
      }
 
      public areRedSquaresActive = (): boolean => {
