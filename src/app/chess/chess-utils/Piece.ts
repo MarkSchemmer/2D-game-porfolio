@@ -44,6 +44,15 @@ export class Piece implements IPiece {
         }
     }
 
+    public TryGetPiece = (fn) => {
+        try {
+            return fn();
+        } catch(e) {
+            console.log(e);
+            return null;
+        }
+    }
+
 
 
     public FindMoves = (cell: ChessCell) => {
@@ -420,8 +429,71 @@ export class BlackKnight extends Knight implements IPiece {
 
 export class King extends Piece {
     public weight: number = Infinity;
+
+    public poolOfSquaresThatCanMoveOrAttack = [];
+
     constructor(image, pieceColor) {
         super(image, pieceColor);
+    }
+
+    public getKingMoves = (cell: ChessCell) => {
+        let left, right, forward, backward, diagforwardleft, 
+        diagforwardright, diagbackwardsleft, diagbackwardsright;
+
+        left = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Left
+        );
+
+        right = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Right
+        );
+
+        forward = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Forward
+        );
+
+        backward = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Backwards
+        );
+
+        diagforwardleft = this.TryGetPiece(
+            () => cell.chessMovementPatterns.ForwardsDiagonalLeft
+        );
+
+        diagforwardright = this.TryGetPiece(
+            () => cell.chessMovementPatterns.ForwardsDiagonalRight
+        );
+
+        diagbackwardsleft = this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalLeft
+        );
+
+        diagbackwardsright = this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalRight
+        );
+
+
+        this.poolOfSquaresThatCanMoveOrAttack = [
+            left, right, forward, backward, diagforwardleft, 
+            diagforwardright, diagbackwardsleft, diagbackwardsright
+        ].filter((c: ChessCell) => isValue(c));
+
+
+        this.poolOfSquaresThatCanMoveOrAttack.forEach((c:ChessCell) => c.canMoveToOrAttack = true);
+
+    }
+
+    public FindMoves = (cell: ChessCell) => {
+        this.getKingMoves(cell);
+        console.log("found King moves. ");
+    }
+
+    public UnSelectMoves = (cell: ChessCell) => {
+        this.poolOfSquaresThatCanMoveOrAttack.forEach((cell: ChessCell) => {
+            cell.canMoveToOrAttack = false;
+        });
+
+        this.poolOfSquaresThatCanMoveOrAttack = [];
     }
 }
 
