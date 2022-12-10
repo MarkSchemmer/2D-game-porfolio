@@ -37,8 +37,9 @@ export class Piece implements IPiece {
             this.imageObj.onload = () => { 
                 ctx.drawImage(this.imageObj, xRange - 5, yRange - 5, 60, 60);
             }
-            this.hasRun = !this.hasRun
+            this.hasRun = true;
         } else {
+            this.imageObj.onload = null;
             this.imageObj.src = this.image;
             ctx.drawImage(this.imageObj, xRange - 5, yRange - 5, 60, 60);
         }

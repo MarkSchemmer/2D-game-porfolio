@@ -184,10 +184,28 @@ export class ChessGrid {
       this.focusSquare(cell);
     }
 
+    public movePieceToSquare = (cell) => {
+      // Primitive movement will if will be 
+      // focused.piece to cell.piece;
+
+      let piece = this.focusedCell.piece;
+      cell.piece = piece;
+      this.focusedCell.piece = null;
+      this.focusedCell = null;
+      this.resetAllSquares();
+      this.draw();
+    }
+
     public clickSquare = (x, y, e, isLeftClick) => {
 
       /*
          Items we need to cover when handling a click. 
+
+
+         Note: 
+
+         For determining intent to move piece, you need to have a focused cell
+         And then you
       */
       let cell: ChessCell = this.grid[x][y];
       console.log(cell);
@@ -202,11 +220,13 @@ export class ChessGrid {
             if (this.focusedCell === null) { this.focusSquare(cell); }
             // If the square was clicked as the previous square
             else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.unFocusOldSquare(cell); }
+            // In this else if sqaure block, 
             // Focusing new square that was clicked, so basically focus new square and unfocus old square
             else { this.focusNewSquare(cell); }
             // After all operations we update the previous cell
             this.focusedCell = cell;
         }
+        else if (this.focusSquare != null && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
         // Clicked a square and we need to unofus all squares 
         else 
         {

@@ -1,0 +1,29 @@
+
+What's the key to discipering when a piece can move or attack...? 
+
+Is there really a difference? 
+
+The piece can move in it's own pattern as long as it:
+
+Urgent to do tasks:
+
+- Add primitive movement logic to the game such as
+  so basically we click and focus a square then when another sqaure 
+  is clicked we need to basically move focused sqaure to new sqaure where
+  the square is "canMoveToOrAttack" is true. 
+  
+
+- It's not creating check, create a check, and check-mate method.
+
+- Is the piece respecting it's rules of the game such as: 
+        - Bishop can't jump or move over it's own pieces
+        - If it does move and takes a piece then it can only take that piece and be placed there 
+
+
+Use this above test case above. 
+
+
+
+How to approach this issue of moving pieces?
+
+I'm thinking the 1st
