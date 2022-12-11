@@ -7,23 +7,53 @@ The piece can move in it's own pattern as long as it:
 
 Urgent to do tasks:
 
-- Add primitive movement logic to the game such as
+- [COMPLETED] Add primitive movement logic to the game such as
   so basically we click and focus a square then when another sqaure 
   is clicked we need to basically move focused sqaure to new sqaure where
-  the square is "canMoveToOrAttack" is true. 
+  the square is "canMoveToOrAttack" is true. -> completed.
+
+
+- [COMPLETED] Add logic for being able to take another piece
+  -- If the other piece is of the opposite color
+
+
+- [Incomplete] Add another rewrite of pondHelper, to be able to make moves without 
+               throwing error when moving... 
+
+- [Incomplete] Add logic for not being able to move past when lane or path is blocked
   
+- [Incomplete] It's not creating check, create a check, and check-mate method.
 
-- It's not creating check, create a check, and check-mate method.
-
-- Is the piece respecting it's rules of the game such as: 
+- [Incomplete] Is the piece respecting it's rules of the game such as: 
         - Bishop can't jump or move over it's own pieces
         - If it does move and takes a piece then it can only take that piece and be placed there 
 
+- [Incomplete] Add castle ability
+
+- [Incomplete] Add "En Passant" ability
 
 Use this above test case above. 
 
-
-
 How to approach this issue of moving pieces?
 
-I'm thinking the 1st
+I'm thinking the 1st iteration of chess after all things are completed. 
+
+
+
+
+
+NOTE: 
+
+ $env:NODE_OPTIONS = "--openssl-legacy-provider"
+
+ When the following error happens: 
+
+
+ Your global Angular CLI version (15.0.2) is greater than your local version (8.3.19). The local Angular CLI version is used.
+
+To disable this warning use "ng config -g cli.warnings.versionMismatch false".
+10% building 3/3 modules 0 activei ｢wds｣: Project is running at http://localhost:4200/webpack-dev-server/
+i ｢wds｣: webpack output is served from /   
+i ｢wds｣: 404s will fallback to //index.html
+10% building 3/4 modules 1 active ...dev-server\client\index.js?http://0.0.0.0:0/sockjs-node&sockPath=/sockjs-nodenode:internal/crypto/hash:71
+  this[kHandle] = new _Hash(algorithm, xofLen);

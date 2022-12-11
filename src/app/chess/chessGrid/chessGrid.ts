@@ -165,6 +165,8 @@ export class ChessGrid {
 
       // we need to also make sure that paths it can move or attack are also
       // highlighted
+
+      this.focusedCell = cell;
     }
 
     public unFocusOldSquare = (cell: ChessCell) => {
@@ -209,6 +211,7 @@ export class ChessGrid {
       */
       let cell: ChessCell = this.grid[x][y];
       console.log(cell);
+      console.log(this.focusedCell);
       let piece = cell.piece;
       if (isLeftClick) 
       {
@@ -220,11 +223,12 @@ export class ChessGrid {
             if (this.focusedCell === null) { this.focusSquare(cell); }
             // If the square was clicked as the previous square
             else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.unFocusOldSquare(cell); }
+            // We know it's not the same cell, also we know The pieces are different colors. 
+            else if (this.focusedCell != null && this.focusedCell.piece.pieceColor != cell.piece.pieceColor && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
             // In this else if sqaure block, 
             // Focusing new square that was clicked, so basically focus new square and unfocus old square
             else { this.focusNewSquare(cell); }
             // After all operations we update the previous cell
-            this.focusedCell = cell;
         }
         else if (this.focusSquare != null && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
         // Clicked a square and we need to unofus all squares 
