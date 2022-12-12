@@ -17,7 +17,7 @@ Urgent to do tasks:
   -- If the other piece is of the opposite color
 
 
-- [Incomplete] Add another rewrite of pondHelper, to be able to make moves without 
+- [COMPLETED] Add another rewrite of pondHelper, to be able to make moves without 
                throwing error when moving... 
 
 - [Incomplete] Add logic for not being able to move past when lane or path is blocked

@@ -152,21 +152,24 @@ class Pond extends Piece {
 
     public pondHelper = (cell: ChessCell) => {
 
+        let whichColor = cell.piece.pieceColor === PieceColor.WHITE;
         let next, nextNext;
 
-        if (cell.piece.pieceColor === PieceColor.WHITE) 
-        {
-            next = cell.chessMovementPatterns.Forward;
-            nextNext = next && next.chessMovementPatterns.Forward;
-        } 
-        else 
-        {
-            next = cell.chessMovementPatterns.Backwards;
-            nextNext = next && next.chessMovementPatterns.Backwards;
-        }
+        next = this.TryGetPiece(
+            () =>  whichColor ? cell.chessMovementPatterns.Forward : cell.chessMovementPatterns.Backwards
+        );
 
-        let left = next.chessMovementPatterns.Left;
-        let right = next.chessMovementPatterns.Right;
+        nextNext = this.TryGetPiece(
+            () => whichColor ? next.chessMovementPatterns.Forward : next.chessMovementPatterns.Backwards
+        );
+
+        let left = this.TryGetPiece(
+            () => next.chessMovementPatterns.Left
+        );
+
+        let right = this.TryGetPiece(
+            () => next.chessMovementPatterns.Right
+        );
 
         if (isValue(left)) {
             left.canMoveToOrAttack = true;
@@ -178,13 +181,13 @@ class Pond extends Piece {
             this.poolOfSquaresThatCanMoveOrAttack.push(right);
         }
 
-        if (this.hasMoved === false) 
+        if (this.hasMoved === false && isValue(next) && isValue(nextNext)) 
         {
             next.canMoveToOrAttack = true;
             nextNext.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack = [ ...this.poolOfSquaresThatCanMoveOrAttack, next, nextNext ];
 
-        } else {
+        } else if (isValue(next)) {
             next.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack.push(next);
         }

@@ -3,18 +3,15 @@ import { isValue } from "utils/Utils";
 import { ChessCell, connectBoard, IChessCell } from "../chess-utils/utils";
 
 /*
-
   I'm needing to write horizontal -> either a - h
 
   On the vertical 1 - 8
-
 
   Chess green base black square: #769656
 
   Chess white base white square: #eeeed2
 
   The way for prouducing 
-
 */
 
 export class ChessGrid {
