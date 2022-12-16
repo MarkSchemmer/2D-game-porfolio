@@ -2,6 +2,7 @@
 // Going to be base class for all
 import { isValue, range } from "utils/Utils";
 import { ChessCell } from "./utils";
+import { ChessRules } from "../chess-business-rules/chess-rules";
 
 export enum PieceName {
     ROOK,
@@ -30,6 +31,20 @@ export class Piece implements IPiece {
     public imageObj = new Image();
     public hasRun: boolean = false;
     public unSelectOldMovesFn: () => void;
+    public chessRules: ChessRules = new ChessRules();
+
+    constructor(image, pieceColor) {
+        this.image = image;
+        this.pieceColor = pieceColor;
+    }
+
+    public isSameColor = (otherPiece: Piece): boolean => {
+        return this.pieceColor === otherPiece.pieceColor;
+    }
+
+    public isNotSameColor = (otherPiece: Piece): boolean => {
+        return !this.isSameColor(otherPiece);
+    }
 
     public draw = (ctx, xRange, yRange) => {
         if (this.hasRun === false) {
@@ -132,18 +147,12 @@ export class Piece implements IPiece {
             backwards = backwards.chessMovementPatterns.Backwards;
         }
     }
-
-    constructor(image, pieceColor) {
-        this.image = image;
-        this.pieceColor = pieceColor;
-    }
 }
 
 class Pond extends Piece {
     public weight: number = 1;
     public imageObj = new Image();
     public hasMoved: boolean = false;
-
     public poolOfSquaresThatCanMoveOrAttack = [];
 
     constructor(image, pieceColor) {
@@ -181,17 +190,17 @@ class Pond extends Piece {
             this.poolOfSquaresThatCanMoveOrAttack.push(right);
         }
 
-        if (this.hasMoved === false && isValue(next) && isValue(nextNext)) 
+        if (this.chessRules.canPondMove2SpacesOnFirstMove(cell, next, nextNext)) 
         {
             next.canMoveToOrAttack = true;
             nextNext.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack = [ ...this.poolOfSquaresThatCanMoveOrAttack, next, nextNext ];
-
-        } else if (isValue(next)) {
+            this.hasMoved = true;
+        } 
+        else if (this.chessRules.canPondMove1SpaceForward(cell, next)) {
             next.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack.push(next);
         }
-
     }
 
     public FindMoves = (cell: ChessCell) => {
@@ -205,7 +214,6 @@ class Pond extends Piece {
         });
 
         this.poolOfSquaresThatCanMoveOrAttack = [];
-
     }
 }
 

@@ -150,6 +150,14 @@ export class ChessCell implements IChessCell {
     public col: number;
     public chessMovementPatterns: ChessMovement = new ChessMovement();
 
+    public cellIsEmpty = (): boolean => {
+        return this.piece === null;
+    }
+
+    public cellIsNotEmpty = (): boolean => {
+        return !this.cellIsEmpty();
+    }
+
     public connectToNeighbors = (cell: ChessCell, pieceMap: { [key: string] : ChessCell }) => {
         
         // leftNeighbor

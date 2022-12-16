@@ -1,6 +1,7 @@
 import { Coordinate } from "src/app/common/utils";
 import { isValue } from "utils/Utils";
 import { ChessCell, connectBoard, IChessCell } from "../chess-utils/utils";
+import { ChessRules } from "../chess-business-rules/chess-rules";
 
 /*
   I'm needing to write horizontal -> either a - h
@@ -33,6 +34,7 @@ export class ChessGrid {
      public sqaureIsFocused = false;
      public currentFocusedSquare: Coordinate = null;
      public focusedCell: ChessCell = null;
+     public chessRules: ChessRules = new ChessRules();
 
      // Can add a hash map for simplification.
      public pieceMap: { [key: string] : ChessCell };

@@ -20,7 +20,16 @@ Urgent to do tasks:
 - [COMPLETED] Add another rewrite of pondHelper, to be able to make moves without 
                throwing error when moving... 
 
+
+- [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
+
+- [Incomplete] Should identify "attack" as diffierent as canMoveToOrAttack?
+
+- [Incomplete] Add abstraction for chess rules that covers all pieces? think and comtemplate this.            
+
 - [Incomplete] Add logic for not being able to move past when lane or path is blocked
+
+- [Incomplete] Add rest of pond movement logic. (Excluding En Passant)
   
 - [Incomplete] It's not creating check, create a check, and check-mate method.
 
