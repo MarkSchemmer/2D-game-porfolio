@@ -21,6 +21,11 @@ Urgent to do tasks:
                throwing error when moving... 
 
 
+- [URGENT TODO NEXT] The main software development workflow for all piece 
+logic for the game, basically when a move is made we calculate if the move can even be
+made and when or how it can be made. 
+
+
 - [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
 
 - [Incomplete] Should identify "attack" as diffierent as canMoveToOrAttack?

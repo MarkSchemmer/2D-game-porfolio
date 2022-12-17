@@ -8,6 +8,7 @@
 
 import { isValue } from "utils/Utils";
 import { ChessCell } from "../chess-utils/utils";
+import { PieceName } from "../chess-utils/Piece";
 
 
 /*
@@ -21,8 +22,6 @@ import { ChessCell } from "../chess-utils/utils";
 */
 
 export class ChessRules {
-
-
     /*
         Logic for when a piece can move on attack? 
 
@@ -33,7 +32,7 @@ export class ChessRules {
     */
 
     public canPondAttack = (currentCell: ChessCell, leftOrRightCell: ChessCell): boolean => {
-        return leftOrRightCell.cellIsNotEmpty() && currentCell.piece.isSameColor(leftOrRightCell.piece);
+        return leftOrRightCell.cellIsNotEmpty() && currentCell.piece.isNotSameColor(leftOrRightCell.piece);
     }
 
     // Method for when a pond can move left or right, it's not so much about 
@@ -66,4 +65,18 @@ export class ChessRules {
 
 
    // My idea for calculating moves for all pieces, call one method, then 
+   // How do we even determine what direction we're going? 
+   // Maybe it's a bit too early to implement this type of 
+   // logic for the moment, but I surly can implement 
+   // stand alone methods for the moment. 
+   public calculate = (fromCell:ChessCell, toCell:ChessCell) => {
+        switch(fromCell.piece.PieceName) {
+            case PieceName.POND: {
+
+            }
+            default: {
+                console.log("caluclating the default. ");
+            }
+        }
+   }
 }

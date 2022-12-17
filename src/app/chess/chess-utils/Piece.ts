@@ -32,6 +32,7 @@ export class Piece implements IPiece {
     public hasRun: boolean = false;
     public unSelectOldMovesFn: () => void;
     public chessRules: ChessRules = new ChessRules();
+    public PieceName: PieceName;
 
     constructor(image, pieceColor) {
         this.image = image;
@@ -157,6 +158,7 @@ class Pond extends Piece {
 
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.POND;
     }
 
     public pondHelper = (cell: ChessCell) => {
@@ -180,12 +182,12 @@ class Pond extends Piece {
             () => next.chessMovementPatterns.Right
         );
 
-        if (isValue(left)) {
+        if (isValue(left) && this.chessRules.canPondAttack(cell, left)) {
             left.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack.push(left);
         }
 
-        if (isValue(right)) {
+        if (isValue(right) && this.chessRules.canPondAttack(cell, right)) {
             right.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack.push(right);
         }
@@ -231,8 +233,10 @@ export class BlackPond extends Pond implements IPiece {
 
 export class Rook extends Piece {
     public weight: number = 5;
+
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.ROOK;
     }
 
     public rookHelper = (cell: ChessCell) => {
@@ -298,6 +302,7 @@ export class Bishop extends Piece {
     public weight: number = 3;
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.BISHOP;
     }
 
     public bishopHelper = (cell: ChessCell) => {
@@ -330,6 +335,7 @@ export class Knight extends Piece {
 
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.KNIGHT;
     }
 
     public FindMoves = (cell: ChessCell) => {
@@ -446,6 +452,7 @@ export class King extends Piece {
 
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.KING;
     }
 
     public getKingMoves = (cell: ChessCell) => {
@@ -525,6 +532,7 @@ export class Queen extends Piece {
     public weight: number = 10;
     constructor(image, pieceColor) {
         super(image, pieceColor);
+        this.PieceName = PieceName.QUEEN;
     }
 
     public queenHelper = (cell: ChessCell) => {
