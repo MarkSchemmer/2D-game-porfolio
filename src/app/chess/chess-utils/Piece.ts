@@ -83,19 +83,43 @@ export class Piece implements IPiece {
 
     public getAllVerticalCells = (cell: ChessCell) => {
         // We should look left and right...
-        let right = cell.chessMovementPatterns.Right;
-        let left = cell.chessMovementPatterns.Left;
+        let right: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Right
+        );
+        let left: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Left
+        );
 
-        // Look Right
-        while(isValue(right)) {
-            right.canMoveToOrAttack = !right.canMoveToOrAttack;
-            right = right.chessMovementPatterns.Right;
+        while(isValue(right)) 
+        {
+            if (right.cellIsEmpty()) 
+            {
+                right.canMoveToOrAttack = true;
+                right = right.chessMovementPatterns.Right;
+            } 
+            else
+            {
+                if (cell.piece.isNotSameColor(right.piece))
+                    right.canMoveToOrAttack = true;
+                
+                right = null;
+            }
         }
 
-        // Look Left
-        while (isValue(left)) {
-            left.canMoveToOrAttack = !left.canMoveToOrAttack;
-            left = left.chessMovementPatterns.Left;
+        while (isValue(left)) 
+        {
+            if (left.cellIsEmpty()) 
+            {
+                left.canMoveToOrAttack = true;
+                left = left.chessMovementPatterns.Left;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(left.piece))
+                    left.canMoveToOrAttack = true;
+
+                left = null;
+            }
         }
     }
 
@@ -134,17 +158,45 @@ export class Piece implements IPiece {
     }
 
     public getAllHorizontals = (cell: ChessCell) => {
-        let forwards = cell.chessMovementPatterns.Forward;
-        let backwards = cell.chessMovementPatterns.Backwards;
 
-        while (isValue(forwards)) {
-            forwards.canMoveToOrAttack = !forwards.canMoveToOrAttack;
-            forwards = forwards.chessMovementPatterns.Forward;
+        let forwards:ChessCell = this.TryGetPiece(
+            () =>  cell.chessMovementPatterns.Forward
+        );
+
+        let backwards:ChessCell = this.TryGetPiece(
+            () =>  cell.chessMovementPatterns.Backwards
+        );
+
+        while (isValue(forwards)) 
+        {
+            if (forwards.cellIsEmpty()) 
+            {
+                forwards.canMoveToOrAttack = true;
+                forwards = forwards.chessMovementPatterns.Forward;
+            } 
+            else 
+            {
+                if (cell.piece.isNotSameColor(forwards.piece))
+                    forwards.canMoveToOrAttack = true;
+
+                forwards = null;
+            } 
         }
 
-        while (isValue(backwards)) {
-            backwards.canMoveToOrAttack = !backwards.canMoveToOrAttack;
-            backwards = backwards.chessMovementPatterns.Backwards;
+        while (isValue(backwards)) 
+        {
+            if (backwards.cellIsEmpty()) 
+            {
+                backwards.canMoveToOrAttack = true;
+                backwards = backwards.chessMovementPatterns.Backwards;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(backwards.piece))
+                    backwards.canMoveToOrAttack = true;
+
+                backwards = null;
+            }
         }
     }
 }

@@ -167,7 +167,6 @@ export class ChessGrid {
 
       // we need to also make sure that paths it can move or attack are also
       // highlighted
-
       this.focusedCell = cell;
     }
 
@@ -212,8 +211,8 @@ export class ChessGrid {
          And then you
       */
       let cell: ChessCell = this.grid[x][y];
-      console.log(cell);
-      console.log(this.focusedCell);
+      // console.log(cell);
+      // console.log(this.focusedCell);
       let piece = cell.piece;
       if (isLeftClick) 
       {

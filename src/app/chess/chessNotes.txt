@@ -25,14 +25,13 @@ Urgent to do tasks:
 logic for the game, basically when a move is made we calculate if the move can even be
 made and when or how it can be made. 
 
-- [Urgent bug fix] "when clicking piece, first click you see double space for pond, when you unfocus then focus again
+- [Urgent bug fix -> FIXED] "when clicking piece, first click you see double space for pond, when you unfocus then focus again
                     You only see one space. This is due to setting this.hasMoved, when it shouldn't. 
 
-- [Urgent bug fix] Need to fix logic for when clicking piece, it focuses and then unfocuses.  
+- [Urgent bug fix -> FIXED] Need to fix logic for when clicking piece, it focuses and then unfocuses. 
+ 
 
-
-- [Urgent bug fix] need to play with board, when piece is moved and focused then unfocused, seems 
-that it's not possible to re-focus on piece. 
+- [Incomplete] Add logic for not being able to move past when lane or path is blocked
 
 
 - [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
@@ -40,8 +39,6 @@ that it's not possible to re-focus on piece.
 - [Incomplete] Should identify "attack" as diffierent as canMoveToOrAttack?
 
 - [Incomplete] Add abstraction for chess rules that covers all pieces? think and comtemplate this.            
-
-- [Incomplete] Add logic for not being able to move past when lane or path is blocked
 
 - [Incomplete] Add rest of pond movement logic. (Excluding En Passant)
   
