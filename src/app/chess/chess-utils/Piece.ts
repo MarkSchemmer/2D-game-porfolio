@@ -125,35 +125,87 @@ export class Piece implements IPiece {
 
     public getAllDiagonals = (cell: ChessCell) => {
         // forward right
-        let diagForwardRight = cell.chessMovementPatterns.ForwardsDiagonalRight;
+        let diagForwardRight: ChessCell = this.TryGetPiece(
+            () =>  cell.chessMovementPatterns.ForwardsDiagonalRight
+        );
 
-        while (isValue(diagForwardRight)) {
-            diagForwardRight.canMoveToOrAttack = !diagForwardRight.canMoveToOrAttack;
-            diagForwardRight = diagForwardRight.chessMovementPatterns.ForwardsDiagonalRight;
+        while (isValue(diagForwardRight)) 
+        {
+            if (diagForwardRight.cellIsEmpty()) 
+            {
+                diagForwardRight.makeCellAttack();
+                diagForwardRight = diagForwardRight.chessMovementPatterns.ForwardsDiagonalRight;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(diagForwardRight.piece))
+                    diagForwardRight.makeCellAttack();
+
+                diagForwardRight = null;
+            }
         }
 
         // forward left
-        let diagForwardLeft = cell.chessMovementPatterns.ForwardsDiagonalLeft;
+        let diagForwardLeft: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.ForwardsDiagonalLeft
+        );
 
-        while (isValue(diagForwardLeft)) {
-            diagForwardLeft.canMoveToOrAttack = !diagForwardLeft.canMoveToOrAttack;
-            diagForwardLeft = diagForwardLeft.chessMovementPatterns.ForwardsDiagonalLeft;
+        while (isValue(diagForwardLeft)) 
+        {
+            if (diagForwardLeft.cellIsEmpty()) 
+            {
+                diagForwardLeft.makeCellAttack();
+                diagForwardLeft = diagForwardLeft.chessMovementPatterns.ForwardsDiagonalLeft;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(diagForwardLeft.piece))
+                    diagForwardLeft.makeCellAttack();
+
+                diagForwardLeft = null;
+            }
         }
 
         // backwards right 
-        let diagBackwardsRight = cell.chessMovementPatterns.BackwardsDiagonalRight;
+        let diagBackwardsRight: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalRight
+        );
 
-        while (isValue(diagBackwardsRight)) {
-            diagBackwardsRight.canMoveToOrAttack = !diagBackwardsRight.canMoveToOrAttack;
-            diagBackwardsRight = diagBackwardsRight.chessMovementPatterns.BackwardsDiagonalRight;
+        while (isValue(diagBackwardsRight)) 
+        {
+            if (diagBackwardsRight.cellIsEmpty()) 
+            {
+                diagBackwardsRight.makeCellAttack();
+                diagBackwardsRight = diagBackwardsRight.chessMovementPatterns.BackwardsDiagonalRight;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(diagBackwardsRight.piece))
+                    diagBackwardsRight.makeCellAttack();
+
+                diagBackwardsRight = null;
+            }
         }
 
         // backwards left
-        let diagBackwardsLeft = cell.chessMovementPatterns.BackwardsDiagonalLeft;
+        let diagBackwardsLeft: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalLeft
+        );
 
-        while (isValue(diagBackwardsLeft)) {
-            diagBackwardsLeft.canMoveToOrAttack = !diagBackwardsLeft.canMoveToOrAttack;
-            diagBackwardsLeft = diagBackwardsLeft.chessMovementPatterns.BackwardsDiagonalLeft;
+        while (isValue(diagBackwardsLeft)) 
+        {
+            if (diagBackwardsLeft.cellIsEmpty()) 
+            {
+                diagBackwardsLeft.makeCellAttack();
+                diagBackwardsLeft = diagBackwardsLeft.chessMovementPatterns.BackwardsDiagonalLeft;
+            }
+            else 
+            {
+                if (cell.piece.isNotSameColor(diagBackwardsLeft.piece))
+                    diagBackwardsLeft.makeCellAttack();
+
+                diagBackwardsLeft = null;
+            }
         }
     }
 

@@ -150,6 +150,14 @@ export class ChessCell implements IChessCell {
     public col: number;
     public chessMovementPatterns: ChessMovement = new ChessMovement();
 
+    public makeCellAttack = () => {
+        this.canMoveToOrAttack = true;
+    }
+
+    public makeCellNotAttack = () => {
+        this.canMoveToOrAttack = false;
+    }
+
     public cellIsEmpty = (): boolean => {
         return this.piece === null;
     }
