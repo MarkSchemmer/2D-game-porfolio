@@ -70,8 +70,6 @@ export class Piece implements IPiece {
         }
     }
 
-
-
     public FindMoves = (cell: ChessCell) => {
         // console.log("base moves here, basically log and forget.");
         // console.log(cell.coordinate.chessCoordinate);
@@ -295,8 +293,6 @@ export class BlackRook extends Rook implements IPiece {
         super(`assets/chess-images/black-rook.png`, PieceColor.BLACK);
     }
 }
-
-
 
 export class Bishop extends Piece {
     public weight: number = 3;

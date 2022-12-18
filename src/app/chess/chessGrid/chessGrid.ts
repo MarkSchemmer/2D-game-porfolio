@@ -158,8 +158,11 @@ export class ChessGrid {
           // We need to toggle the cell.
           cell.isAlive = !cell.isAlive;
           // we need to make the sqaure active
-          if (isValue(cell.piece)) {
+          if (isValue(cell.piece) && cell.isAlive) {
             cell.piece.FindMoves(cell);
+            this.focusedCell = cell;
+          } else {
+            this.unFocusOldSquare(cell);
           }
 
       // we need to also make sure that paths it can move or attack are also
@@ -170,7 +173,7 @@ export class ChessGrid {
 
     public unFocusOldSquare = (cell: ChessCell) => {
       cell.isAlive = false;
-      if (isValue(cell.piece)){
+      if (isValue(cell.piece)) {
         this.unSelectedOldSelectedSquares();
       }
     }
@@ -221,7 +224,7 @@ export class ChessGrid {
             // if no square is selected select square and focus
             if (this.focusedCell === null) { this.focusSquare(cell); }
             // If the square was clicked as the previous square
-            else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.unFocusOldSquare(cell); }
+            else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.focusSquare(cell); }
             // We know it's not the same cell, also we know The pieces are different colors. 
             else if (this.focusedCell != null && this.focusedCell.piece.pieceColor != cell.piece.pieceColor && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
             // In this else if sqaure block, 

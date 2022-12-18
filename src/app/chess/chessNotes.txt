@@ -25,6 +25,15 @@ Urgent to do tasks:
 logic for the game, basically when a move is made we calculate if the move can even be
 made and when or how it can be made. 
 
+- [Urgent bug fix] "when clicking piece, first click you see double space for pond, when you unfocus then focus again
+                    You only see one space. This is due to setting this.hasMoved, when it shouldn't. 
+
+- [Urgent bug fix] Need to fix logic for when clicking piece, it focuses and then unfocuses.  
+
+
+- [Urgent bug fix] need to play with board, when piece is moved and focused then unfocused, seems 
+that it's not possible to re-focus on piece. 
+
 
 - [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
 
