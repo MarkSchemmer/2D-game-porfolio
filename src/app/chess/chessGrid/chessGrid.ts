@@ -191,9 +191,9 @@ export class ChessGrid {
     public movePieceToSquare = (cell) => {
       // Primitive movement will if will be 
       // focused.piece to cell.piece;
-
       let piece = this.focusedCell.piece;
       cell.piece = piece;
+      cell.piece.hasMoved = true;
       this.focusedCell.piece = null;
       this.focusedCell = null;
       this.resetAllSquares();

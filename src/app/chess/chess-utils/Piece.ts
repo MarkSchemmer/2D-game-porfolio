@@ -33,6 +33,7 @@ export class Piece implements IPiece {
     public unSelectOldMovesFn: () => void;
     public chessRules: ChessRules = new ChessRules();
     public PieceName: PieceName;
+    public hasMoved: boolean = false;
 
     constructor(image, pieceColor) {
         this.image = image;
@@ -151,7 +152,6 @@ export class Piece implements IPiece {
 class Pond extends Piece {
     public weight: number = 1;
     public imageObj = new Image();
-    public hasMoved: boolean = false;
     public poolOfSquaresThatCanMoveOrAttack = [];
 
     constructor(image, pieceColor) {
@@ -195,7 +195,7 @@ class Pond extends Piece {
             next.canMoveToOrAttack = true;
             nextNext.canMoveToOrAttack = true;
             this.poolOfSquaresThatCanMoveOrAttack = [ ...this.poolOfSquaresThatCanMoveOrAttack, next, nextNext ];
-            this.hasMoved = true;
+            // this.hasMoved = true;
         } 
         else if (this.chessRules.canPondMove1SpaceForward(cell, next)) {
             next.canMoveToOrAttack = true;
