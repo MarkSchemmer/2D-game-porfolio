@@ -29,10 +29,13 @@ made and when or how it can be made.
                     You only see one space. This is due to setting this.hasMoved, when it shouldn't. 
 
 - [Urgent bug fix -> FIXED] Need to fix logic for when clicking piece, it focuses and then unfocuses. 
- 
 
 - [Incomplete] Add logic for not being able to move past when lane or path is blocked
+          - Need to add logic for King and Knight. 
+          - Note: I added basic logic for moving king, still need to implement
+                  Still need to add logic for "check" and "checkmate"
 
+- [INCOMPLETE - Logic for implementing stalemate]...
 
 - [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
 

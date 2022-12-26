@@ -443,7 +443,7 @@ export class Knight extends Piece {
         console.log("found knight moves. ");
     }
 
-    public UnSelectMoves = (cell: ChessCell) => {
+    public UnSelectMoves = (c: ChessCell) => {
         this.poolOfSquaresThatCanMoveOrAttack.forEach((cell: ChessCell) => {
             cell.canMoveToOrAttack = false;
         });
@@ -598,8 +598,16 @@ export class King extends Piece {
         ].filter((c: ChessCell) => isValue(c));
 
 
-        this.poolOfSquaresThatCanMoveOrAttack.forEach((c:ChessCell) => c.canMoveToOrAttack = true);
+        this.poolOfSquaresThatCanMoveOrAttack.forEach((c:ChessCell) => {
+            if (this.KingRules(c)) {
+                c.canMoveToOrAttack = true;
+            }
+        });
 
+    }
+
+    public KingRules = (c: ChessCell): boolean => {
+        return this.chessRules.canKingMove(c);
     }
 
     public FindMoves = (cell: ChessCell) => {

@@ -55,6 +55,11 @@ export class ChessRules {
         return isValue(nextCell) && nextCell.cellIsEmpty();
     }
 
+    public canKingMove = (cell: ChessCell): boolean => {
+        // Need to add logic for check and checkmate. 
+        return isValue(cell) && cell.cellIsEmpty();
+    }
+
     // The thought of pondCanMove will be
     // 
 
