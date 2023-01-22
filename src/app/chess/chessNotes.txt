@@ -30,16 +30,31 @@ made and when or how it can be made.
 
 - [Urgent bug fix -> FIXED] Need to fix logic for when clicking piece, it focuses and then unfocuses. 
 
-- [Incomplete] Add logic for not being able to move past when lane or path is blocked
+- [Incomplete -> complete] Add logic for not being able to move past when lane or path is blocked
           - Need to add logic for King and Knight. -> 
 
+- [Incomplete -> FIXED] Is the piece respecting it's rules of the game such as: 
+  - Bishop can't jump or move over it's own pieces
+  - If it does move and takes a piece then it can only take that piece and be placed there 
+
+
+TODO NOW: 
+
+----------------------------------------------------------------
+
+- [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
+
+
+----------------------------------------------------------------
 
 
 
+
+TODOS LATER: 
 
 - [INCOMPLETE - Logic for implementing stalemate]...
 
-- [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
+
 
 - [Incomplete] Should identify "attack" as diffierent as canMoveToOrAttack?
 
@@ -49,9 +64,7 @@ made and when or how it can be made.
   
 - [Incomplete] It's not creating check, create a check, and check-mate method.
 
-- [Incomplete] Is the piece respecting it's rules of the game such as: 
-        - Bishop can't jump or move over it's own pieces
-        - If it does move and takes a piece then it can only take that piece and be placed there 
+
 
 - [Incomplete] Add castle ability
 
