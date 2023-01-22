@@ -62,6 +62,10 @@ export class Piece implements IPiece {
         }
     }
 
+    public getRightSquare = () => {
+
+    }
+
     public TryGetPiece = (fn) => {
         try {
             return fn();
@@ -453,83 +457,48 @@ export class Knight extends Piece {
 
     public getKnightMoves = (cell: ChessCell) => {
         // Need to get forward -> left and right
-        let fl = null, fr = null, f = null;
-        try 
-        {
-            f = cell.chessMovementPatterns.Forward.chessMovementPatterns.Forward;
-            fl = f.chessMovementPatterns.Left;
-            fr = f.chessMovementPatterns.Right;
+        let f: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Forward.chessMovementPatterns.Forward
+        );
 
-            if (isValue(fl)) {
-                fl.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(fl);
-            }
-
-            if (isValue(fr)) {
-                fr.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(fr);
-            }
-        } catch(e) {}
+        let validF : Boolean = isValue(f);
+        let fr: ChessCell = validF ? this.TryGetPiece(() => f.chessMovementPatterns.Right) : null;
+        let fl: ChessCell = validF ? this.TryGetPiece(() => f.chessMovementPatterns.Left) : null;
 
         // Need to get backwards -> left and right
 
-        let bl = null, br = null, b = null;
-        try 
-        {
-            b = cell.chessMovementPatterns.Backwards.chessMovementPatterns.Backwards;
-            bl = b.chessMovementPatterns.Left;
-            br = b.chessMovementPatterns.Right;
+        let  b: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Backwards.chessMovementPatterns.Backwards
+        );
 
-            if (isValue(br)) {
-                br.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(br);
-            }
+        let validB: Boolean = isValue(b);
+        let bl: ChessCell = validB ? this.TryGetPiece(() => b.chessMovementPatterns.Left) : null;
+        let br: ChessCell = validB ? this.TryGetPiece(() => b.chessMovementPatterns.Right) : null;
 
-            if (isValue(bl)) {
-                bl.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(bl);
-            }
-        } catch(e) {}
+        let l: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Left.chessMovementPatterns.Left
+        );
 
-        // Need to get left -> forwards and backwards
+        let validL: Boolean = isValue(l);
+        let lf: ChessCell = validL ? this.TryGetPiece(() => l.chessMovementPatterns.Forward) : null;
+        let lb: ChessCell = validL ? this.TryGetPiece(() => l.chessMovementPatterns.Backwards) : null;
 
-        let lf = null, lb = null, l = null;
-        try 
-        {
-            l = cell.chessMovementPatterns.Left.chessMovementPatterns.Left;
-            lf = l.chessMovementPatterns.Forward;
-            lb = l.chessMovementPatterns.Backwards;
 
-            if (isValue(lf)) {
-                lf.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(lf);
-            }
+        let r: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Right.chessMovementPatterns.Right
+        );
 
-            if (isValue(lb)) {
-                lb.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(lb);
-            }
-        } catch(e) {}
+        let validR = isValue(r);
+        let rf: ChessCell = validR ? this.TryGetPiece(() => r.chessMovementPatterns.Forward) : null;
+        let rb: ChessCell = validB ? this.TryGetPiece(() => r.chessMovementPatterns.Backwards) : null;
 
-        // Need to get right -> forwards and backwards
+        this.poolOfSquaresThatCanMoveOrAttack = [
+            fr, fl, bl, br, lf, lb, rf, rb
+        ].filter(
+            (cell: ChessCell) => this.chessRules.canKnightMove(cell)
+        );
 
-        let rf = null, rb = null, r = null;
-        try 
-        {
-            r = cell.chessMovementPatterns.Right.chessMovementPatterns.Right;
-            rf = r.chessMovementPatterns.Forward;
-            rb = r.chessMovementPatterns.Backwards;
-
-            if (isValue(rf)) {
-                rf.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(rf);
-            }
-
-            if (isValue(rb)) {
-                rb.canMoveToOrAttack = true;
-                this.poolOfSquaresThatCanMoveOrAttack.push(rb);
-            }
-        } catch(e) {}
+        this.poolOfSquaresThatCanMoveOrAttack.forEach(cell => cell.canMoveToOrAttack = true);
     }
 }
 

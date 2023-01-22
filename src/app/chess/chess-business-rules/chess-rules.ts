@@ -23,6 +23,7 @@ import { PieceName } from "../chess-utils/Piece";
 
 export class ChessRules {
     /*
+
         Logic for when a piece can move on attack? 
 
         - Causes check? -> will do this logic later in the game. 
@@ -64,16 +65,20 @@ export class ChessRules {
     // 
 
 
+    // Later on in time, will add a more advanced calculation for knight movements.
+    public canKnightMove = (cell: ChessCell): boolean => {
+        return isValue(cell) && cell.cellIsEmpty();
+    }
+
     // One public move that then determines if can move or not. 
-
    // public calculateMove
-
-
    // My idea for calculating moves for all pieces, call one method, then 
    // How do we even determine what direction we're going? 
    // Maybe it's a bit too early to implement this type of 
    // logic for the moment, but I surly can implement 
    // stand alone methods for the moment. 
+   // I'm thinking for future refactor we condence all chess to a central method such as 
+   // calculate, when and after all chess methods have been calculated and 
    public calculate = (fromCell:ChessCell, toCell:ChessCell) => {
         switch(fromCell.piece.PieceName) {
             case PieceName.POND: {
