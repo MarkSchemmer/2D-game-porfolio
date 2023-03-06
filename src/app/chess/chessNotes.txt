@@ -38,12 +38,20 @@ made and when or how it can be made.
   - If it does move and takes a piece then it can only take that piece and be placed there 
 
 
+- [Incomplete -> COMPLETED] Note: I added basic logic for moving king, still need to implement
+
+- [Incomplete -> COMPLETED] Refactor to FindMoves (to use TryGetPiece -> )
+
 TODO NOW: 
 
 ----------------------------------------------------------------
 
-- [Incomplete] Refactor to FindMoves (to use TryGetPiece -> )
+- [Incomplete] Implement turn style moving, So white then black can move, with text on the
+               board, and add timers counting down from 10:00 minutes, with a start button. 
 
+- [Incomplete] Add abstractions for helper methods to remove duplication
+               for finding proper path... Need to think to make sure that is the
+               proper way forward, as to not over complicate this the logic. 
 
 ----------------------------------------------------------------
 
@@ -54,25 +62,21 @@ TODOS LATER:
 
 - [INCOMPLETE - Logic for implementing stalemate]...
 
-
-
 - [Incomplete] Should identify "attack" as diffierent as canMoveToOrAttack?
 
 - [Incomplete] Add abstraction for chess rules that covers all pieces? think and comtemplate this.            
 
-- [Incomplete] Add rest of pond movement logic. (Excluding En Passant)
+- [Incomplete] Add rest of pond movement logic (Including En Passant)
+     - En Passsant
+     - Pond reaching the end of the board then being able to upgrade to "Rook, Bishop, Rook, Queen".
   
 - [Incomplete] It's not creating check, create a check, and check-mate method.
 
-
-
 - [Incomplete] Add castle ability
 
-- [Incomplete] Add "En Passant" ability
+- [Incomplete]: Add "check" logic for King
 
-
-- [Incomplete] Note: I added basic logic for moving king, still need to implement
-        Still need to add logic for "check" and "checkmate"
+- [Incomplete]: Add "check-mate" logic for King 
 
 Use this above test case above. 
 

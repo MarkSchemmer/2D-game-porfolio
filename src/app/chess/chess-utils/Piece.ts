@@ -4,6 +4,13 @@ import { isValue, range } from "utils/Utils";
 import { ChessCell } from "./utils";
 import { ChessRules } from "../chess-business-rules/chess-rules";
 
+export enum PieceDirections { 
+    FORWARD, BACKWARDS, 
+    LEFT, RIGHT, 
+    DIAGONALFORWARDLEFT, DIAGONALFORWARDRIGHT, 
+    DIAGONALBACKWARDSLEFT, DIAGONALBACKWARDSRIGHT
+}
+
 export enum PieceName {
     ROOK,
     POND,
@@ -85,6 +92,10 @@ export class Piece implements IPiece {
         // console.log("Need to unselect all squares here. ");
     }
 
+    public getChessPiecesSquares = (cell: ChessCell, direction: PieceDirections) => {
+
+    }
+
     public getAllVerticalCells = (cell: ChessCell) => {
         // We should look left and right...
         let right: ChessCell = this.TryGetPiece(
@@ -98,13 +109,13 @@ export class Piece implements IPiece {
         {
             if (right.cellIsEmpty()) 
             {
-                right.canMoveToOrAttack = true;
-                right = right.chessMovementPatterns.Right;
+                right.makeCellAttack();
+                right = getPieceFromDirection(right, PieceDirections.RIGHT);
             } 
             else
             {
                 if (cell.piece.isNotSameColor(right.piece))
-                    right.canMoveToOrAttack = true;
+                    right.makeCellAttack();
                 
                 right = null;
             }
@@ -114,13 +125,13 @@ export class Piece implements IPiece {
         {
             if (left.cellIsEmpty()) 
             {
-                left.canMoveToOrAttack = true;
-                left = left.chessMovementPatterns.Left;
+                left.makeCellAttack();
+                left = getPieceFromDirection(left, PieceDirections.LEFT);
             }
             else 
             {
                 if (cell.piece.isNotSameColor(left.piece))
-                    left.canMoveToOrAttack = true;
+                    left.makeCellAttack();
 
                 left = null;
             }
@@ -138,7 +149,7 @@ export class Piece implements IPiece {
             if (diagForwardRight.cellIsEmpty()) 
             {
                 diagForwardRight.makeCellAttack();
-                diagForwardRight = diagForwardRight.chessMovementPatterns.ForwardsDiagonalRight;
+                diagForwardRight = getPieceFromDirection(diagForwardRight, PieceDirections.DIAGONALFORWARDRIGHT);
             }
             else 
             {
@@ -159,7 +170,7 @@ export class Piece implements IPiece {
             if (diagForwardLeft.cellIsEmpty()) 
             {
                 diagForwardLeft.makeCellAttack();
-                diagForwardLeft = diagForwardLeft.chessMovementPatterns.ForwardsDiagonalLeft;
+                diagForwardLeft = getPieceFromDirection(diagForwardLeft, PieceDirections.DIAGONALFORWARDLEFT);
             }
             else 
             {
@@ -180,8 +191,8 @@ export class Piece implements IPiece {
             if (diagBackwardsRight.cellIsEmpty()) 
             {
                 diagBackwardsRight.makeCellAttack();
-                diagBackwardsRight = diagBackwardsRight.chessMovementPatterns.BackwardsDiagonalRight;
-            }
+                diagBackwardsRight = getPieceFromDirection(diagBackwardsRight, PieceDirections.DIAGONALBACKWARDSRIGHT);
+            } 
             else 
             {
                 if (cell.piece.isNotSameColor(diagBackwardsRight.piece))
@@ -201,7 +212,7 @@ export class Piece implements IPiece {
             if (diagBackwardsLeft.cellIsEmpty()) 
             {
                 diagBackwardsLeft.makeCellAttack();
-                diagBackwardsLeft = diagBackwardsLeft.chessMovementPatterns.BackwardsDiagonalLeft;
+                diagBackwardsLeft = getPieceFromDirection(diagBackwardsLeft, PieceDirections.DIAGONALBACKWARDSLEFT);
             }
             else 
             {
@@ -227,13 +238,13 @@ export class Piece implements IPiece {
         {
             if (forwards.cellIsEmpty()) 
             {
-                forwards.canMoveToOrAttack = true;
-                forwards = forwards.chessMovementPatterns.Forward;
+                forwards.makeCellAttack();
+                forwards = getPieceFromDirection(forwards, PieceDirections.FORWARD);
             } 
             else 
             {
                 if (cell.piece.isNotSameColor(forwards.piece))
-                    forwards.canMoveToOrAttack = true;
+                    forwards.makeCellAttack();
 
                 forwards = null;
             } 
@@ -243,13 +254,13 @@ export class Piece implements IPiece {
         {
             if (backwards.cellIsEmpty()) 
             {
-                backwards.canMoveToOrAttack = true;
-                backwards = backwards.chessMovementPatterns.Backwards;
+                backwards.makeCellAttack();
+                backwards = getPieceFromDirection(backwards, PieceDirections.BACKWARDS);
             }
             else 
             {
                 if (cell.piece.isNotSameColor(backwards.piece))
-                    backwards.canMoveToOrAttack = true;
+                    backwards.makeCellAttack();
 
                 backwards = null;
             }
@@ -289,24 +300,24 @@ class Pond extends Piece {
         );
 
         if (isValue(left) && this.chessRules.canPondAttack(cell, left)) {
-            left.canMoveToOrAttack = true;
+            left.makeCellAttack();
             this.poolOfSquaresThatCanMoveOrAttack.push(left);
         }
 
         if (isValue(right) && this.chessRules.canPondAttack(cell, right)) {
-            right.canMoveToOrAttack = true;
+            right.makeCellAttack();
             this.poolOfSquaresThatCanMoveOrAttack.push(right);
         }
 
         if (this.chessRules.canPondMove2SpacesOnFirstMove(cell, next, nextNext)) 
         {
-            next.canMoveToOrAttack = true;
-            nextNext.canMoveToOrAttack = true;
+            next.makeCellAttack();
+            nextNext.makeCellAttack();
             this.poolOfSquaresThatCanMoveOrAttack = [ ...this.poolOfSquaresThatCanMoveOrAttack, next, nextNext ];
             // this.hasMoved = true;
         } 
         else if (this.chessRules.canPondMove1SpaceForward(cell, next)) {
-            next.canMoveToOrAttack = true;
+            next.makeCellAttack();
             this.poolOfSquaresThatCanMoveOrAttack.push(next);
         }
     }
@@ -318,7 +329,7 @@ class Pond extends Piece {
     public UnSelectMoves = (c: ChessCell) => {
 
         this.poolOfSquaresThatCanMoveOrAttack.forEach((cell: ChessCell) => {
-            cell.canMoveToOrAttack = false;
+            cell.makeCellNotAttack();
         });
 
         this.poolOfSquaresThatCanMoveOrAttack = [];
@@ -672,6 +683,49 @@ export class ChessPieceFactory {
                 console.log("default.");
                 return null;
             }
+        }
+    }
+}
+
+// export const PieceDirectionGetter = ()
+
+export const TryGetFunc = (fn) => {
+    try {
+        return fn();
+    } catch(e) {
+        console.log(e);
+        return null;
+    }
+}
+
+export const getPieceFromDirection = (cell: ChessCell, direction: PieceDirections) => {
+    switch(direction) {
+        case PieceDirections.FORWARD: {
+            return cell.chessMovementPatterns.Forward;
+        } 
+        case PieceDirections.BACKWARDS: {
+            return cell.chessMovementPatterns.Backwards;
+        }
+        case PieceDirections.LEFT: {
+            return cell.chessMovementPatterns.Left;
+        }
+        case PieceDirections.RIGHT: {
+            return cell.chessMovementPatterns.Right;
+        }
+        case PieceDirections.DIAGONALFORWARDLEFT: {
+            return cell.chessMovementPatterns.ForwardsDiagonalLeft;
+        }
+        case PieceDirections.DIAGONALFORWARDRIGHT: {
+            return cell.chessMovementPatterns.ForwardsDiagonalRight;
+        }
+        case PieceDirections.DIAGONALBACKWARDSRIGHT: {
+            return cell.chessMovementPatterns.BackwardsDiagonalRight;
+        }
+        case PieceDirections.DIAGONALBACKWARDSLEFT: {
+            return cell.chessMovementPatterns.BackwardsDiagonalLeft;
+        }
+        default: {
+            return null;
         }
     }
 }
