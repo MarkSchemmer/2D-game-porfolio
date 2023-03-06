@@ -92,8 +92,23 @@ export class Piece implements IPiece {
         // console.log("Need to unselect all squares here. ");
     }
 
-    public getChessPiecesSquares = (cell: ChessCell, direction: PieceDirections) => {
-
+    public getChessPiecesSquares = (cell: ChessCell, direction: PieceDirections, predicate : (baseCell: ChessCell, newCell: ChessCell) => boolean) => {
+        let baseCell = cell;
+        while(isValue(cell)) 
+        {
+            if (cell.cellIsEmpty()) 
+            {
+                cell.makeCellAttack();
+                cell = getPieceFromDirection(cell, direction);
+            } 
+            else
+            {
+                if (predicate(baseCell, cell))
+                    cell.makeCellAttack();
+                
+                cell = null;
+            }
+        }
     }
 
     public getAllVerticalCells = (cell: ChessCell) => {
@@ -105,37 +120,11 @@ export class Piece implements IPiece {
             () => cell.chessMovementPatterns.Left
         );
 
-        while(isValue(right)) 
-        {
-            if (right.cellIsEmpty()) 
-            {
-                right.makeCellAttack();
-                right = getPieceFromDirection(right, PieceDirections.RIGHT);
-            } 
-            else
-            {
-                if (cell.piece.isNotSameColor(right.piece))
-                    right.makeCellAttack();
-                
-                right = null;
-            }
-        }
+        let predicateRight = (baseCell, newCell) => TryGetFunc((baseCell, newCell) => baseCell.piece.isNotSameColor(newCell.piece));
+        let predicateLeft = (baseCell, newCell) => TryGetFunc((baseCell, newCell) => baseCell.piece.isNotSameColor(newCell.piece));
 
-        while (isValue(left)) 
-        {
-            if (left.cellIsEmpty()) 
-            {
-                left.makeCellAttack();
-                left = getPieceFromDirection(left, PieceDirections.LEFT);
-            }
-            else 
-            {
-                if (cell.piece.isNotSameColor(left.piece))
-                    left.makeCellAttack();
-
-                left = null;
-            }
-        }
+        this.getChessPiecesSquares(right, PieceDirections.RIGHT, predicateRight);
+        this.getChessPiecesSquares(left, PieceDirections.LEFT, predicateLeft);
     }
 
     public getAllDiagonals = (cell: ChessCell) => {
