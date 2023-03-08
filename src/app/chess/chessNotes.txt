@@ -53,6 +53,14 @@ TODO NOW:
                for finding proper path... Need to think to make sure that is the
                proper way forward, as to not over complicate this the logic. 
 
+               - to sum this task above, is basically for the moment finish utilization of 
+               using 'getChessPiecesSquares' as to remove numerous lines of duplication 
+               then I can resolve this task item
+
+- [Incomplete]: Add "check" logic for King
+
+- [Incomplete]: Add "check-mate" logic for King 
+
 ----------------------------------------------------------------
 
 
@@ -73,10 +81,6 @@ TODOS LATER:
 - [Incomplete] It's not creating check, create a check, and check-mate method.
 
 - [Incomplete] Add castle ability
-
-- [Incomplete]: Add "check" logic for King
-
-- [Incomplete]: Add "check-mate" logic for King 
 
 Use this above test case above. 
 

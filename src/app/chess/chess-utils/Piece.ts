@@ -92,8 +92,7 @@ export class Piece implements IPiece {
         // console.log("Need to unselect all squares here. ");
     }
 
-    public getChessPiecesSquares = (cell: ChessCell, direction: PieceDirections, predicate : (baseCell: ChessCell, newCell: ChessCell) => boolean) => {
-        let baseCell = cell;
+    public getChessPiecesSquares = (baseCell: ChessCell, cell: ChessCell, direction: PieceDirections, predicate : (baseCell: PieceColor, newCell: PieceColor) => boolean) => {
         while(isValue(cell)) 
         {
             if (cell.cellIsEmpty()) 
@@ -103,7 +102,7 @@ export class Piece implements IPiece {
             } 
             else
             {
-                if (predicate(baseCell, cell))
+                if (predicate(baseCell.piece.pieceColor, cell.piece.pieceColor))
                     cell.makeCellAttack();
                 
                 cell = null;
@@ -111,149 +110,62 @@ export class Piece implements IPiece {
         }
     }
 
+
+    /*
+    
+            Please remember to pass in the base cell in 'this.getChessPiecesSquares()' method. 
+
+            In doing this we will have the base cell so then we can actually compare it to 
+
+            the final cell. 
+    
+    */
+
+
     public getAllVerticalCells = (cell: ChessCell) => {
-        // We should look left and right...
-        let right: ChessCell = this.TryGetPiece(
+        // get Chess Pieces Squares is a 
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Right
-        );
-        let left: ChessCell = this.TryGetPiece(
+        ), PieceDirections.RIGHT, notSameColorPredicate);
+
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Left
-        );
-
-        let predicateRight = (baseCell, newCell) => TryGetFunc((baseCell, newCell) => baseCell.piece.isNotSameColor(newCell.piece));
-        let predicateLeft = (baseCell, newCell) => TryGetFunc((baseCell, newCell) => baseCell.piece.isNotSameColor(newCell.piece));
-
-        this.getChessPiecesSquares(right, PieceDirections.RIGHT, predicateRight);
-        this.getChessPiecesSquares(left, PieceDirections.LEFT, predicateLeft);
+        ), PieceDirections.LEFT, notSameColorPredicate);
     }
 
     public getAllDiagonals = (cell: ChessCell) => {
-        // forward right
-        let diagForwardRight: ChessCell = this.TryGetPiece(
+        // Chess pieces diagonally right
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () =>  cell.chessMovementPatterns.ForwardsDiagonalRight
-        );
+        ), PieceDirections.DIAGONALFORWARDRIGHT, notSameColorPredicate);
 
-        while (isValue(diagForwardRight)) 
-        {
-            if (diagForwardRight.cellIsEmpty()) 
-            {
-                diagForwardRight.makeCellAttack();
-                diagForwardRight = getPieceFromDirection(diagForwardRight, PieceDirections.DIAGONALFORWARDRIGHT);
-            }
-            else 
-            {
-                if (cell.piece.isNotSameColor(diagForwardRight.piece))
-                    diagForwardRight.makeCellAttack();
-
-                diagForwardRight = null;
-            }
-        }
-
-        // forward left
-        let diagForwardLeft: ChessCell = this.TryGetPiece(
+        // Chess pieces diagonally right
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.ForwardsDiagonalLeft
-        );
+        ), PieceDirections.DIAGONALFORWARDLEFT, notSameColorPredicate);
 
-        while (isValue(diagForwardLeft)) 
-        {
-            if (diagForwardLeft.cellIsEmpty()) 
-            {
-                diagForwardLeft.makeCellAttack();
-                diagForwardLeft = getPieceFromDirection(diagForwardLeft, PieceDirections.DIAGONALFORWARDLEFT);
-            }
-            else 
-            {
-                if (cell.piece.isNotSameColor(diagForwardLeft.piece))
-                    diagForwardLeft.makeCellAttack();
 
-                diagForwardLeft = null;
-            }
-        }
-
-        // backwards right 
-        let diagBackwardsRight: ChessCell = this.TryGetPiece(
+        // Chess pieces diagonally backwards right
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.BackwardsDiagonalRight
-        );
+        ), PieceDirections.DIAGONALBACKWARDSRIGHT, notSameColorPredicate);
 
-        while (isValue(diagBackwardsRight)) 
-        {
-            if (diagBackwardsRight.cellIsEmpty()) 
-            {
-                diagBackwardsRight.makeCellAttack();
-                diagBackwardsRight = getPieceFromDirection(diagBackwardsRight, PieceDirections.DIAGONALBACKWARDSRIGHT);
-            } 
-            else 
-            {
-                if (cell.piece.isNotSameColor(diagBackwardsRight.piece))
-                    diagBackwardsRight.makeCellAttack();
-
-                diagBackwardsRight = null;
-            }
-        }
-
-        // backwards left
-        let diagBackwardsLeft: ChessCell = this.TryGetPiece(
+        // Chess pieces diagonally backwards left
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.BackwardsDiagonalLeft
-        );
-
-        while (isValue(diagBackwardsLeft)) 
-        {
-            if (diagBackwardsLeft.cellIsEmpty()) 
-            {
-                diagBackwardsLeft.makeCellAttack();
-                diagBackwardsLeft = getPieceFromDirection(diagBackwardsLeft, PieceDirections.DIAGONALBACKWARDSLEFT);
-            }
-            else 
-            {
-                if (cell.piece.isNotSameColor(diagBackwardsLeft.piece))
-                    diagBackwardsLeft.makeCellAttack();
-
-                diagBackwardsLeft = null;
-            }
-        }
+        ), PieceDirections.DIAGONALBACKWARDSLEFT, notSameColorPredicate);
     }
 
     public getAllHorizontals = (cell: ChessCell) => {
+        // Chess pieces forwards
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Forward
+        ), PieceDirections.FORWARD, notSameColorPredicate);
 
-        let forwards:ChessCell = this.TryGetPiece(
-            () =>  cell.chessMovementPatterns.Forward
-        );
-
-        let backwards:ChessCell = this.TryGetPiece(
-            () =>  cell.chessMovementPatterns.Backwards
-        );
-
-        while (isValue(forwards)) 
-        {
-            if (forwards.cellIsEmpty()) 
-            {
-                forwards.makeCellAttack();
-                forwards = getPieceFromDirection(forwards, PieceDirections.FORWARD);
-            } 
-            else 
-            {
-                if (cell.piece.isNotSameColor(forwards.piece))
-                    forwards.makeCellAttack();
-
-                forwards = null;
-            } 
-        }
-
-        while (isValue(backwards)) 
-        {
-            if (backwards.cellIsEmpty()) 
-            {
-                backwards.makeCellAttack();
-                backwards = getPieceFromDirection(backwards, PieceDirections.BACKWARDS);
-            }
-            else 
-            {
-                if (cell.piece.isNotSameColor(backwards.piece))
-                    backwards.makeCellAttack();
-
-                backwards = null;
-            }
-        }
+        // Chess pieces backwards
+        this.getChessPiecesSquares(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Backwards
+        ), PieceDirections.BACKWARDS, notSameColorPredicate);
     }
 }
 
@@ -354,7 +266,7 @@ export class Rook extends Piece {
         // console.log("white rook here, let's find moves.");
         // console.log(cell.coordinate.chessCoordinate);
         this.rookHelper(cell);
-        console.log("finished.");
+        // console.log("finished.");
     }
 
     public UnSelectMoves = (cell: ChessCell) => {
@@ -417,7 +329,7 @@ export class Bishop extends Piece {
         // console.log("white rook here, let's find moves.");
         // console.log(cell.coordinate.chessCoordinate);
         this.bishopHelper(cell);
-        console.log("finished.");
+        // console.log("finished.");
     }
 }
 
@@ -669,7 +581,7 @@ export class ChessPieceFactory {
                 return pieceColor === PieceColor.WHITE ? new WhiteKing() : new BlackKing();
             }
             default: {
-                console.log("default.");
+                // console.log("default.");
                 return null;
             }
         }
@@ -682,7 +594,7 @@ export const TryGetFunc = (fn) => {
     try {
         return fn();
     } catch(e) {
-        console.log(e);
+        // console.log(e);
         return null;
     }
 }
@@ -717,4 +629,13 @@ export const getPieceFromDirection = (cell: ChessCell, direction: PieceDirection
             return null;
         }
     }
+}
+
+export let notSameColorPredicate = (_baseCell: PieceColor, _newCell: PieceColor) => { 
+    try {
+            return _baseCell !== _newCell;
+    }
+   catch(err) {
+    alert(err);
+   }
 }
