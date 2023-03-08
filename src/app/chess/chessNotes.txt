@@ -42,14 +42,7 @@ made and when or how it can be made.
 
 - [Incomplete -> COMPLETED] Refactor to FindMoves (to use TryGetPiece -> )
 
-TODO NOW: 
-
-----------------------------------------------------------------
-
-- [Incomplete] Implement turn style moving, So white then black can move, with text on the
-               board, and add timers counting down from 10:00 minutes, with a start button. 
-
-- [Incomplete] Add abstractions for helper methods to remove duplication
+- [COMPLETED] Add abstractions for helper methods to remove duplication
                for finding proper path... Need to think to make sure that is the
                proper way forward, as to not over complicate this the logic. 
 
@@ -57,7 +50,16 @@ TODO NOW:
                using 'getChessPiecesSquares' as to remove numerous lines of duplication 
                then I can resolve this task item
 
-- [Incomplete]: Add "check" logic for King
+TODO NOW: 
+
+----------------------------------------------------------------
+
+- [Incomplete] Implement turn style moving, So white then black can move, with text on the
+               board, and add timers counting down from 10:00 minutes, with a start button. 
+
+- [Incomplete]: Add "check" logic for King -> Need to determine where we place this function, 
+                so when we make a move we properly check if the king is in check, 1st using alerts
+                later we will make sounds. 
 
 - [Incomplete]: Add "check-mate" logic for King 
 
@@ -67,6 +69,8 @@ TODO NOW:
 
 
 TODOS LATER: 
+
+- [Incomplete - BUG] - King can't move and take another piece, if in check or not in check. 
 
 - [INCOMPLETE - Logic for implementing stalemate]...
 

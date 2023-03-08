@@ -110,18 +110,6 @@ export class Piece implements IPiece {
         }
     }
 
-
-    /*
-    
-            Please remember to pass in the base cell in 'this.getChessPiecesSquares()' method. 
-
-            In doing this we will have the base cell so then we can actually compare it to 
-
-            the final cell. 
-    
-    */
-
-
     public getAllVerticalCells = (cell: ChessCell) => {
         // get Chess Pieces Squares is a 
         this.getChessPiecesSquares(cell, this.TryGetPiece(

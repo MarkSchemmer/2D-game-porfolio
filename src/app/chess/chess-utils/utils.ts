@@ -20,7 +20,7 @@ class PieceDirectionSetup {
     }
 }
 
-let pieceName: PieceName[] = [
+export let pieceName: PieceName[] = [
     PieceName.POND,
     PieceName.BISHOP,
     PieceName.KNIGHT,

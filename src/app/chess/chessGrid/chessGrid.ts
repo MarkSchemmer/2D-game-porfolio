@@ -2,6 +2,7 @@ import { Coordinate } from "src/app/common/utils";
 import { isValue } from "utils/Utils";
 import { ChessCell, connectBoard, IChessCell } from "../chess-utils/utils";
 import { ChessRules } from "../chess-business-rules/chess-rules";
+import { Piece, PieceColor } from "../chess-utils/Piece";
 
 /*
   I'm needing to write horizontal -> either a - h
@@ -16,6 +17,13 @@ import { ChessRules } from "../chess-business-rules/chess-rules";
 */
 
 export class ChessGrid {
+
+    public blackInCheck: boolean = false;
+    public whiteInCheck: boolean = false;
+    public whiteInCheckMate: boolean = false;
+    public blackInCheckMate: boolean = false;
+    public whosMoveisIt: PieceColor = PieceColor.WHITE;
+
     // dimension of each square
      public thickness = 1;
      public black = "#000";
@@ -54,6 +62,14 @@ export class ChessGrid {
        // console.log(this.pieceMap);
       this.calculateRange(this.grid);
       connectBoard(this.pieceMap);
+     }
+
+     public changeWhosMoveItIs = () => {
+        if (this.whosMoveisIt === PieceColor.WHITE) {
+          this.whosMoveisIt = PieceColor.BLACK;
+        } else {
+          this.whosMoveisIt = PieceColor.WHITE;
+        }
      }
 
      public calculateRange = grid => {
@@ -188,6 +204,7 @@ export class ChessGrid {
     }
 
     public movePieceToSquare = (cell) => {
+      
       // Primitive movement will if will be 
       // focused.piece to cell.piece;
       let piece = this.focusedCell.piece;
@@ -200,6 +217,22 @@ export class ChessGrid {
     }
 
     public clickSquare = (x, y, e, isLeftClick) => {
+
+
+      /*
+
+          Things I need to know before we can logically code this out
+
+            - Check if were in check, if were not in check then we can make a move
+
+          Logic for 'check', can check opposing team
+
+          Logic, can't move if in check, if in check you must move out of check
+
+          Logic
+      
+      */
+
 
       /*
          Items we need to cover when handling a click. 
@@ -214,9 +247,23 @@ export class ChessGrid {
       // console.log(cell);
       // console.log(this.focusedCell);
       let piece = cell.piece;
+      let isValidPiece = isValue(piece);
+      // Allows user to actually make a move, only move a piece if it is in fact it's turn.
+      // How do we determine whos move it is? 
+      // White goes first
+      // Then Black
+      // ect... flip flopping the turn.
+      let pieceColor: PieceColor = this.focusedCell === null ? null : this.focusedCell.piece.pieceColor;
+      let canMove: boolean = pieceColor !== null && pieceColor === this.whosMoveisIt;
+      // Here we need to realize if we are in check
+      // We need to determine if we can make a move out of check
+      // if we are in check, then move out of check or look for 'check-mate' detection
+      // if we are not in check, then just make a normal move
+      // algorithm for searching for check
+      // algorithm for getting out of check
       if (isLeftClick) 
       {
-        if (isValue(piece)) 
+        if (isValidPiece) 
         { 
             // We need to reset all redsquares just in case. 
             this.resetAllRedSquares();
@@ -225,13 +272,19 @@ export class ChessGrid {
             // If the square was clicked as the previous square
             else if (this.focusedCell.coordinate.chessCoordinate === cell.coordinate.chessCoordinate) { this.focusSquare(cell); }
             // We know it's not the same cell, also we know The pieces are different colors. 
-            else if (this.focusedCell != null && this.focusedCell.piece.pieceColor != cell.piece.pieceColor && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
+            else if (this.focusedCell != null && this.focusedCell.piece.pieceColor != cell.piece.pieceColor && cell.canMoveToOrAttack && canMove) { 
+              this.movePieceToSquare(cell);
+              this.changeWhosMoveItIs();
+            }
             // In this else if sqaure block, 
             // Focusing new square that was clicked, so basically focus new square and unfocus old square
             else { this.focusNewSquare(cell); }
             // After all operations we update the previous cell
         }
-        else if (this.focusSquare != null && cell.canMoveToOrAttack) { this.movePieceToSquare(cell); }
+        else if (this.focusSquare != null && cell.canMoveToOrAttack && canMove) { 
+          this.movePieceToSquare(cell); 
+          this.changeWhosMoveItIs();
+        }
         // Clicked a square and we need to unofus all squares 
         else 
         {
