@@ -387,7 +387,7 @@ export class Knight extends Piece {
         this.poolOfSquaresThatCanMoveOrAttack = [
             fr, fl, bl, br, lf, lb, rf, rb
         ].filter(
-            (cell: ChessCell) => this.chessRules.canKnightMove(cell)
+            (otherCell: ChessCell) => this.chessRules.canKnightMove(cell, otherCell)
         );
 
         this.poolOfSquaresThatCanMoveOrAttack.forEach(cell => cell.canMoveToOrAttack = true);

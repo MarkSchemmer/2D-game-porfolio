@@ -79,8 +79,19 @@ export class ChessRules {
 
 
     // Later on in time, will add a more advanced calculation for knight movements.
-    public canKnightMove = (cell: ChessCell): boolean => {
-        return isValue(cell) && cell.cellIsEmpty();
+    public canKnightMove = (cell: ChessCell, otherCell: ChessCell): boolean => {
+        if (isValue(otherCell)) {
+            if (otherCell.cellIsEmpty()) return true;
+
+            if (otherCell.cellIsNotEmpty() && this.isNotSameColor(cell, otherCell)) { 
+                return true;
+            } else {
+                return false;
+            }
+
+        } else {
+            return false;
+        }
     }
 
     // One public move that then determines if can move or not. 
