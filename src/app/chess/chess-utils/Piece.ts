@@ -47,14 +47,6 @@ export class Piece implements IPiece {
         this.pieceColor = pieceColor;
     }
 
-    public isSameColor = (otherPiece: Piece): boolean => {
-        return this.pieceColor === otherPiece.pieceColor;
-    }
-
-    public isNotSameColor = (otherPiece: Piece): boolean => {
-        return !this.isSameColor(otherPiece);
-    }
-
     public draw = (ctx, xRange, yRange) => {
         if (this.hasRun === false) {
             this.imageObj.src = this.image;
@@ -92,7 +84,7 @@ export class Piece implements IPiece {
         // console.log("Need to unselect all squares here. ");
     }
 
-    public getChessPiecesSquares = (baseCell: ChessCell, cell: ChessCell, direction: PieceDirections, predicate : (baseCell: PieceColor, newCell: PieceColor) => boolean) => {
+    public getChessPiecesSquares = (baseCell: ChessCell, cell: ChessCell, direction: PieceDirections, predicate : (baseCell: ChessCell, newCell: ChessCell) => boolean) => {
         while(isValue(cell)) 
         {
             if (cell.cellIsEmpty()) 
@@ -102,7 +94,7 @@ export class Piece implements IPiece {
             } 
             else
             {
-                if (predicate(baseCell.piece.pieceColor, cell.piece.pieceColor))
+                if (predicate(baseCell, cell))
                     cell.makeCellAttack();
                 
                 cell = null;
@@ -114,46 +106,46 @@ export class Piece implements IPiece {
         // get Chess Pieces Squares is a 
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Right
-        ), PieceDirections.RIGHT, notSameColorPredicate);
+        ), PieceDirections.RIGHT, this.chessRules.isNotSameColor);
 
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Left
-        ), PieceDirections.LEFT, notSameColorPredicate);
+        ), PieceDirections.LEFT, this.chessRules.isNotSameColor);
     }
 
     public getAllDiagonals = (cell: ChessCell) => {
         // Chess pieces diagonally right
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () =>  cell.chessMovementPatterns.ForwardsDiagonalRight
-        ), PieceDirections.DIAGONALFORWARDRIGHT, notSameColorPredicate);
+        ), PieceDirections.DIAGONALFORWARDRIGHT, this.chessRules.isNotSameColor);
 
         // Chess pieces diagonally right
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.ForwardsDiagonalLeft
-        ), PieceDirections.DIAGONALFORWARDLEFT, notSameColorPredicate);
+        ), PieceDirections.DIAGONALFORWARDLEFT, this.chessRules.isNotSameColor);
 
 
         // Chess pieces diagonally backwards right
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.BackwardsDiagonalRight
-        ), PieceDirections.DIAGONALBACKWARDSRIGHT, notSameColorPredicate);
+        ), PieceDirections.DIAGONALBACKWARDSRIGHT, this.chessRules.isNotSameColor);
 
         // Chess pieces diagonally backwards left
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.BackwardsDiagonalLeft
-        ), PieceDirections.DIAGONALBACKWARDSLEFT, notSameColorPredicate);
+        ), PieceDirections.DIAGONALBACKWARDSLEFT, this.chessRules.isNotSameColor);
     }
 
     public getAllHorizontals = (cell: ChessCell) => {
         // Chess pieces forwards
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Forward
-        ), PieceDirections.FORWARD, notSameColorPredicate);
+        ), PieceDirections.FORWARD, this.chessRules.isNotSameColor);
 
         // Chess pieces backwards
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Backwards
-        ), PieceDirections.BACKWARDS, notSameColorPredicate);
+        ), PieceDirections.BACKWARDS, this.chessRules.isNotSameColor);
     }
 }
 
@@ -617,13 +609,4 @@ export const getPieceFromDirection = (cell: ChessCell, direction: PieceDirection
             return null;
         }
     }
-}
-
-export let notSameColorPredicate = (_baseCell: PieceColor, _newCell: PieceColor) => { 
-    try {
-            return _baseCell !== _newCell;
-    }
-   catch(err) {
-    alert(err);
-   }
 }

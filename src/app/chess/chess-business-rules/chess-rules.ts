@@ -32,8 +32,21 @@ export class ChessRules {
     
     */
 
+    public isNotSameColor = (currentCell: ChessCell, otherCell: ChessCell): boolean => {
+        return !this.isSameColor(currentCell, otherCell);
+    }
+
+    public isSameColor = (currentCell: ChessCell, otherCell: ChessCell): boolean => {
+        let currentCellColor = currentCell.piece.pieceColor;
+        let otherCellColor = otherCell && otherCell.piece && otherCell.piece.pieceColor;
+
+        if (otherCellColor === null) return true;
+
+        return currentCellColor === otherCellColor;
+    }
+
     public canPondAttack = (currentCell: ChessCell, leftOrRightCell: ChessCell): boolean => {
-        return leftOrRightCell.cellIsNotEmpty() && currentCell.piece.isNotSameColor(leftOrRightCell.piece);
+        return leftOrRightCell.cellIsNotEmpty() && this.isNotSameColor(currentCell, leftOrRightCell);
     }
 
     // Method for when a pond can move left or right, it's not so much about 

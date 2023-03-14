@@ -58,6 +58,8 @@ TODO NOW:
 - refactor genChessBoard, to a simplier way such as a hashmap, 
 to access the chessGrid, then just assigning the piece.
 
+- refactor isSameColor and is not same color to chess rules 
+
 - [Incomplete] Implement turn style moving, So white then black can move, with text on the
                board, and add timers counting down from 10:00 minutes, with a start button. 
 
