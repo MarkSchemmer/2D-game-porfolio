@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { genChessBoard, IChessCell, Mouse } from "../chess-utils/utils";
+import { genChessBoard, Mouse } from "../chess-utils/utils";
+import { IChessCell } from "../ChessCell/ChessCell";
 import { ChessGrid } from "../chessGrid/chessGrid";
 declare var $: any;
 

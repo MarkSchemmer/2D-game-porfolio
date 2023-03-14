@@ -1,7 +1,9 @@
 import { Coordinate } from "src/app/common/utils";
 import { isValue, range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
-import { ChessPieceFactory, IPiece, Piece, PieceColor, PieceName, WhitePond } from "./Piece";
+import { ChessPieceFactory, IPiece, PieceColor, PieceName, WhitePond } from "./Piece";
+import { ChessCell, IChessCell } from "../ChessCell/ChessCell";
+import { defaultChessLocations } from "./defaultChessLocations";
 
 export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export let numbers = range(1, 8);
@@ -27,57 +29,6 @@ export let pieceName: PieceName[] = [
     PieceName.ROOK,
     PieceName.QUEEN,
     PieceName.KING
-];
-
-let genWhitePiecesSetup = () => {
-    let whitePondLocations = letters.map(letter => (letter + 2).toString())
-    let whitePonds = new PieceDirectionSetup(PieceColor.WHITE, PieceName.POND, whitePondLocations);
-
-    let whiteRookLocations = ["a", "h"].map(letter => (letter + 1).toString());
-    let whiteRooks = new PieceDirectionSetup(PieceColor.WHITE, PieceName.ROOK, whiteRookLocations);
-
-    let whiteBishopLocations = ["c", "f"].map(letter => (letter + 1).toString());
-    let whiteBishops = new PieceDirectionSetup(PieceColor.WHITE, PieceName.BISHOP, whiteBishopLocations);
-
-    let whiteKnightLocations = ["b", "g"].map(letter => (letter + 1).toString());
-    let whiteKnights = new PieceDirectionSetup(PieceColor.WHITE, PieceName.KNIGHT, whiteKnightLocations);
-
-    return [
-        whitePonds,
-        whiteRooks,
-        whiteBishops,
-        whiteKnights,
-        new PieceDirectionSetup(PieceColor.WHITE, PieceName.QUEEN, ["d1"]),
-        new PieceDirectionSetup(PieceColor.WHITE, PieceName.KING, ["e1"]),
-    ];
-}
-
-let genBlackPiecesSetup = () => {
-    let blackPondLocations = letters.map(letter => (letter + 7).toString())
-    let blackPonds = new PieceDirectionSetup(PieceColor.BLACK, PieceName.POND, blackPondLocations);
-
-    let blackRookLocations = ["a", "h"].map(letter => (letter + 8).toString());
-    let blackRooks = new PieceDirectionSetup(PieceColor.BLACK, PieceName.ROOK, blackRookLocations);
-
-    let blackBishopLocations = ["c", "f"].map(letter => (letter + 8).toString());
-    let blackBishops = new PieceDirectionSetup(PieceColor.BLACK, PieceName.BISHOP, blackBishopLocations);
-
-    let blackKnightLocations = ["b", "g"].map(letter => (letter + 8).toString());
-    let blackKnights = new PieceDirectionSetup(PieceColor.BLACK, PieceName.KNIGHT, blackKnightLocations);
-
-    return [
-        blackPonds,
-        blackRooks,
-        blackBishops,
-        blackKnights,
-        new PieceDirectionSetup(PieceColor.BLACK, PieceName.QUEEN, ["d8"]),
-        new PieceDirectionSetup(PieceColor.BLACK, PieceName.KING, ["e8"]),
-    ];
-}
-
-let listDirections : PieceDirectionSetup[] = [
-    ...genWhitePiecesSetup(),
-    ...genBlackPiecesSetup()
 ];
 
 export class Mouse {
@@ -115,120 +66,18 @@ export class ChessMovement {
     BackwardsDiagonalRight: ChessCell;
 }
 
-export interface IChessCell {
-    cellsColor: string;
-    xRange: number;
-    yRange: number;
-    isAlive: boolean;
-    redSquareActivated: boolean;
-    coordinate: ChessCoordinate;
-    letterText: string;
-    numberText: string;
-    piece: Piece;
-}
-
-export class ChessCell implements IChessCell {
-    // Chess green base black square: #769656
-    // Chess white base white square: #eeeed2
-    public whiteColor: string = "#769656";
-    public blackColor: string = "#eeeed2";
-    public xRange: number;
-    public yRange: number;
-    // chagne isAlive to userFocusedSqaure
-    public isAlive: boolean = false;
-    public redSquareActivated: boolean = false;
-
-    public canMoveToOrAttack: boolean = false;
-
-    // Coordinate of square in chessboard.
-    public coordinate: ChessCoordinate = null;
-    public cellsColor: string = null;
-    public letterText: string = null;
-    public numberText: string = null;
-    public piece: Piece = null;
-    public row: number;
-    public col: number;
-    public chessMovementPatterns: ChessMovement = new ChessMovement();
-
-    public makeCellAttack = () => {
-        this.canMoveToOrAttack = true;
-    }
-
-    public makeCellNotAttack = () => {
-        this.canMoveToOrAttack = false;
-    }
-
-    public cellIsEmpty = (): boolean => {
-        return this.piece === null;
-    }
-
-    public cellIsNotEmpty = (): boolean => {
-        return !this.cellIsEmpty();
-    }
-
-    public connectToNeighbors = (cell: ChessCell, pieceMap: { [key: string] : ChessCell }) => {
-        
-        // leftNeighbor
-        let leftCellCoordinate = cell.coordinate.getLeftCell();
-        let leftCell = isValue(leftCellCoordinate) ? pieceMap[leftCellCoordinate] : null;
-        
-        // Right Neighbor
-        let rightCellCoordinate = cell.coordinate.getRightCell();
-        let rightCell = isValue(rightCellCoordinate) ? pieceMap[rightCellCoordinate] : null;
-
-        // Forward Neighbor
-        let forwardCellCoordinate = cell.coordinate.getForwardCell();
-        let forwardCell = isValue(forwardCellCoordinate) ? pieceMap[forwardCellCoordinate] : null;
-
-        // Backwards Neighbor
-        let backwardsCellCoordinate = cell.coordinate.getBackwardsCell();
-        let backwardsCell = isValue(backwardsCellCoordinate) ? pieceMap[backwardsCellCoordinate] : null;
-
-        // Diagonal Forward Right Neighbor
-        let forwardDiagonalRightCoordinate = cell.coordinate.getForwardsDiagonalRightCell();
-        let diagonalForwardRightCell = isValue(forwardDiagonalRightCoordinate) ? pieceMap[forwardDiagonalRightCoordinate] : null;
-
-        // Diagonal Forward Left Neighbor
-        let forwardDiagonalLeftCoordinate = cell.coordinate.getForwardsDiagonalLeftCell();
-        let diagonalForwardLeftCell = isValue(forwardDiagonalLeftCoordinate) ? pieceMap[forwardDiagonalLeftCoordinate] : null;
-
-        // Diagonal Backwards Right Neighbor
-        let backwardsDiagonalRightCoordinate = cell.coordinate.getBackwardsDiagonalRightCell();
-        let backwardsDiagonalRightCell = isValue(backwardsDiagonalRightCoordinate) ? pieceMap[backwardsDiagonalRightCoordinate] : null;
-
-        // Diagonal Backwards Left Neighbor
-        let backwardsDiagonalLeftCoordinate = cell.coordinate.getBackwardsDiagonalLeftCell();
-        let backwardsDiagonalLeftCell = isValue(backwardsDiagonalLeftCoordinate) ? pieceMap[backwardsDiagonalLeftCoordinate] : null;
-
-        cell.chessMovementPatterns.Left = leftCell;
-        cell.chessMovementPatterns.Right = rightCell;
-        cell.chessMovementPatterns.Forward = forwardCell;
-        cell.chessMovementPatterns.Backwards = backwardsCell;
-        cell.chessMovementPatterns.ForwardsDiagonalRight = diagonalForwardRightCell;
-        cell.chessMovementPatterns.ForwardsDiagonalLeft = diagonalForwardLeftCell;
-        cell.chessMovementPatterns.BackwardsDiagonalRight = backwardsDiagonalRightCell;
-        cell.chessMovementPatterns.BackwardsDiagonalLeft = backwardsDiagonalLeftCell
-    }
-
-    setRowCol = (row, col) => {
-        this.row = row;
-        this.col = col;
-    }
-
-    constructor(x, y) 
-    {
-      this.coordinate = new ChessCoordinate(x, y);
-      this.cellsColor = getCellColor(x, y) === chessCellColor.WHITE ? this.whiteColor : this.blackColor;
-    }
-}
-
 export let genChessBoard = () => {
     // xIndex row
     // yIndex col
     let board =  range(1, 8).map((x, xIndex) => {
         let chessCell: ChessCell = null;
         let indexes = range(1, 8).map((y, yIndex) => {
-            chessCell = new ChessCell(x, y);
+            let chessCoord = new ChessCoordinate(x, y);
+            let cellColor = getCellColor(x, y);
+            let stringChessCoord = chessCoord.chessCoordinate;
+            let piece = stringChessCoord in defaultChessLocations ? defaultChessLocations[stringChessCoord] : null;
+            console.log(stringChessCoord);
+            chessCell = new ChessCell(chessCoord, cellColor, piece);
             chessCell.setRowCol(xIndex, yIndex);
             if (x === 1) { chessCell.letterText = (yIndex + 1).toString(); }
             return chessCell;
@@ -239,15 +88,9 @@ export let genChessBoard = () => {
 
     board.forEach((line, idx) => line[line.length - 1].numberText = letters[idx])
 
-    let pieceSetter = setChessPieces(board, chessPieceFactory);
-
-    // Place white pieces
-    listDirections.forEach(directions => {
-        pieceSetter(directions);
-    });
-
     return board;
 }
+
 
 export let connectBoard = (pieceMap: { [key: string] : ChessCell }) => {
     Object.values(pieceMap).forEach((cell: ChessCell) => {
@@ -264,7 +107,7 @@ let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSe
     });
 }
  
-enum chessCellColor {
+export enum chessCellColor {
     WHITE = "WHITE",
     BLACK = "BLACK"
 }

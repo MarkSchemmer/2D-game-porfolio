@@ -1,7 +1,7 @@
 // A piece needs to know how to move, 
 // Going to be base class for all
 import { isValue, range } from "utils/Utils";
-import { ChessCell } from "./utils";
+import { ChessCell } from "../ChessCell/ChessCell";
 import { ChessRules } from "../chess-business-rules/chess-rules";
 
 export enum PieceDirections { 

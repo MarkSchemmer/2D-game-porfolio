@@ -7,7 +7,7 @@
 // This entity should live on piece? maybe it should.
 
 import { isValue } from "utils/Utils";
-import { ChessCell } from "../chess-utils/utils";
+import { ChessCell } from "../ChessCell/ChessCell";
 import { PieceName } from "../chess-utils/Piece";
 
 

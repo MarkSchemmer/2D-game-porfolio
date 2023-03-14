@@ -1,6 +1,7 @@
 import { Coordinate } from "src/app/common/utils";
 import { isValue } from "utils/Utils";
-import { ChessCell, connectBoard, IChessCell } from "../chess-utils/utils";
+import { connectBoard } from "../chess-utils/utils";
+import { ChessCell, IChessCell } from "../ChessCell/ChessCell";
 import { ChessRules } from "../chess-business-rules/chess-rules";
 import { Piece, PieceColor } from "../chess-utils/Piece";
 
