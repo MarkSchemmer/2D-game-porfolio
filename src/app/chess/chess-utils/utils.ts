@@ -1,26 +1,12 @@
 import { Coordinate } from "src/app/common/utils";
 import { isValue, range } from "utils/Utils"
 import { ChessGrid } from "../chessGrid/chessGrid";
-import { ChessPieceFactory, IPiece, PieceColor, PieceName, WhitePond } from "./Piece";
+import { PieceName } from "./Piece";
 import { ChessCell, IChessCell } from "../ChessCell/ChessCell";
 import { defaultChessLocations } from "./defaultChessLocations";
 
 export let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
 export let numbers = range(1, 8);
-export const chessPieceFactory = new ChessPieceFactory();
-
-class PieceDirectionSetup {
-
-    pieceColor: PieceColor;
-    pieceName: PieceName;
-    pieceLocations: string[]
-
-    constructor(pieceColor: PieceColor, pieceName: PieceName, pieceLocations: string[]){
-        this.pieceColor = pieceColor;
-        this.pieceName = pieceName;
-        this.pieceLocations = pieceLocations;
-    }
-}
 
 export let pieceName: PieceName[] = [
     PieceName.POND,
@@ -95,15 +81,6 @@ export let genChessBoard = () => {
 export let connectBoard = (pieceMap: { [key: string] : ChessCell }) => {
     Object.values(pieceMap).forEach((cell: ChessCell) => {
         cell.connectToNeighbors(cell, pieceMap);
-    });
-} 
-
-let setChessPieces = (board, chessPieceFactory) => (directions: PieceDirectionSetup) => {
-    directions.pieceLocations.forEach(location => {
-        let chessCell = getCell(location, board);
-        if (chessCell != null) {
-            chessCell.piece = chessPieceFactory.PieceGenerator(directions.pieceName, directions.pieceColor);
-        }
     });
 }
  

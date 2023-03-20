@@ -50,24 +50,27 @@ made and when or how it can be made.
                using 'getChessPiecesSquares' as to remove numerous lines of duplication 
                then I can resolve this task item
 
+
+- [COMPLETED] refactor genChessBoard, to a simplier way such as a hashmap, 
+to access the chessGrid, then just assigning the piece.
+
+- [COMPLETED] refactor isSameColor and is not same color to chess rules 
+
+- [COMPLETED] Implement turn style moving, So white then black can move, with text on the
+               board, and add timers counting down from 10:00 minutes, with a start button. 
+
 TODO NOW: 
 
 ----------------------------------------------------------------
-
-
-- refactor genChessBoard, to a simplier way such as a hashmap, 
-to access the chessGrid, then just assigning the piece.
-
-- refactor isSameColor and is not same color to chess rules 
-
-- [Incomplete] Implement turn style moving, So white then black can move, with text on the
-               board, and add timers counting down from 10:00 minutes, with a start button. 
 
 - [Incomplete]: Add "check" logic for King -> Need to determine where we place this function, 
                 so when we make a move we properly check if the king is in check, 1st using alerts
                 later we will make sounds. 
 
-- [Incomplete]: Add "check-mate" logic for King 
+- [Incomplete]: Add "check-mate" logic for King
+
+- [INCOMPLETE]: the question is, can move or attack does that really cover just attack?
+                Do I need an attack square? to make red when 
 
 ----------------------------------------------------------------
 
