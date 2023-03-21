@@ -3,7 +3,7 @@ import { isValue } from "utils/Utils";
 import { connectBoard } from "../chess-utils/utils";
 import { ChessCell, IChessCell } from "../ChessCell/ChessCell";
 import { ChessRules } from "../chess-business-rules/chess-rules";
-import { Piece, PieceColor } from "../chess-utils/Piece";
+import { Piece, PieceColor, PieceName } from "../chess-utils/Piece";
 
 /*
   I'm needing to write horizontal -> either a - h
@@ -38,12 +38,15 @@ export class ChessGrid {
      public resolution;
      public COLS;
      public ROWS;
-     public grid;
      public ctx;
+     public grid;
      public sqaureIsFocused = false;
      public currentFocusedSquare: Coordinate = null;
      public focusedCell: ChessCell = null;
      public chessRules: ChessRules = new ChessRules();
+
+     public blackKing: ChessCell = null;
+     public whiteKing: ChessCell = null;
 
      // Can add a hash map for simplification.
      public pieceMap: { [key: string] : ChessCell };
@@ -55,7 +58,7 @@ export class ChessGrid {
       this.grid = grid;
       this.ctx = ctx;
 
-      this.pieceMap = (this.grid.flat())
+      this.pieceMap = (grid.flat())
        .reduce((acc, cur, idx) => {
         acc[cur.coordinate.chessCoordinate] = cur; 
         return acc;
@@ -63,6 +66,11 @@ export class ChessGrid {
        // console.log(this.pieceMap);
       this.calculateRange(this.grid);
       connectBoard(this.pieceMap);
+
+      this.blackKing = this.findBlackKing();
+      this.whiteKing = this.findWhiteKing();
+
+      // console.log(this.blackKing);
      }
 
      public changeWhosMoveItIs = () => {
@@ -136,6 +144,23 @@ export class ChessGrid {
        }
      }
 
+     public findBlackKing = () => this.FindPieces(PieceColor.BLACK, PieceName.KING)[0];
+
+     public findWhiteKing = () => this.FindPieces(PieceColor.WHITE, PieceName.KING)[0];
+
+     public FindPieces = (color: PieceColor, pieceName: PieceName) => {
+        return Object.values(this.pieceMap).filter((c: ChessCell) => {
+           return c.piece && c.piece.PieceName === pieceName && c.piece.pieceColor === color;
+        });
+     }
+
+     public FindAllPiecesOfSameColor = (color: PieceColor) => {
+      // console.log(this.pieceMap);
+      return Object.values(this.pieceMap).filter((c: ChessCell) => {
+        return c.piece && c.piece.pieceColor === color;
+      });
+     }
+
      public resetAllSquares = () => {
         Object.values(this.pieceMap).forEach((c: ChessCell) => {
           c.isAlive = false;
@@ -205,21 +230,41 @@ export class ChessGrid {
     }
 
     public movePieceToSquare = (cell) => {
-      
-      // Primitive movement will if will be 
-      // focused.piece to cell.piece;
-      let piece = this.focusedCell.piece;
-      cell.piece = piece;
-      cell.piece.hasMoved = true;
-      this.focusedCell.piece = null;
-      this.focusedCell = null;
-      this.resetAllSquares();
-      this.draw();
+
+      // focused cell moving to cell
+
+        // Primitive movement will if will be 
+        // focused.piece to cell.piece;
+        let FocusedPastPieceCoordinate = this.focusedCell.coordinate.chessCoordinate;
+        let FocusedPiece = this.focusedCell.piece;
+
+
+        this.pieceMap[cell.coordinate.chessCoordinate].piece = null;
+        cell.piece = null;
+
+        cell.piece = FocusedPiece;
+        this.pieceMap[cell.coordinate.chessCoordinate].piece = FocusedPiece;
+
+        cell.piece.hasMoved = true;
+        this.pieceMap[cell.coordinate.chessCoordinate].piece.hasMoved = true;
+
+        this.focusedCell.piece = null;
+        this.focusedCell = null;
+
+        // this.pieceMap[FocusedPastPieceCoordinate].piece = null;
+
+        this.resetAllSquares();
+        this.draw();
     }
 
     public clickSquare = (x, y, e, isLeftClick) => {
+      /*
+          Logic for finding check will not interupt the game as of now, 
 
+          it will only just log and alert for the moment. 
+      */
 
+      // this.chessRules.KingCheck(king, allPieces);
       /*
 
           Things I need to know before we can logically code this out
@@ -244,7 +289,8 @@ export class ChessGrid {
          For determining intent to move piece, you need to have a focused cell
          And then you
       */
-      let cell: ChessCell = this.grid[x][y];
+      let c: ChessCell = this.grid[x][y];
+      let cell: ChessCell = this.pieceMap[c.coordinate.chessCoordinate];
       // console.log(cell);
       // console.log(this.focusedCell);
       let piece = cell.piece;
@@ -266,6 +312,7 @@ export class ChessGrid {
       {
         if (isValidPiece) 
         { 
+            console.log(cell);
             // We need to reset all redsquares just in case. 
             this.resetAllRedSquares();
             // if no square is selected select square and focus
@@ -275,6 +322,9 @@ export class ChessGrid {
             // We know it's not the same cell, also we know The pieces are different colors. 
             else if (this.focusedCell != null && this.focusedCell.piece.pieceColor != cell.piece.pieceColor && cell.canMoveToOrAttack && canMove) { 
               this.movePieceToSquare(cell);
+              let king = this.whosMoveisIt === PieceColor.WHITE ? this.findBlackKing(): this.findWhiteKing();
+              let allPieces = this.FindAllPiecesOfSameColor(this.whosMoveisIt === PieceColor.WHITE ? PieceColor.WHITE : PieceColor.BLACK);
+              this.chessRules.KingCheck(king, allPieces);
               this.changeWhosMoveItIs();
             }
             // In this else if sqaure block, 
@@ -284,6 +334,9 @@ export class ChessGrid {
         }
         else if (this.focusSquare != null && cell.canMoveToOrAttack && canMove) { 
           this.movePieceToSquare(cell); 
+          let king = this.whosMoveisIt === PieceColor.WHITE ? this.findBlackKing(): this.findWhiteKing();
+          let allPieces = this.FindAllPiecesOfSameColor(this.whosMoveisIt === PieceColor.WHITE ? PieceColor.WHITE : PieceColor.BLACK);
+          this.chessRules.KingCheck(king, allPieces);
           this.changeWhosMoveItIs();
         }
         // Clicked a square and we need to unofus all squares 

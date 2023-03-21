@@ -62,7 +62,6 @@ export let genChessBoard = () => {
             let cellColor = getCellColor(x, y);
             let stringChessCoord = chessCoord.chessCoordinate;
             let piece = stringChessCoord in defaultChessLocations ? defaultChessLocations[stringChessCoord] : null;
-            console.log(stringChessCoord);
             chessCell = new ChessCell(chessCoord, cellColor, piece);
             chessCell.setRowCol(xIndex, yIndex);
             if (x === 1) { chessCell.letterText = (yIndex + 1).toString(); }
@@ -87,6 +86,12 @@ export let connectBoard = (pieceMap: { [key: string] : ChessCell }) => {
 export enum chessCellColor {
     WHITE = "WHITE",
     BLACK = "BLACK"
+}
+
+export const getChessCoordination = (x, y) => {
+    let letters = ["a", "b", "c", "d", "e", "f", "g", "h"];
+
+    return `${letters[x - 1]}-${y}`;
 }
 
 export class ChessCoordinate extends Coordinate {

@@ -32,6 +32,36 @@ export class ChessRules {
     
     */
 
+    public KingCheck = (KingCell: ChessCell, AllOtherOposingPieces: ChessCell[]) => {
+        /*
+            Basically if checking that white is in check, we pass the White-King and then pass
+            Black-pieces, and then scan all Black possibly moves, if any of Black-pieces have canMoveOrAttack quadrant
+            where the Black is located then it is "check"
+        */
+        let kingPiece = KingCell.piece;
+        let KingColor = KingCell.piece.pieceColor;
+        let KingCoordinate = KingCell.coordinate.chessCoordinate;
+        // console.log(KingColor);
+        // console.log(`Kings coordinate: ${KingCoordinate}`);
+        // console.log(`Kings color: ${KingColor}`);
+        let allMoves = [];
+
+        AllOtherOposingPieces.forEach((c: ChessCell) => {
+           // console.log(c.piece.pieceColor);
+           let otherMovesFromOtherPieces = c.piece.FindMovesAndReturnCells(c);
+           allMoves = [ ...allMoves, ...otherMovesFromOtherPieces ];
+        });
+
+        let isKinginCheck = allMoves.some((c: ChessCell) => {
+            // console.log(c.coordinate.chessCoordinate);
+            return c.coordinate.chessCoordinate === KingCoordinate;
+        });
+
+        if (isKinginCheck) {
+            alert("check");
+        }
+    }
+
     public isNotSameColor = (currentCell: ChessCell, otherCell: ChessCell): boolean => {
         return !this.isSameColor(currentCell, otherCell);
     }
@@ -80,16 +110,21 @@ export class ChessRules {
 
     // Later on in time, will add a more advanced calculation for knight movements.
     public canKnightMove = (cell: ChessCell, otherCell: ChessCell): boolean => {
-        if (isValue(otherCell)) {
+        if (isValue(otherCell)) 
+        {
             if (otherCell.cellIsEmpty()) return true;
 
-            if (otherCell.cellIsNotEmpty() && this.isNotSameColor(cell, otherCell)) { 
+            if (this.isNotSameColor(cell, otherCell)) 
+            { 
                 return true;
-            } else {
+            } 
+            else 
+            {
                 return false;
             }
-
-        } else {
+        } 
+        else 
+        {
             return false;
         }
     }

@@ -12,12 +12,12 @@ export enum PieceDirections {
 }
 
 export enum PieceName {
-    ROOK,
-    POND,
-    BISHOP,
-    QUEEN,
-    KING,
-    KNIGHT
+    ROOK = "rook",
+    POND = "pond",
+    BISHOP = "bishop",
+    QUEEN = "queen",
+    KING = "king",
+    KNIGHT = "knight"
 }
 
 export enum PieceColor {
@@ -69,19 +69,36 @@ export class Piece implements IPiece {
         try {
             return fn();
         } catch(e) {
-            console.log(e);
+            // console.log(e);
             return null;
         }
     }
 
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        switch(cell.piece.PieceName) {
+            case PieceName.POND: 
+            case PieceName.KNIGHT:
+            case PieceName.BISHOP:
+            case PieceName.KING: 
+            case PieceName.QUEEN:
+            case PieceName.ROOK: {
+                return cell.piece.FindMovesAndReturnCells(cell);
+            }
+            default : {
+                return [];
+            }
+        }
+    }
+
     public FindMoves = (cell: ChessCell) => {
+        // basically with this 
         // console.log("base moves here, basically log and forget.");
         // console.log(cell.coordinate.chessCoordinate);
     }
 
     public UnSelectMoves = (cell: ChessCell) => {
         // console.log("Here in the base class. ");
-        // console.log("Need to unselect all squares here. ");
+        // console.log("Need to unselect all squares h ere. ");
     }
 
     public getChessPiecesSquares = (baseCell: ChessCell, cell: ChessCell, direction: PieceDirections, predicate : (baseCell: ChessCell, newCell: ChessCell) => boolean) => {
@@ -102,6 +119,29 @@ export class Piece implements IPiece {
         }
     }
 
+    public getChessPiecesSquaresCoordinates = (baseCell: ChessCell, cell: ChessCell, direction: PieceDirections, predicate : (baseCell: ChessCell, newCell: ChessCell) => boolean): ChessCell[] => {
+        
+        let cellCoordinates = [];
+        
+        while(isValue(cell)) 
+        {
+            if (cell.cellIsEmpty()) 
+            {
+                cellCoordinates.push(cell); 
+                cell = getPieceFromDirection(cell, direction);
+            } 
+            else
+            {
+                if (predicate(baseCell, cell))
+                    cellCoordinates.push(cell);
+                
+                cell = null;
+            }
+        }
+
+        return cellCoordinates;
+    }
+
     public getAllVerticalCells = (cell: ChessCell) => {
         // get Chess Pieces Squares is a 
         this.getChessPiecesSquares(cell, this.TryGetPiece(
@@ -111,6 +151,19 @@ export class Piece implements IPiece {
         this.getChessPiecesSquares(cell, this.TryGetPiece(
             () => cell.chessMovementPatterns.Left
         ), PieceDirections.LEFT, this.chessRules.isNotSameColor);
+    }
+
+    public getAllVerticalCellsChessCoordinates = (cell: ChessCell) => {
+        // get Chess Pieces Squares is a 
+        let right = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Right
+        ), PieceDirections.RIGHT, this.chessRules.isNotSameColor);
+
+        let left = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Left
+        ), PieceDirections.LEFT, this.chessRules.isNotSameColor);
+
+        return [ ...left, ...right ];
     }
 
     public getAllDiagonals = (cell: ChessCell) => {
@@ -136,6 +189,31 @@ export class Piece implements IPiece {
         ), PieceDirections.DIAGONALBACKWARDSLEFT, this.chessRules.isNotSameColor);
     }
 
+    public getAllDiagonalsChessCells = (cell: ChessCell) => {
+        // Chess pieces diagonally right
+        let forwardRight = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () =>  cell.chessMovementPatterns.ForwardsDiagonalRight
+        ), PieceDirections.DIAGONALFORWARDRIGHT, this.chessRules.isNotSameColor);
+
+        // Chess pieces diagonally right
+        let forwardLeft = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.ForwardsDiagonalLeft
+        ), PieceDirections.DIAGONALFORWARDLEFT, this.chessRules.isNotSameColor);
+
+
+        // Chess pieces diagonally backwards right
+        let backwardRight = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalRight
+        ), PieceDirections.DIAGONALBACKWARDSRIGHT, this.chessRules.isNotSameColor);
+
+        // Chess pieces diagonally backwards left
+        let backwardLeft = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.BackwardsDiagonalLeft
+        ), PieceDirections.DIAGONALBACKWARDSLEFT, this.chessRules.isNotSameColor);
+
+        return [ ...forwardRight, ...forwardLeft, ...backwardLeft, ...backwardRight ];
+    }
+
     public getAllHorizontals = (cell: ChessCell) => {
         // Chess pieces forwards
         this.getChessPiecesSquares(cell, this.TryGetPiece(
@@ -147,6 +225,20 @@ export class Piece implements IPiece {
             () => cell.chessMovementPatterns.Backwards
         ), PieceDirections.BACKWARDS, this.chessRules.isNotSameColor);
     }
+
+    public getAllHorizontalsChessCells = (cell: ChessCell) => {
+        // Chess pieces forwards
+        let forward = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Forward
+        ), PieceDirections.FORWARD, this.chessRules.isNotSameColor);
+
+        // Chess pieces backwards
+        let backward = this.getChessPiecesSquaresCoordinates(cell, this.TryGetPiece(
+            () => cell.chessMovementPatterns.Backwards
+        ), PieceDirections.BACKWARDS, this.chessRules.isNotSameColor);
+
+        return [ ...forward, ...backward ];
+    }
 }
 
 class Pond extends Piece {
@@ -157,6 +249,29 @@ class Pond extends Piece {
     constructor(image, pieceColor) {
         super(image, pieceColor);
         this.PieceName = PieceName.POND;
+    }
+
+    public pondAttackCells = (cell: ChessCell): ChessCell[] => {
+        let next;
+        let whichColor = cell.piece.pieceColor === PieceColor.WHITE;
+
+        next = this.TryGetPiece(
+            () =>  whichColor ? cell.chessMovementPatterns.Forward : cell.chessMovementPatterns.Backwards
+        );
+
+        let left = this.TryGetPiece(
+            () => next.chessMovementPatterns.Left
+        );
+
+        let right = this.TryGetPiece(
+            () => next.chessMovementPatterns.Right
+        );
+
+        return [left, right].filter((c: ChessCell) => isValue(c));
+    }
+
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return this.pondAttackCells(cell);
     }
 
     public pondHelper = (cell: ChessCell) => {
@@ -237,6 +352,13 @@ export class Rook extends Piece {
         this.PieceName = PieceName.ROOK;
     }
 
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return [
+            ...this.getAllHorizontalsChessCells(cell),
+            ...this.getAllVerticalCellsChessCoordinates(cell)
+        ];
+    }
+
     public rookHelper = (cell: ChessCell) => {
         this.getAllVerticalCells(cell);
         this.getAllHorizontals(cell);
@@ -301,6 +423,12 @@ export class Bishop extends Piece {
         this.PieceName = PieceName.BISHOP;
     }
 
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return [
+            ...this.getAllDiagonalsChessCells(cell)
+        ];
+    }
+
     public bishopHelper = (cell: ChessCell) => {
         this.getAllDiagonals(cell);
     }
@@ -334,9 +462,13 @@ export class Knight extends Piece {
         this.PieceName = PieceName.KNIGHT;
     }
 
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return this.getKnightMovesChessCells(cell);
+    }
+
     public FindMoves = (cell: ChessCell) => {
         this.getKnightMoves(cell);
-        console.log("found knight moves. ");
+        // console.log("found knight moves. ");
     }
 
     public UnSelectMoves = (c: ChessCell) => {
@@ -346,6 +478,54 @@ export class Knight extends Piece {
 
         this.poolOfSquaresThatCanMoveOrAttack = [];
     }
+
+    public getKnightMovesChessCells = (cell: ChessCell) => {
+        // Need to get forward -> left and right
+        let f: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Forward.chessMovementPatterns.Forward
+        );
+
+        let validF : Boolean = isValue(f);
+        let fr: ChessCell = validF ? this.TryGetPiece(() => f.chessMovementPatterns.Right) : null;
+        let fl: ChessCell = validF ? this.TryGetPiece(() => f.chessMovementPatterns.Left) : null;
+
+        // Need to get backwards -> left and right
+
+        let  b: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Backwards.chessMovementPatterns.Backwards
+        );
+
+        let validB: Boolean = isValue(b);
+        let bl: ChessCell = validB ? this.TryGetPiece(() => b.chessMovementPatterns.Left) : null;
+        let br: ChessCell = validB ? this.TryGetPiece(() => b.chessMovementPatterns.Right) : null;
+
+        let l: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Left.chessMovementPatterns.Left
+        );
+
+        let validL: Boolean = isValue(l);
+        let lf: ChessCell = validL ? this.TryGetPiece(() => l.chessMovementPatterns.Forward) : null;
+        let lb: ChessCell = validL ? this.TryGetPiece(() => l.chessMovementPatterns.Backwards) : null;
+
+
+        let r: ChessCell = this.TryGetPiece(
+            () => cell.chessMovementPatterns.Right.chessMovementPatterns.Right
+        );
+
+        let validR = isValue(r);
+        let rf: ChessCell = validR ? this.TryGetPiece(() => r.chessMovementPatterns.Forward) : null;
+        let rb: ChessCell = validR ? this.TryGetPiece(() => r.chessMovementPatterns.Backwards) : null;
+
+        let knightMoves = [
+            fr, fl, bl, br, lf, lb, rf, rb
+        ].filter(
+            (otherCell: ChessCell) => this.chessRules.canKnightMove(cell, otherCell)
+        );
+
+        return knightMoves;
+    }
+
+    
 
     public getKnightMoves = (cell: ChessCell) => {
         // Need to get forward -> left and right
@@ -382,7 +562,9 @@ export class Knight extends Piece {
 
         let validR = isValue(r);
         let rf: ChessCell = validR ? this.TryGetPiece(() => r.chessMovementPatterns.Forward) : null;
-        let rb: ChessCell = validB ? this.TryGetPiece(() => r.chessMovementPatterns.Backwards) : null;
+        let rb: ChessCell = validR ? this.TryGetPiece(() => r.chessMovementPatterns.Backwards) : null;
+
+        console.log(`Right back cell: ${rb}`);
 
         this.poolOfSquaresThatCanMoveOrAttack = [
             fr, fl, bl, br, lf, lb, rf, rb
@@ -414,6 +596,10 @@ export class King extends Piece {
     constructor(image, pieceColor) {
         super(image, pieceColor);
         this.PieceName = PieceName.KING;
+    }
+
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return [ ];
     }
 
     public getKingMoves = (cell: ChessCell) => {
@@ -502,6 +688,14 @@ export class Queen extends Piece {
     constructor(image, pieceColor) {
         super(image, pieceColor);
         this.PieceName = PieceName.QUEEN;
+    }
+
+    public FindMovesAndReturnCells = (cell: ChessCell): ChessCell[] => {
+        return [
+            ...this.getAllDiagonalsChessCells(cell),
+            ...this.getAllHorizontalsChessCells(cell),
+            ...this.getAllHorizontalsChessCells(cell)
+        ];
     }
 
     public queenHelper = (cell: ChessCell) => {
